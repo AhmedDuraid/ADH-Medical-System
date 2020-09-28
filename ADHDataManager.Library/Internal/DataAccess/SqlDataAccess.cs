@@ -9,6 +9,7 @@ namespace ADHDataManager.Library.Internal.DataAccess
 {
     internal class SqlDataAccess
     {
+        // the internal class that will connect to SQL server with dapper 
         public string GetConnectionString(string stringName)
         {
             return ConfigurationManager.ConnectionStrings[stringName].ConnectionString;

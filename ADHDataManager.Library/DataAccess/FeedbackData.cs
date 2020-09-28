@@ -7,7 +7,7 @@ namespace ADHDataManager.Library.DataAccess
     public class FeedbackData
     {
         // interface with the API 
-        private string DataConnectionName = "AHDConnection";
+        private readonly string DataConnectionName = "AHDConnection";
         public List<FeedbackModel> GetFeedbacks()
         {
             SqlDataAccess dataAccess = new SqlDataAccess();

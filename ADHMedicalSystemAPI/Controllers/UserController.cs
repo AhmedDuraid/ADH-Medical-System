@@ -9,6 +9,14 @@ namespace ADHMedicalSystemAPI.Controllers
     [RoutePrefix("api/User")]
     public class UserController : ApiController
     {
+        // GET: api/User
+        public List<UserModel> GetUsers()
+        {
+            UserData userData = new UserData();
+
+            return userData.GetUsers();
+        }
+
         // GET: api/User/5
         public List<UserModel> GetByID(int id)
         {
@@ -17,6 +25,16 @@ namespace ADHMedicalSystemAPI.Controllers
 
             return data.GetUserById(id);
         }
+
+        // POST: api/User
+        public void Post([FromBody] UserModel user)
+        {
+            UserData userData = new UserData();
+
+            userData.CreateUser(user);
+
+        }
+
 
 
 
