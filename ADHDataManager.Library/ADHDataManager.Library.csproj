@@ -46,9 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\ArticleData.cs" />
+    <Compile Include="DataAccess\AssignedMedicine.cs" />
     <Compile Include="DataAccess\FeedbackData.cs" />
+    <Compile Include="DataAccess\LabTestData.cs" />
     <Compile Include="Models\ArticleModel.cs" />
+    <Compile Include="Models\AssignedMedicineModel.cs" />
     <Compile Include="Models\FeedbackModel.cs" />
+    <Compile Include="Models\LabTestModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Internal\DataAccess\SqlDataAccess.cs" />
