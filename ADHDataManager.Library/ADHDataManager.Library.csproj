@@ -45,7 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\ArticleData.cs" />
     <Compile Include="DataAccess\FeedbackData.cs" />
+    <Compile Include="Models\ArticleModel.cs" />
     <Compile Include="Models\FeedbackModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
