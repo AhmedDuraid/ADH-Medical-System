@@ -40,5 +40,20 @@ namespace ADHDataManager.Library.DataAccess
 
         }
 
+        public void AddNewTest(LabTestModel labTest)
+        {
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            var Parameters = new
+            {
+                @TestName = labTest.test_name,
+                @Description = labTest.description
+            };
+
+            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_AddNewTest",
+                Parameters, ConnectionName);
+
+
+        }
+
     }
 }

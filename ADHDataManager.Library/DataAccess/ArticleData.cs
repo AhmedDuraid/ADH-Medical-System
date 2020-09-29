@@ -12,9 +12,9 @@ namespace ADHDataManager.Library.DataAccess
         {
             SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
-            var Parameters = new { @WithUserInfo = 0 };
 
-            var output = sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_GetAllArticles", Parameters,
+
+            var output = sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_GetAllArticles", new { },
                  ConnectionName);
 
             return output;
@@ -24,7 +24,7 @@ namespace ADHDataManager.Library.DataAccess
         {
             SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
-            var Parameters = new { @WithUserInfo = 0, @ID = id };
+            var Parameters = new { @ID = id };
 
             var output = sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_GetArticleByID", Parameters,
                  ConnectionName);
