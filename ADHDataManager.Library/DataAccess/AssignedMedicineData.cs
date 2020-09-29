@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class AssignedMedicine
+    public class AssignedMedicineData
     {
         private readonly string DataConnectionName = "AHDConnection";
 
