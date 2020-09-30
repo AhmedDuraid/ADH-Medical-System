@@ -9,6 +9,16 @@ namespace ADHDataManager.Library.DataAccess
     {
         // interface with the API 
         private readonly string ConnectionName = "AHDConnection";
+
+        public List<UserModel> GetUsers()
+        {
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+
+            return sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_GetUsers",
+                new { }, ConnectionName);
+
+
+        }
         public List<UserModel> GetUserById(int id)
         {
             SqlDataAccess sqlDataAccess = new SqlDataAccess();
@@ -20,15 +30,7 @@ namespace ADHDataManager.Library.DataAccess
 
             return output;
         }
-        public List<UserModel> GetUsers()
-        {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
-            return sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_GetUsers",
-                new { }, ConnectionName);
-
-
-        }
         public void CreateUser(UserModel user)
         {
 
