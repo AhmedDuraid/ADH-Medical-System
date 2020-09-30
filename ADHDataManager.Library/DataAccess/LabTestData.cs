@@ -29,7 +29,7 @@ namespace ADHDataManager.Library.DataAccess
             return output;
 
         }
-        public List<LabTestModel> GetLabTestByName(int testName)
+        public List<LabTestModel> GetLabTestByName(string testName)
         {
             SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @TestName = testName };

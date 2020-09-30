@@ -26,7 +26,7 @@ namespace ADHDataManager.Library.DataAccess
             var Parapeters = new { @ID = id };
 
             var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spLabTestRequests_GetRequestByID",
-                id, ConnectionName);
+                Parapeters, ConnectionName);
 
             return Output;
 
