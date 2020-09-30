@@ -6,7 +6,7 @@ using System.Web.Http;
 namespace ADHMedicalSystemAPI.Controllers
 {
     [Authorize]
-    [RoutePrefix("api/Feedbacks")]
+    [RoutePrefix("api/Feedback")]
     public class FeedbackController : ApiController
     {
         // GET: api/Feedback
