@@ -217,6 +217,7 @@
     <Compile Include="Controllers\LabTestRequestController.cs" />
     <Compile Include="Controllers\MedicineController.cs" />
     <Compile Include="Controllers\PatientNoteController.cs" />
+    <Compile Include="Controllers\PatientProgressController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
