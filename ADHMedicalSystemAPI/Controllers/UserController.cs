@@ -14,8 +14,10 @@ namespace ADHMedicalSystemAPI.Controllers
         {
             UserData userData = new UserData();
 
+
             return userData.GetUsers();
         }
+
 
         // GET: api/User/5
         public List<UserModel> GetByID(int id)
