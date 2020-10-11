@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -8,10 +9,16 @@ namespace ADHDataManager.Library.DataAccess
     {
 
         private readonly string ConnectionName = "AHDConnection";
+        private readonly IConfiguration _configuration;
+
+        public PatientNoteData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public List<PatientNoteModel> GetPatienstNotes()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_GetNotes", new { },
                  ConnectionName);
@@ -21,7 +28,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PatientNoteModel> GetPatientsNotesById(int noteId)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parameters = new { @NoteId = noteId };
 
@@ -33,7 +40,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PatientNoteModel> GetPatientNotesByPatientId(int patientId)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parameters = new { @PatientID = patientId };
 
@@ -45,7 +52,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public void AddNewPatientNote(PatientNoteModel patientNote)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parameters = new
             {
@@ -56,7 +63,6 @@ namespace ADHDataManager.Library.DataAccess
 
             sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_AddNewNote", Parameters,
                  ConnectionName);
-
         }
     }
 }

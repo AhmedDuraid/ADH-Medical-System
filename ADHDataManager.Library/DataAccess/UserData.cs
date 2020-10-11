@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,19 +10,24 @@ namespace ADHDataManager.Library.DataAccess
     {
         // interface with the API 
         private readonly string ConnectionName = "AHDConnection";
+        private readonly IConfiguration _configuration;
+
+        public UserData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public List<UserModel> GetUsers()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             return sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_GetUsers",
                 new { }, ConnectionName);
-
-
         }
+
         public List<UserModel> GetUserById(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parameters = new { @id = id };
 
@@ -34,7 +40,7 @@ namespace ADHDataManager.Library.DataAccess
         public void CreateUser(UserModel user)
         {
 
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parameters = new
             {
@@ -52,8 +58,6 @@ namespace ADHDataManager.Library.DataAccess
 
             sqlDataAccess.SaveData<dynamic>("dbo.spUsers_CreateUser",
                 Parameters, ConnectionName);
-
-
         }
     }
 }

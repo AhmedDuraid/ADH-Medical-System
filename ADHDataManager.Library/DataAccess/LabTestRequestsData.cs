@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -8,10 +9,16 @@ namespace ADHDataManager.Library.DataAccess
     {
 
         private readonly string ConnectionName = "AHDConnection";
+        private readonly IConfiguration _configuration;
+
+        public LabTestRequestsData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public List<LabTestRequestsModel> GetLabTestRequests()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spLabTestRequests_GetAll",
                 new { }, ConnectionName);
@@ -21,7 +28,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<LabTestRequestsModel> GetLabTestRequestByID(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
 
             var Parapeters = new { @ID = id };
 
@@ -34,7 +41,7 @@ namespace ADHDataManager.Library.DataAccess
         public void AddLabTestRequests(LabTestRequestsModel data)
         {
 
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
             var Parameter = new
             {
                 @PatientID = data.patient_id,
@@ -45,9 +52,6 @@ namespace ADHDataManager.Library.DataAccess
 
             sqlDataAccess.SaveData<dynamic>("dbo.spLabTestRequests_AddNewRequest",
                 Parameter, ConnectionName);
-
-
-
         }
     }
 }

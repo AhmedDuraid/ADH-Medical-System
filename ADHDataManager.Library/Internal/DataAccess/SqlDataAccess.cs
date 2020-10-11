@@ -1,6 +1,6 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -9,10 +9,17 @@ namespace ADHDataManager.Library.Internal.DataAccess
 {
     internal class SqlDataAccess
     {
+        private readonly IConfiguration _configuration;
+
+        public SqlDataAccess(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         // the internal class that will connect to SQL server with dapper 
         public string GetConnectionString(string stringName)
         {
-            return ConfigurationManager.ConnectionStrings[stringName].ConnectionString;
+            return _configuration.GetConnectionString(stringName);
+            //  return ConfigurationManager.ConnectionStrings[stringName].ConnectionString;
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameter, string connectionStringName)
@@ -39,8 +46,6 @@ namespace ADHDataManager.Library.Internal.DataAccess
             {
                 connection.Execute(storedProcedure, parameter,
                     commandType: CommandType.StoredProcedure);
-
-
             }
         }
     }
