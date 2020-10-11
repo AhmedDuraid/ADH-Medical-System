@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADHMedicalSystemAPI", "ADHM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADHDataManager.Library", "ADHDataManager.Library\ADHDataManager.Library.csproj", "{13306568-9733-455A-9C58-4BAD0BB777F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADHApi", "ADHApi\ADHApi.csproj", "{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADHApi", "ADHApi\ADHApi.csproj", "{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
