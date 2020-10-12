@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADHDataManager.Library", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADHApi", "ADHApi\ADHApi.csproj", "{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthDataAccess.Library", "AuthDataAccess.Library\AuthDataAccess.Library.csproj", "{06D7E0F8-235B-4C55-83D2-05904E4F76F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F3FE608-B1E7-41FD-8A9C-D5B8BDFFD7E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D7E0F8-235B-4C55-83D2-05904E4F76F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D7E0F8-235B-4C55-83D2-05904E4F76F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D7E0F8-235B-4C55-83D2-05904E4F76F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D7E0F8-235B-4C55-83D2-05904E4F76F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

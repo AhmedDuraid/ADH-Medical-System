@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ADHDataManager.Library\ADHDataManager.Library.csproj" />
+    <ProjectReference Include="..\AuthDataAccess.Library\AuthDataAccess.Library.csproj" />
   </ItemGroup>
 
 
