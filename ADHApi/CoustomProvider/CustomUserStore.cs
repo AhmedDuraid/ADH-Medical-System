@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace ADHApi.CoustomProvider
 {
-    public class CustomUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
+    public class CustomUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>,
+        IUserEmailStore<ApplicationUser>
     {
         private readonly string _connectionString;
         private readonly UserDataAccess userDataAccess;
@@ -26,10 +27,14 @@ namespace ADHApi.CoustomProvider
                 @UserId = user.Id.ToString(),
                 @UserName = user.UserName.ToString(),
                 @Email = user.Email.ToString(),
-                @Password = user.PasswordHash.ToString()
+                @Password = user.PasswordHash.ToString(),
+                @NormalizedUserName = user.NormalizedUserName,
+                @FirstName = user.FirstName,
+                @LastName = user.LastName,
+                @NormalizedEmail = user.NormalizedEmail
             };
 
-            await userDataAccess.AddNewUser<dynamic>(_connectionString, p, "dbo.spUsers_AddUser");
+            await userDataAccess.AddNewUser<dynamic>(_connectionString, p, "dbo.spUsers_AddUser_Auth");
 
             return IdentityResult.Success;
 
@@ -50,8 +55,10 @@ namespace ADHApi.CoustomProvider
         {
             var Parameters = new { @UserId = userId.ToString() };
 
-            return await userDataAccess.LoadUserById<ApplicationUser, dynamic>
-                (_connectionString, Parameters, "dbo.spUsers_GetUserById");
+            var userInfo = await userDataAccess.LoadUserById<ApplicationUser, dynamic>
+                (_connectionString, Parameters, "dbo.spUsers_GetUserById_Auth");
+
+            return userInfo;
 
         }
 
@@ -59,12 +66,15 @@ namespace ADHApi.CoustomProvider
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var p = new
+            var Parameters = new
             {
                 @NormalizedUserName = normalizedUserName
             };
 
-            return await userDataAccess.LoadUserByName<ApplicationUser, dynamic>(_connectionString, p, "dbo.spUsers_GetUserByName");
+            var UserInfo = await userDataAccess.LoadUserByName
+                <ApplicationUser, dynamic>(_connectionString, Parameters, "dbo.spUsers_GetUserByName_Auth");
+
+            return UserInfo;
         }
 
         public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -84,7 +94,7 @@ namespace ADHApi.CoustomProvider
 
         public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.NormalizedUserName);
+            return Task.FromResult(user.NormalizedUserName = normalizedName);
         }
 
         public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
@@ -116,10 +126,14 @@ namespace ADHApi.CoustomProvider
         // email store 
         public async Task<ApplicationUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            var Parameters = new { @UserEmail = normalizedEmail };
+            var Parameters = new { @NormalizedEmail = normalizedEmail };
 
-            return await userDataAccess.LoadUserByEmail<ApplicationUser, dynamic>(_connectionString, Parameters, "dbo.spUsers_GetUserByEmail");
-            throw new NotImplementedException();
+            var UserInfo = await userDataAccess.LoadUserByEmail<ApplicationUser, dynamic>
+                (
+                _connectionString, Parameters, "dbo.spUsers_GetUserByEmail_Auth"
+                );
+
+            return UserInfo;
         }
 
         public Task<string> GetEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -134,7 +148,7 @@ namespace ADHApi.CoustomProvider
 
         public Task<string> GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.NormalizedEmail);
         }
 
         public Task SetEmailAsync(ApplicationUser user, string email, CancellationToken cancellationToken)
@@ -149,8 +163,8 @@ namespace ADHApi.CoustomProvider
 
         public Task SetNormalizedEmailAsync(ApplicationUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
-            user.Email = normalizedEmail;
-            return Task.FromResult(0);
+
+            return Task.FromResult(user.NormalizedEmail = normalizedEmail);
         }
     }
 }

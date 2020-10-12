@@ -19,9 +19,9 @@ namespace ADHApi.CoustomProvider
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var Parameters = new { @RoleID = role.Id, @RoleName = role.Name };
+            var Parameters = new { @RoleID = role.Id, @RoleName = role.Name, @NormalizedRoleName = role.NormalizedRoleName };
 
-            await roleDataAccess.AddNewRole<dynamic>(_connectionString, Parameters, "dbo.spRoles_AddNewRole");
+            await roleDataAccess.AddNewRole<dynamic>(_connectionString, Parameters, "dbo.spRoles_AddNewRole_Auth");
 
             return IdentityResult.Success;
         }
@@ -42,19 +42,22 @@ namespace ADHApi.CoustomProvider
 
             var Parameters = new { @RoleID = roleId };
 
-            return await roleDataAccess.FindRoleByID<ApplicationRole, dynamic>
-                (_connectionString, Parameters, "dbo.spRoles_GetRoleByID");
+            var Role = await roleDataAccess.FindRoleByID<ApplicationRole, dynamic>
+                (_connectionString, Parameters, "dbo.spRoles_GetRoleByID_Auth");
+
+            return Role;
 
         }
 
         public async Task<ApplicationRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var Parameters = new { @RoleName = normalizedRoleName };
+            var Parameters = new { @NormalizedRoleName = normalizedRoleName };
 
-            return await roleDataAccess.FindRoleByName<ApplicationRole, dynamic>
-                (_connectionString, Parameters, "dbo.spRoles_GetRoleByName");
+            var Role = await roleDataAccess.FindRoleByName<ApplicationRole, dynamic>
+                (_connectionString, Parameters, "dbo.spRoles_GetRoleByName_Auth");
 
+            return Role;
         }
 
         public Task<string> GetNormalizedRoleNameAsync(ApplicationRole role, CancellationToken cancellationToken)
@@ -74,7 +77,7 @@ namespace ADHApi.CoustomProvider
 
         public Task SetNormalizedRoleNameAsync(ApplicationRole role, string normalizedName, CancellationToken cancellationToken)
         {
-            return Task.FromResult(role.Name);
+            return Task.FromResult(role.NormalizedRoleName = normalizedName);
         }
 
         public Task SetRoleNameAsync(ApplicationRole role, string roleName, CancellationToken cancellationToken)
