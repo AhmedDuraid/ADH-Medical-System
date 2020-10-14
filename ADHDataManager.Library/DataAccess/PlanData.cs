@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -8,16 +7,11 @@ namespace ADHDataManager.Library.DataAccess
     public class PlanData
     {
         private readonly string DataConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public PlanData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public List<PlanModel> GetPlans()
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
 
             var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlans",
                 new { }, DataConnectionName);
@@ -27,7 +21,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PlanModel> GetPlanById(int id)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
             var Parameters = new { @ID = id };
 
             var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlanByID",
@@ -38,7 +32,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PlanModel> GetPlansByType(string planType)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
             var Parameters = new { @Type = planType };
 
             var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlanByType",
@@ -49,7 +43,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public void AddPlan(PlanModel plan)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
             var Parapeters = new
             {
                 @Type = plan.plan_type,

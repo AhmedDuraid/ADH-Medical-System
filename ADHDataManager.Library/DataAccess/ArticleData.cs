@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -8,16 +7,12 @@ namespace ADHDataManager.Library.DataAccess
     public class ArticleData
     {
         private readonly string ConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public ArticleData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+
 
         public List<ArticleModel> GetArticles()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
             var output = sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_GetAllArticles", new { },
                  ConnectionName);
@@ -27,7 +22,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<ArticleModel> GetArticleByID(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
             var Parameters = new { @ID = id };
 
@@ -40,7 +35,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public void AddArticle(ArticleModel article)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
             var Parameters = new
             {

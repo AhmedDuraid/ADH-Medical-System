@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,16 +8,11 @@ namespace ADHDataManager.Library.DataAccess
     {
 
         private readonly string ConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public MedicineData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public List<MedicineModel> GetMedicines()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
 
             var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetAllMed",
@@ -30,7 +24,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<MedicineModel> GetMedicineByID(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @MedID = id };
 
             var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetMedByID",
@@ -41,7 +35,7 @@ namespace ADHDataManager.Library.DataAccess
         }
         public List<MedicineModel> GetMedicineByName(string name)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @MedName = name };
 
             var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetMedByName",
@@ -52,7 +46,7 @@ namespace ADHDataManager.Library.DataAccess
         }
         public void AddMedicines(MedicineModel medicine)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
                 @MedName = medicine.name,

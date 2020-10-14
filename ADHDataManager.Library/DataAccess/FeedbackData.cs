@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,16 +8,11 @@ namespace ADHDataManager.Library.DataAccess
     {
         // interface with the API 
         private readonly string DataConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public FeedbackData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public List<FeedbackModel> GetFeedbacks()
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
 
             List<FeedbackModel> output = dataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_GetAllUnreadedFeedback",
                 new { }, DataConnectionName);
@@ -28,7 +22,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<FeedbackModel> GetFeedbackByID(int id)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
 
             List<FeedbackModel> output = dataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_GetFeedbackByID",
                 new { @ID = id }, DataConnectionName);
@@ -38,7 +32,7 @@ namespace ADHDataManager.Library.DataAccess
         }
         public void AddFeedback(FeedbackModel feedback)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess dataAccess = new SqlDataAccess();
 
             var Parameters = new
             {

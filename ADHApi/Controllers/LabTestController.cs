@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<LabTestModel> Get()
         {
-            LabTestData labTest = new LabTestData(_configuration);
+            LabTestData labTest = new LabTestData();
 
             var tests = labTest.GetLabTests();
 
@@ -32,7 +32,7 @@ namespace ADHApi.Controllers
         // GET: api/LabTest/{id}
         public List<LabTestModel> Get(int id)
         {
-            LabTestData labTest = new LabTestData(_configuration);
+            LabTestData labTest = new LabTestData();
 
             var test = labTest.GetLabTestById(id);
 
@@ -42,7 +42,7 @@ namespace ADHApi.Controllers
         [HttpGet("{name}")]
         public List<LabTestModel> Get(string name)
         {
-            LabTestData labTest = new LabTestData(_configuration);
+            LabTestData labTest = new LabTestData();
 
             var tests = labTest.GetLabTestByName(name);
 
@@ -53,7 +53,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] LabTestModel labTest)
         {
-            LabTestData labTestDate = new LabTestData(_configuration);
+            LabTestData labTestDate = new LabTestData();
 
             labTestDate.AddNewTest(labTest);
 

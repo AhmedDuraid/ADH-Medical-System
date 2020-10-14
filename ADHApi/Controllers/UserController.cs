@@ -2,6 +2,7 @@
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace ADHApi.Controllers
@@ -21,31 +22,32 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<UserModel> GetUsers()
         {
-            UserData userData = new UserData(_configuration);
+            UserData userData = new UserData();
 
 
-            return userData.GetUsers();
+            // return userData.GetUsers();
+            throw new NotImplementedException();
         }
 
 
         // GET: api/User/5
-        [HttpGet("{id}")]
-        public List<UserModel> GetByID(int id)
-        {
+        //[HttpGet("{id}")]
+        //public List<UserModel> GetByID(int id)
+        //{
 
-            UserData data = new UserData(_configuration);
+        //    UserData data = new UserData(_configuration);
 
-            return data.GetUserById(id);
-        }
+        //    return data.GetUserById(id);
+        //}
 
-        // POST: api/User
-        [HttpPost]
-        public void Post([FromBody] UserModel user)
-        {
-            UserData userData = new UserData(_configuration);
+        // // POST: api/User
+        //[HttpPost]
+        // public void Post([FromBody] UserModel user)
+        // {
+        //     UserData userData = new UserData(_configuration);
 
-            userData.CreateUser(user);
+        //     userData.CreateUser(user);
 
-        }
+        // }
     }
 }

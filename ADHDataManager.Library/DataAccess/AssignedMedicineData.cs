@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,15 +8,11 @@ namespace ADHDataManager.Library.DataAccess
     {
         private readonly string DataConnectionName = "AHDConnection";
 
-        private readonly IConfiguration _configuration;
-        public AssignedMedicineData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+
 
         public List<AssignedMedicineModel> GetAssignedMeds()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { };
 
             var output = sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssigned_GetAllAssignedMed",
@@ -29,7 +24,7 @@ namespace ADHDataManager.Library.DataAccess
         }
         public List<AssignedMedicineModel> GetAssignedMedByID(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @ID = id };
 
             var output = sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssigned_GetAssignedMedByID",
@@ -41,7 +36,7 @@ namespace ADHDataManager.Library.DataAccess
         }
         public void AddAssignedMed(AssignedMedicineModel assignedMedicine)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
                 @PatientId = assignedMedicine.patient_id,

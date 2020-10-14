@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<AssignedPlanModel> Get()
         {
-            AssignedPlanData assignedPlanData = new AssignedPlanData(_configuration);
+            AssignedPlanData assignedPlanData = new AssignedPlanData();
 
             var AssignedPlans = assignedPlanData.GetAssignedPlans();
 
@@ -32,7 +32,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<AssignedPlanModel> GetByPatientID(int patientId)
         {
-            AssignedPlanData assignedPlanData = new AssignedPlanData(_configuration);
+            AssignedPlanData assignedPlanData = new AssignedPlanData();
 
             var AssignedPlans = assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
 
@@ -43,7 +43,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] AssignedPlanModel assigned)
         {
-            AssignedPlanData assignedPlanData = new AssignedPlanData(_configuration);
+            AssignedPlanData assignedPlanData = new AssignedPlanData();
 
             assignedPlanData.AddAssignedPlan(assigned);
 

@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<PatientProgressModel> Get()
         {
-            PatientProgressData patientProgressData = new PatientProgressData(_configuration);
+            PatientProgressData patientProgressData = new PatientProgressData();
 
             var Progresses = patientProgressData.GetPatientProgresses();
 
@@ -44,7 +44,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<PatientProgressModel> GetByPatientID(int patientID)
         {
-            PatientProgressData patientProgressData = new PatientProgressData(_configuration);
+            PatientProgressData patientProgressData = new PatientProgressData();
 
             var Progresses = patientProgressData.GetPatientProgressesByPatientID(patientID);
 
@@ -55,7 +55,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] PatientProgressModel patientProgress)
         {
-            PatientProgressData patientProgressData = new PatientProgressData(_configuration);
+            PatientProgressData patientProgressData = new PatientProgressData();
 
             patientProgressData.AddProgress(patientProgress);
 

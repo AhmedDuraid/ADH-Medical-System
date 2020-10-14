@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<FeedbackModel> Get()
         {
-            FeedbackData data = new FeedbackData(_configuration);
+            FeedbackData data = new FeedbackData();
             var feedbacks = data.GetFeedbacks();
 
             return feedbacks;
@@ -32,7 +32,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<FeedbackModel> GetFeedbackById(int id)
         {
-            FeedbackData data = new FeedbackData(_configuration);
+            FeedbackData data = new FeedbackData();
 
             var Feedback = data.GetFeedbackByID(id);
 
@@ -42,7 +42,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void AddFeedback([FromBody] FeedbackModel feedback)
         {
-            FeedbackData data = new FeedbackData(_configuration);
+            FeedbackData data = new FeedbackData();
             data.AddFeedback(feedback);
 
         }

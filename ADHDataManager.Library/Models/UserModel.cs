@@ -4,19 +4,20 @@ namespace ADHDataManager.Library.Models
 {
     public class UserModel
     {
-        public int user_id { get; set; }
-        public string user_name { get; set; }
-        public string first_name { get; set; }
-        public string middle_name { get; set; }
-        public string last_name { get; set; }
-        public string password { get; set; }
-        public string email { get; set; }
-        public DateTime birth_date { get; set; }
-        public int role_id { get; set; }
-        public string gender { get; set; }
-        public string nationality { get; set; }
-        public DateTime create_date { get; set; }
-        public string address { get; set; }
+        public string Id { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string IsAuthenticated { get; set; }
+
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string Gender { get; set; }
+        public string Nationality { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string Address { get; set; }
 
 
     }

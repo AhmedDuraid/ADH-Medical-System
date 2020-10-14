@@ -1,6 +1,6 @@
 ﻿using ADHApi.CoustomProvider;
 using ADHApi.Models;
-using AuthDataAccess.Library.DataAccess;
+using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -12,20 +12,19 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ADHApi.Controllers
+namespace ADHApi.Controllers.Administration
 {
     [Route("api/[controller]")]
     [ApiController]
     public class TokenController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly UserRoleDataAccess _userRoleDataAccess;
         private readonly string _connectionString;
+        private readonly UserRoleData _userRoleData = new UserRoleData();
 
         public TokenController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
-            _userRoleDataAccess = new UserRoleDataAccess();
             _connectionString = configuration.GetConnectionString("AHDConnection");
         }
 
@@ -61,7 +60,7 @@ namespace ADHApi.Controllers
 
             // get all this user roles to be added to the claim
 
-            var roles = _userRoleDataAccess.LoadUserRoleByID<UserRoleModel, dynamic>
+            var roles = _userRoleData.LoadUserRoleByID<UserRoleModel, dynamic>
                   (_connectionString, new { @UserId = user.Id }, "dbo.spUserRole_GetUserRoleById_Auth");
 
             var claims = new List<Claim> {

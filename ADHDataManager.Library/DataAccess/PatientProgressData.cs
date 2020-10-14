@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,16 +8,11 @@ namespace ADHDataManager.Library.DataAccess
     {
 
         private readonly string ConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public PatientProgressData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public List<PatientProgressModel> GetPatientProgresses()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
 
             var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgresses",
                 new { }, ConnectionName);
@@ -27,7 +21,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PatientProgressModel> GetPatientProgressesById(int progressID)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @ID = progressID };
 
             var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgressByID",
@@ -39,7 +33,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PatientProgressModel> GetPatientProgressesByPatientID(int patientID)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @PatientID = patientID };
 
             var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgressByPatientID",
@@ -49,7 +43,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public void AddProgress(PatientProgressModel progress)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
                 @Weight = progress.weight,

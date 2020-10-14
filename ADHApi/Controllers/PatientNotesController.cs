@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<PatientNoteModel> Get()
         {
-            PatientNoteData patientNote = new PatientNoteData(_configuration);
+            PatientNoteData patientNote = new PatientNoteData();
 
             var Notes = patientNote.GetPatienstNotes();
 
@@ -44,7 +44,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<PatientNoteModel> GetByPatientID(int patientId)
         {
-            PatientNoteData patientNote = new PatientNoteData(_configuration);
+            PatientNoteData patientNote = new PatientNoteData();
 
             var Notes = patientNote.GetPatientNotesByPatientId(patientId);
 
@@ -57,7 +57,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] PatientNoteModel patientNote)
         {
-            PatientNoteData patientNoteData = new PatientNoteData(_configuration);
+            PatientNoteData patientNoteData = new PatientNoteData();
 
             patientNoteData.AddNewPatientNote(patientNote);
         }

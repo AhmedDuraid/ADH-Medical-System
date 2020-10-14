@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<ArticleModel> Get()
         {
-            ArticleData articles = new ArticleData(_configuration);
+            ArticleData articles = new ArticleData();
             var Result = articles.GetArticles();
 
             return Result;
@@ -31,7 +31,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<ArticleModel> GetAricleByID(int id)
         {
-            ArticleData articles = new ArticleData(_configuration);
+            ArticleData articles = new ArticleData();
             var Result = articles.GetArticleByID(id);
 
             return Result;
@@ -42,7 +42,7 @@ namespace ADHApi.Controllers
         public void Post([FromBody] ArticleModel values)
         {
 
-            ArticleData articles = new ArticleData(_configuration);
+            ArticleData articles = new ArticleData();
 
             articles.AddArticle(values);
 

@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<MedicineModel> Get()
         {
-            MedicineData medicineData = new MedicineData(_configuration);
+            MedicineData medicineData = new MedicineData();
 
             var Medicines = medicineData.GetMedicines();
 
@@ -32,7 +32,7 @@ namespace ADHApi.Controllers
         [HttpGet("{id}")]
         public List<MedicineModel> Get(int id)
         {
-            MedicineData medicineData = new MedicineData(_configuration);
+            MedicineData medicineData = new MedicineData();
 
             var Medicine = medicineData.GetMedicineByID(id);
 
@@ -43,7 +43,7 @@ namespace ADHApi.Controllers
         [HttpGet("{name}")]
         public List<MedicineModel> Get(string medName)
         {
-            MedicineData medicineData = new MedicineData(_configuration);
+            MedicineData medicineData = new MedicineData();
 
             var Medicine = medicineData.GetMedicineByName(medName);
 
@@ -54,7 +54,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] MedicineModel medicine)
         {
-            MedicineData medicineData = new MedicineData(_configuration);
+            MedicineData medicineData = new MedicineData();
 
             medicineData.AddMedicines(medicine);
         }

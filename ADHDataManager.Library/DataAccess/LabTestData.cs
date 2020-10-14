@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -8,16 +7,11 @@ namespace ADHDataManager.Library.DataAccess
     public class LabTestData
     {
         private readonly string ConnectionName = "AHDConnection";
-        private readonly IConfiguration _configuration;
 
-        public LabTestData(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public List<LabTestModel> GetLabTests()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { };
 
             var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetAllTests",
@@ -29,7 +23,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<LabTestModel> GetLabTestById(int id)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @LabID = id };
 
             var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetTestByID",
@@ -40,7 +34,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<LabTestModel> GetLabTestByName(string testName)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @TestName = testName };
 
             var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetTestByName",
@@ -51,7 +45,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public void AddNewTest(LabTestModel labTest)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess(_configuration);
+            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
                 @TestName = labTest.test_name,

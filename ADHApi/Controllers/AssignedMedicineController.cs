@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<AssignedMedicineModel> Get()
         {
-            AssignedMedicineData assignedMedicine = new AssignedMedicineData(_configuration);
+            AssignedMedicineData assignedMedicine = new AssignedMedicineData();
 
             var Results = assignedMedicine.GetAssignedMeds();
 
@@ -33,7 +33,7 @@ namespace ADHApi.Controllers
         public List<AssignedMedicineModel> Get(int id)
         {
 
-            AssignedMedicineData assignedMedicine = new AssignedMedicineData(_configuration);
+            AssignedMedicineData assignedMedicine = new AssignedMedicineData();
 
             var Results = assignedMedicine.GetAssignedMedByID(id);
 
@@ -44,7 +44,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] AssignedMedicineModel value)
         {
-            AssignedMedicineData assignedMedicine = new AssignedMedicineData(_configuration);
+            AssignedMedicineData assignedMedicine = new AssignedMedicineData();
 
             assignedMedicine.AddAssignedMed(value);
         }

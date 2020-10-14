@@ -1,4 +1,4 @@
-﻿using AuthDataAccess.Library.DataAccess;
+﻿using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -10,18 +10,19 @@ namespace ADHApi.CoustomProvider
     public class CustomRoleStore : IRoleStore<ApplicationRole>
     {
         private readonly string _connectionString;
-        RoleDataAccess roleDataAccess;
+        RoleData _roleData = new RoleData();
+
         public CustomRoleStore(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("AHDConnection");
-            roleDataAccess = new RoleDataAccess();
+
         }
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var Parameters = new { @RoleID = role.Id, @RoleName = role.Name, @NormalizedRoleName = role.NormalizedRoleName };
 
-            await roleDataAccess.AddNewRole<dynamic>(_connectionString, Parameters, "dbo.spRoles_AddNewRole_Auth");
+            await _roleData.AddNewRole<dynamic>(_connectionString, Parameters, "dbo.spRoles_AddNewRole_Auth");
 
             return IdentityResult.Success;
         }
@@ -42,7 +43,7 @@ namespace ADHApi.CoustomProvider
 
             var Parameters = new { @RoleID = roleId };
 
-            var Role = await roleDataAccess.FindRoleByID<ApplicationRole, dynamic>
+            var Role = await _roleData.FindRoleByID<ApplicationRole, dynamic>
                 (_connectionString, Parameters, "dbo.spRoles_GetRoleByID_Auth");
 
             return Role;
@@ -54,7 +55,7 @@ namespace ADHApi.CoustomProvider
             cancellationToken.ThrowIfCancellationRequested();
             var Parameters = new { @NormalizedRoleName = normalizedRoleName };
 
-            var Role = await roleDataAccess.FindRoleByName<ApplicationRole, dynamic>
+            var Role = await _roleData.FindRoleByName<ApplicationRole, dynamic>
                 (_connectionString, Parameters, "dbo.spRoles_GetRoleByName_Auth");
 
             return Role;

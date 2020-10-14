@@ -21,7 +21,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<PlanModel> Get()
         {
-            PlanData planData = new PlanData(_configuration);
+            PlanData planData = new PlanData();
 
             var Plan = planData.GetPlans();
 
@@ -32,7 +32,7 @@ namespace ADHApi.Controllers
         [HttpGet]
         public List<PlanModel> Get(int id)
         {
-            PlanData planData = new PlanData(_configuration);
+            PlanData planData = new PlanData();
 
             var Plan = planData.GetPlanById(id);
 
@@ -44,7 +44,7 @@ namespace ADHApi.Controllers
         // checks ????
         public List<PlanModel> Get(string planType)
         {
-            PlanData planData = new PlanData(_configuration);
+            PlanData planData = new PlanData();
 
             var Plans = planData.GetPlansByType(planType);
 
@@ -55,7 +55,7 @@ namespace ADHApi.Controllers
         [HttpPost]
         public void Post([FromBody] PlanModel plan)
         {
-            PlanData planData = new PlanData(_configuration);
+            PlanData planData = new PlanData();
 
             planData.AddPlan(plan);
 

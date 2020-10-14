@@ -1,4 +1,4 @@
-﻿using AuthDataAccess.Library.DataAccess;
+﻿using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -11,12 +11,13 @@ namespace ADHApi.CoustomProvider
         IUserEmailStore<ApplicationUser>
     {
         private readonly string _connectionString;
-        private readonly UserDataAccess userDataAccess;
+        private readonly AccountData _userData = new AccountData();
+
 
         public CustomUserStore(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("AHDConnection");
-            userDataAccess = new UserDataAccess();
+
         }
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
@@ -34,7 +35,7 @@ namespace ADHApi.CoustomProvider
                 @NormalizedEmail = user.NormalizedEmail
             };
 
-            await userDataAccess.AddNewUser<dynamic>(_connectionString, p, "dbo.spUsers_AddUser_Auth");
+            await _userData.AddNewUser<dynamic>(_connectionString, p, "dbo.spUsers_AddUser_Auth");
 
             return IdentityResult.Success;
 
@@ -55,7 +56,7 @@ namespace ADHApi.CoustomProvider
         {
             var Parameters = new { @UserId = userId.ToString() };
 
-            var userInfo = await userDataAccess.LoadUserById<ApplicationUser, dynamic>
+            var userInfo = await _userData.LoadUserById<ApplicationUser, dynamic>
                 (_connectionString, Parameters, "dbo.spUsers_GetUserById_Auth");
 
             return userInfo;
@@ -71,7 +72,7 @@ namespace ADHApi.CoustomProvider
                 @NormalizedUserName = normalizedUserName
             };
 
-            var UserInfo = await userDataAccess.LoadUserByName
+            var UserInfo = await _userData.LoadUserByName
                 <ApplicationUser, dynamic>(_connectionString, Parameters, "dbo.spUsers_GetUserByName_Auth");
 
             return UserInfo;
@@ -107,7 +108,7 @@ namespace ADHApi.CoustomProvider
             throw new NotImplementedException();
         }
 
-        // password has 
+        // password store 
         public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken)
         {
             user.PasswordHash = passwordHash;
@@ -128,7 +129,7 @@ namespace ADHApi.CoustomProvider
         {
             var Parameters = new { @NormalizedEmail = normalizedEmail };
 
-            var UserInfo = await userDataAccess.LoadUserByEmail<ApplicationUser, dynamic>
+            var UserInfo = await _userData.LoadUserByEmail<ApplicationUser, dynamic>
                 (
                 _connectionString, Parameters, "dbo.spUsers_GetUserByEmail_Auth"
                 );
