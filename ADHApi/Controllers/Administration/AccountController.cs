@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace ADHApi.Controllers.Administration
 {
-    [Route("api/admin/[controller]")]
+    [Route("api/admin/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly string _connectionString;
-        private readonly UserData _userData;
+        private readonly UserData _userData = new UserData();
         private readonly UserRoleData _userRoleData = new UserRoleData();
 
         public AccountController(UserManager<ApplicationUser> userManager,
@@ -28,12 +28,11 @@ namespace ADHApi.Controllers.Administration
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _userData = new UserData();
             _connectionString = configuration.GetConnectionString("AHDConnection");
         }
 
 
-        [HttpPost("[action]")]
+        [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (ModelState.IsValid)
@@ -53,19 +52,24 @@ namespace ADHApi.Controllers.Administration
                 if (result.Succeeded)
                 {
                     // add user to role 
-                    var RoleId = await _roleManager.FindByNameAsync("Manager");
+                    ApplicationRole RoleIdInfo = await _roleManager.FindByNameAsync(model.RoleType);
 
-                    var Parameters = new
+                    if (RoleIdInfo != null)
                     {
-                        @UserId = user.Id,
-                        @RoleId = RoleId.Id
-                    };
+                        var Parameters = new
+                        {
+                            @UserId = user.Id,
+                            @RoleId = RoleIdInfo.Id
+                        };
 
-                    _userRoleData.SaveData<dynamic>(_connectionString
-                        , "dbo.spUserRole_AddUserRole_Auth"
-                        , Parameters);
+                        _userRoleData.SaveData<dynamic>(_connectionString
+                            , "dbo.spUserRole_AddUserRole_Auth"
+                            , Parameters);
 
-                    return Ok("user created");
+                        return Ok("user created");
+                    }
+
+                    return BadRequest();
                 }
                 else
                 {
@@ -75,42 +79,46 @@ namespace ADHApi.Controllers.Administration
             }
             else
             {
-                return BadRequest();
+                return BadRequest("can not create user");
             }
 
 
         }
 
-        [HttpPut("[action]/{id}")]
+        [HttpPut("{id}")]
         public IActionResult UpdateUserInfo(string id, [FromBody] UserModel user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var newUserInfo = new
-                {
-                    @UserId = id,
-                    @FirstName = user.FirstName,
-                    @MiddleName = user.MiddleName,
-                    @LastName = user.LastName,
-                    @BirthDate = user.BirthDate,
-                    @PhoneNumber = user.PhoneNumber,
-                    @Gender = user.Gender,
-                    @Nationality = user.Nationality,
-                    @Address = user.Address
-
-                };
-                _userData.UpdateUser(newUserInfo, _connectionString);
+                return BadRequest("Model not valid");
 
             }
+            var newUserInfo = new
+            {
+                @UserId = id,
+                @FirstName = user.FirstName,
+                @MiddleName = user.MiddleName,
+                @LastName = user.LastName,
+                @BirthDate = user.BirthDate,
+                @PhoneNumber = user.PhoneNumber,
+                @Gender = user.Gender,
+                @Nationality = user.Nationality,
+                @Address = user.Address
 
+            };
+            _userData.UpdateUser(newUserInfo, _connectionString);
 
-
-
-
-            return Ok(user);
+            return Ok("User Updated ");
         }
 
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser(string id)
+        {
+            _userData.DeleteUser(id, _connectionString);
+
+            return Ok("user Deleted");
+        }
 
     }
 }

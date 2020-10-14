@@ -28,5 +28,9 @@ namespace ADHApi.Models
         [Required]
         [DataType(DataType.Text)]
         public string UserName { get; set; }
+
+        [Required]
+        [DataType(DataType.Text)]
+        public string RoleType { get; set; }
     }
 }

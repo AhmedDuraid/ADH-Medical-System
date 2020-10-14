@@ -8,12 +8,7 @@ namespace ADHDataManager.Library.DataAccess
     public class UserData
     {
         // interface with the API 
-        private SqlDataAccess _sqlDataAccess;
-
-        public UserData()
-        {
-            _sqlDataAccess = new SqlDataAccess();
-        }
+        private readonly SqlDataAccess _sqlDataAccess = new SqlDataAccess();
 
         public List<UserModel> GetUsers(string connectionString)
         {
@@ -42,7 +37,15 @@ namespace ADHDataManager.Library.DataAccess
         public void UpdateUser(dynamic parameters, string connectionString)
         {
 
-           _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_UpdateUserByID", parameters, connectionString);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_UpdateUserByID", parameters, connectionString);
+
+        }
+
+        public void DeleteUser(string userId, string connectionString)
+        {
+            var parameters = new { @UserId = userId };
+
+            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_DeleteUser", parameters, connectionString);
 
         }
 

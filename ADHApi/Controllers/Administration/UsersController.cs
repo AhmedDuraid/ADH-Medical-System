@@ -2,13 +2,12 @@
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 
 
 namespace ADHApi.Controllers.Administration
 {
-    [Route("api/admin/[controller]")]
+    [Route("api/admin/[controller]/[action]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -41,24 +40,5 @@ namespace ADHApi.Controllers.Administration
             return user;
         }
 
-        // POST api/<UserController>
-        // handle in account cotroller
-
-
-
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-
-        }
     }
 }
