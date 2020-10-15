@@ -10,12 +10,15 @@ namespace ADHApi.Controllers.Public
     [ApiController]
     public class ArticleController : ControllerBase
     {
-        private readonly string _connectionString;
-        private readonly ArticleData articles = new ArticleData();
+        private readonly string connectionName = "AHDConnection";
+        private readonly ArticleData articles;
+        private readonly IConfiguration _configuration;
 
         public ArticleController(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AHDConnection");
+            //  _connectionString = configuration.GetConnectionString("AHDConnection");
+            _configuration = configuration;
+            articles = new ArticleData(configuration, connectionName);
         }
 
         // GET: api/Article/Get
@@ -23,7 +26,7 @@ namespace ADHApi.Controllers.Public
         public List<ArticleModel> GetArticles()
         {
 
-            var Result = articles.FindArticles_Public(_connectionString, true);
+            var Result = articles.FindArticles_Public(true);
 
             return Result;
         }
@@ -33,7 +36,7 @@ namespace ADHApi.Controllers.Public
         public List<ArticleModel> GetAricleByID(string id)
         {
 
-            var Result = articles.FindArticleByID_Public(id, _connectionString, true);
+            var Result = articles.FindArticleByID_Public(id, true);
 
             return Result;
         }
@@ -43,7 +46,7 @@ namespace ADHApi.Controllers.Public
         public List<ArticleModel> GetAricleByUserName(string userName)
         {
 
-            var Result = articles.FindArticlesByUserId_Public(userName, _connectionString, true);
+            var Result = articles.FindArticlesByUserId_Public(userName, true);
 
             return Result;
         }

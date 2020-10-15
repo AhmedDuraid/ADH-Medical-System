@@ -4,16 +4,26 @@
     {
         // links 
 
-        public string patient_first_name { get; set; }
-        public string description { get; set; }
-        public string user_first_name { get; set; }
-        public string user_last_name { get; set; }
+        // Patient
+
+        public string PatientFirstName { get; set; }
+        public string PatientLastName { get; set; }
+
+        // Doctor
+
+        public string DoctoreFirstName { get; set; }
+        public string DoctoreLastNameName { get; set; }
+
+        // Medicine
+        public string MedicineDescription { get; set; }
+        public string MedicineName { get; set; }
+
 
         // table
-        public int assigned_id { get; set; }
-        public int user_id { get; set; }
-        public int medicine_id { get; set; }
-        public int patient_id { get; set; }
+        public int Id { get; set; }
+        public int DoctoreID { get; set; }
+        public int MedicineId { get; set; }
+        public int PatientId { get; set; }
 
 
 

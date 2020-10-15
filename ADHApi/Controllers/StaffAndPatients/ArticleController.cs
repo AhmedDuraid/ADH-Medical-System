@@ -4,24 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
-namespace ADHApi.Controllers.Staff
+namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/staff/[controller]/[action]")]
+    [Route("api/staffAndpatients/[controller]/[action]")]
     [ApiController]
     public class ArticleController : ControllerBase
     {
-        private readonly string _connectionString;
-        private readonly ArticleData articlesData = new ArticleData();
+        private readonly string connectionName = "AHDConnection";
+        private readonly ArticleData articlesData;
 
         public ArticleController(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AHDConnection");
+            articlesData = new ArticleData(configuration, connectionName);
         }
         // GET: api/<ArticleController>/GetArticles
         [HttpGet]
         public IActionResult GetArticles()
         {
-            List<ArticleModel> articles = articlesData.FindArticles_staff(_connectionString);
+            List<ArticleModel> articles = articlesData.FindArticles_staff();
 
             return Ok(articles);
         }
@@ -30,7 +30,7 @@ namespace ADHApi.Controllers.Staff
         [HttpGet("{userId}")]
         public IActionResult GetArticlesByUserId(string userId)
         {
-            List<ArticleModel> articles = articlesData.FindArticlesByUserId_staff(userId, _connectionString);
+            List<ArticleModel> articles = articlesData.FindArticlesByUserId_staff(userId);
 
             return Ok(articles);
         }
@@ -39,7 +39,7 @@ namespace ADHApi.Controllers.Staff
         [HttpPost]
         public IActionResult AddNewArticle([FromBody] ArticleModel values)
         {
-            articlesData.AddArticle_staff(values, _connectionString);
+            articlesData.AddArticle_staff(values);
 
             return Ok("article created");
         }
@@ -48,7 +48,7 @@ namespace ADHApi.Controllers.Staff
         [HttpPut("{articleId}")]
         public IActionResult UpdateArticle(string articleId, [FromBody] ArticleModel article)
         {
-            articlesData.UpdateArticle_staff(article, articleId, _connectionString);
+            articlesData.UpdateArticle_staff(article, articleId);
 
             return Ok();
         }
@@ -57,7 +57,7 @@ namespace ADHApi.Controllers.Staff
         [HttpDelete("{articleId}")]
         public IActionResult Delete(string articleId)
         {
-            articlesData.DeleteArticle_staff(articleId, _connectionString);
+            articlesData.DeleteArticle_staff(articleId);
 
             return Ok();
         }

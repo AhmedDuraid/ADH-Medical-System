@@ -1,15 +1,21 @@
-﻿namespace ADHDataManager.Library.Models
+﻿using System;
+
+namespace ADHDataManager.Library.Models
 {
     public class AssignedPlanModel
     {
         // table 
-        public int assign_id { get; set; }
-        public int patient_Id { get; set; }
-        public int plan_id { get; set; }
+        public string Id { get; set; }
+        public string PatientID { get; set; }
+        public string DoctorID { get; set; }
+        public string PlanId { get; set; }
+        public DateTime StartOn { get; set; }
 
         // realation tables 
-        public string patient_first_name { get; set; }
-        public string patient_last_name { get; set; }
-        public string plan_description { get; set; }
+        public string PatientFirstName { get; set; }
+        public string PatientLastName { get; set; }
+        public string DoctorFirstName { get; set; }
+        public string DoctorLastName { get; set; }
+        public string PlanType { get; set; }
     }
 }
