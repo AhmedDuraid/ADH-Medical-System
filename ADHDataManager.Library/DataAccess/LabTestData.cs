@@ -1,59 +1,84 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
     public class LabTestData
     {
-        private readonly string ConnectionName = "AHDConnection";
-
-
-        public List<LabTestModel> GetLabTests()
+        private readonly string connectionName = "AHDConnection";
+        private readonly string _connectionString;
+        private readonly SqlDataAccess sqlDataAccess;
+        public LabTestData(IConfiguration configuration)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            sqlDataAccess = new SqlDataAccess();
+            _connectionString = configuration.GetConnectionString(connectionName);
+        }
+
+        public List<LabTestModel> GetTests()
+        {
+
             var Parameters = new { };
 
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetAllTests",
-                Parameters, ConnectionName);
+            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindAll",
+                Parameters, _connectionString);
             return output;
 
 
         }
 
-        public List<LabTestModel> GetLabTestById(int id)
+        public List<LabTestModel> GetTestByName(string testName)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-            var Parameters = new { @LabID = id };
-
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetTestByID",
-                Parameters, ConnectionName);
-            return output;
-
-        }
-
-        public List<LabTestModel> GetLabTestByName(string testName)
-        {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new { @TestName = testName };
 
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_GetTestByName",
-                Parameters, ConnectionName);
+            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindTestByName",
+                Parameters, _connectionString);
             return output;
 
         }
 
         public void AddNewTest(LabTestModel labTest)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+
             var Parameters = new
             {
-                @TestName = labTest.test_name,
-                @Description = labTest.description
+                @TestId = labTest.Id,
+                @TestName = labTest.TestName,
+                @Description = labTest.Description
             };
 
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_AddNewTest",
-                Parameters, ConnectionName);
+            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_AddNewTest",
+                Parameters, _connectionString);
+
+
+        }
+
+        public void UpdateTest(LabTestModel labTest)
+        {
+
+            var Parameters = new
+            {
+                @TestId = labTest.Id,
+                @TestName = labTest.TestName,
+                @Description = labTest.Description
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_UpdateTest",
+                Parameters, _connectionString);
+
+
+        }
+
+        public void DeleteTest(string id)
+        {
+            var Parameters = new
+            {
+                @TestID = id
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_DeleteTest",
+                Parameters, _connectionString);
 
 
         }

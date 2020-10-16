@@ -4,10 +4,10 @@ namespace ADHDataManager.Library.Models
 {
     public class LabTestModel
     {
-        public int test_id { get; set; }
-        public string test_name { get; set; }
-        public string description { get; set; }
-        public DateTime last_update { get; set; }
+        public string Id { get; set; }
+        public string TestName { get; set; }
+        public string Description { get; set; }
+        public DateTime LastUpdate { get; set; }
 
 
     }

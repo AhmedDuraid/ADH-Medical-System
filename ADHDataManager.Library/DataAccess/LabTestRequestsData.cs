@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -7,45 +8,82 @@ namespace ADHDataManager.Library.DataAccess
     public class LabTestRequestsData
     {
 
-        private readonly string ConnectionName = "AHDConnection";
-
-
-        public List<LabTestRequestsModel> GetLabTestRequests()
+        private readonly string connectionName = "AHDConnection";
+        private readonly string _connectionString;
+        private readonly SqlDataAccess sqlDataAccess;
+        public LabTestRequestsData(IConfiguration configuration)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            sqlDataAccess = new SqlDataAccess();
+            _connectionString = configuration.GetConnectionString(connectionName);
+        }
 
-            var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spLabTestRequests_GetAll",
-                new { }, ConnectionName);
+
+        public List<LabTestRequestsModel> GetTestRequests()
+        {
+
+            var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spTestRequests_FindAll",
+                new { }, _connectionString);
 
             return Output;
         }
 
-        public List<LabTestRequestsModel> GetLabTestRequestByID(int id)
+        public List<LabTestRequestsModel> GetTestRequestByDoctorId(string doctorId)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+            var Parapeters = new { @DoctorID = doctorId };
 
-            var Parapeters = new { @ID = id };
-
-            var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spLabTestRequests_GetRequestByID",
-                Parapeters, ConnectionName);
+            var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spTestRequests_FindAllByDoctorId",
+                Parapeters, _connectionString);
 
             return Output;
 
         }
-        public void AddLabTestRequests(LabTestRequestsModel data)
-        {
 
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
+        public List<LabTestRequestsModel> GetTestRequestByPatientId(string patientName)
+        {
+            var Parapeters = new { @PatientID = patientName };
+
+            var Output = sqlDataAccess.LoadData<LabTestRequestsModel, dynamic>("dbo.spTestRequests_FindAllByPatientId",
+                Parapeters, _connectionString);
+
+            return Output;
+
+        }
+        public void AddTestRequests(LabTestRequestsModel data)
+        {
             var Parameter = new
             {
-                @PatientID = data.patient_id,
-                @TestID = data.test_id,
-                @TestResult = data.test_result,
-                @UserId = data.user_id
+                @Id = data.Id,
+                @PatientId = data.PatientId,
+                @TestId = data.TesterId,
+                @CreatorID = data.CreatorID
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spLabTestRequests_AddNewRequest",
-                Parameter, ConnectionName);
+            sqlDataAccess.SaveData<dynamic>("dbo.spTestRequests_AddNewRequest",
+                Parameter, _connectionString);
+        }
+
+        public void AddTestResults(LabTestRequestsModel data)
+        {
+            var Parameter = new
+            {
+                @Id = data.Id,
+                @TesterId = data.TesterId,
+                @Results = data.Result
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spTestRequests_UpdateResult",
+                Parameter, _connectionString);
+        }
+
+        public void DeleteRequest(string requestId)
+        {
+            var Parameter = new
+            {
+                @Id = requestId
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spTestRequests_DeleteRequest",
+                Parameter, _connectionString);
         }
     }
 }
