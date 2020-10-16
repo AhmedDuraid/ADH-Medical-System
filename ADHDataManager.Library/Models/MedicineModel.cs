@@ -2,9 +2,10 @@
 {
     public class MedicineModel
     {
-        public int medicine_id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string contraindication { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Contraindication { get; set; }
+        public string RecommendedDose { get; set; }
     }
 }

@@ -2,15 +2,15 @@
 {
     public class PlanModel
     {
-        public int plan_id { get; set; }
-        public string day_1 { get; set; }
-        public string day_2 { get; set; }
-        public string day_3 { get; set; }
-        public string day_4 { get; set; }
-        public string day_5 { get; set; }
-        public string day_6 { get; set; }
-        public string day_7 { get; set; }
-        public string plan_description { get; set; }
-        public string plan_type { get; set; }
+        public string Id { get; set; }
+        public string Day1 { get; set; }
+        public string Day2 { get; set; }
+        public string Day3 { get; set; }
+        public string Day4 { get; set; }
+        public string Day5 { get; set; }
+        public string Day6 { get; set; }
+        public string Day7 { get; set; }
+        public string Description { get; set; }
+        public string Type { get; set; }
     }
 }

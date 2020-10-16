@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ADHApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/StaffAndPatients/[controller]/[action]")]
     [ApiController]
     public class PatientController : ControllerBase
     {

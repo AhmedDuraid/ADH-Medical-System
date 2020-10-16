@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -7,55 +8,71 @@ namespace ADHDataManager.Library.DataAccess
     public class MedicineData
     {
 
-        private readonly string ConnectionName = "AHDConnection";
+        private readonly string connectionName = "AHDConnection";
+        private readonly string _connectionString;
+        private readonly SqlDataAccess sqlDataAccess;
+
+        public MedicineData(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString(connectionName);
+            sqlDataAccess = new SqlDataAccess();
+        }
 
 
         public List<MedicineModel> GetMedicines()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-
-
-            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetAllMed",
-                new { }, ConnectionName);
+            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindAll",
+                new { }, _connectionString);
             return output;
-
-
         }
 
-        public List<MedicineModel> GetMedicineByID(int id)
+        public List<MedicineModel> GetMedicineByName(string medName)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-            var Parameters = new { @MedID = id };
+            var Parameters = new { @MedName = medName };
+            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindMedByName",
+                Parameters, _connectionString);
 
-            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetMedByID",
-                Parameters, ConnectionName);
             return output;
-
-
         }
-        public List<MedicineModel> GetMedicineByName(string name)
-        {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-            var Parameters = new { @MedName = name };
 
-            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_GetMedByName",
-                Parameters, ConnectionName);
-            return output;
-
-
-        }
         public void AddMedicines(MedicineModel medicine)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
-                @MedName = medicine.name,
-                @MedDescription = medicine.description,
-                @MedContraindication = medicine.contraindication
+                @Id = medicine.Id,
+                @Name = medicine.Name,
+                @Description = medicine.Description,
+                @Contraindication = medicine.Contraindication,
+                @RecommendedDose = medicine.RecommendedDose
             };
 
-            sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicine_InsertNewMed",
-                Parameters, ConnectionName);
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_AddNewMed",
+                Parameters, _connectionString);
+        }
+
+        public void UpdateMed(MedicineModel medicine)
+        {
+            var Parameters = new
+            {
+                @Name = medicine.Name,
+                @Description = medicine.Description,
+                @Contraindication = medicine.Contraindication,
+                @RecommendedDose = medicine.RecommendedDose,
+                @MedId = medicine.Id
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_UpdateMed",
+                Parameters, _connectionString);
+        }
+        public void DeleteMed(string medId)
+        {
+            var Parameters = new
+            {
+                @MedId = medId
+            };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_DeleteMed",
+                Parameters, _connectionString);
         }
     }
 }

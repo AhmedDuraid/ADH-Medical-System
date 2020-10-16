@@ -1,64 +1,86 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
     public class PlanData
     {
-        private readonly string DataConnectionName = "AHDConnection";
+        private readonly string connectionName = "AHDConnection";
+        private readonly string _connectionString;
+        private readonly SqlDataAccess dataAccess;
 
+        public PlanData(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString(connectionName);
+            dataAccess = new SqlDataAccess();
+        }
 
         public List<PlanModel> GetPlans()
         {
-            SqlDataAccess dataAccess = new SqlDataAccess();
-
-            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlans",
-                new { }, DataConnectionName);
-
-            return output;
-        }
-
-        public List<PlanModel> GetPlanById(int id)
-        {
-            SqlDataAccess dataAccess = new SqlDataAccess();
-            var Parameters = new { @ID = id };
-
-            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlanByID",
-                Parameters, DataConnectionName);
+            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindAll",
+                new { }, _connectionString);
 
             return output;
         }
 
         public List<PlanModel> GetPlansByType(string planType)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess();
-            var Parameters = new { @Type = planType };
+            var Parameters = new { @PlanType = planType };
 
-            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_GetPlanByType",
-                Parameters, DataConnectionName);
+            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindByType",
+                Parameters, _connectionString);
 
             return output;
         }
 
         public void AddPlan(PlanModel plan)
         {
-            SqlDataAccess dataAccess = new SqlDataAccess();
             var Parapeters = new
             {
-                @Type = plan.plan_type,
-                @Day1 = plan.day_1,
-                @Day2 = plan.day_2,
-                @Day3 = plan.day_3,
-                @Day4 = plan.day_4,
-                @Day5 = plan.day_5,
-                @Day6 = plan.day_6,
-                @Day7 = plan.day_7,
-                @Description = plan.plan_description
+                @Id = plan.Id,
+                @Type = plan.Type,
+                @Day1 = plan.Day1,
+                @Day2 = plan.Day2,
+                @Day3 = plan.Day3,
+                @Day4 = plan.Day4,
+                @Day5 = plan.Day5,
+                @Day6 = plan.Day6,
+                @Day7 = plan.Day7,
+                @Description = plan.Description
             };
 
-            dataAccess.SaveData<dynamic>("dbo.spPlans_AddPlan",
-                Parapeters, DataConnectionName);
+            dataAccess.SaveData<dynamic>("dbo.spPlans_AddNew",
+                Parapeters, _connectionString);
+        }
+
+        public void UpdatePlan(PlanModel plan)
+        {
+            var Parapeters = new
+            {
+                @Id = plan.Id,
+                @Type = plan.Type,
+                @Day1 = plan.Day1,
+                @Day2 = plan.Day2,
+                @Day3 = plan.Day3,
+                @Day4 = plan.Day4,
+                @Day5 = plan.Day5,
+                @Day6 = plan.Day6,
+                @Day7 = plan.Day7,
+                @Description = plan.Description
+            };
+
+            dataAccess.SaveData<dynamic>("dbo.spPlans_UpdatePlan",
+                Parapeters, _connectionString);
+        }
+
+        public void DeletePlan(string id)
+        {
+            var Parapeters = new { @Id = id };
+
+            dataAccess.SaveData<dynamic>("dbo.spPlans_DeletePlan",
+                Parapeters, _connectionString);
         }
     }
 }
