@@ -1,5 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -7,54 +8,54 @@ namespace ADHDataManager.Library.DataAccess
     public class PatientProgressData
     {
 
-        private readonly string ConnectionName = "AHDConnection";
+        private readonly string connectionName = "AHDConnection";
+        private readonly string _connectionString;
+        private readonly SqlDataAccess sqlDataAccess;
 
+        public PatientProgressData(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString(connectionName);
+            sqlDataAccess = new SqlDataAccess();
+        }
 
         public List<PatientProgressModel> GetPatientProgresses()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-
-            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgresses",
-                new { }, ConnectionName);
+            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAll",
+                new { }, _connectionString);
             return output;
         }
 
-        public List<PatientProgressModel> GetPatientProgressesById(int progressID)
+        public List<PatientProgressModel> GetPatientProgressesByPatientId(string patientId)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-            var Parameters = new { @ID = progressID };
+            var Parameters = new { @PatientId = patientId };
 
-            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgressByID",
-                Parameters, ConnectionName);
+            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAllByPatientId",
+                Parameters, _connectionString);
             return output;
 
-
-        }
-
-        public List<PatientProgressModel> GetPatientProgressesByPatientID(int patientID)
-        {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-            var Parameters = new { @PatientID = patientID };
-
-            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_GetProgressByPatientID",
-                Parameters, ConnectionName);
-            return output;
         }
 
         public void AddProgress(PatientProgressModel progress)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
             var Parameters = new
             {
-                @Weight = progress.weight,
-                @BMI = progress.bmi,
-                @UserID = progress.user_id,
-                @PatientID = progress.patient_Id,
-                @AddedBY = progress.added_by
+                @Id = progress.Id,
+                @Weight = progress.Weight,
+                @BMI = progress.BMI,
+                @PatientId = progress.PatientId,
+                @AddedBy = progress.AddedBy
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_ADDProgress",
-                    Parameters, ConnectionName);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_AddNew",
+                    Parameters, _connectionString);
+        }
+
+        public void DeleteProgress(string progressId)
+        {
+            var Parameters = new { @ProgressId = progressId };
+
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_DeleteByID",
+                    Parameters, _connectionString);
         }
     }
 }

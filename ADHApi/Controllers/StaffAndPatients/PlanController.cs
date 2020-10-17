@@ -9,8 +9,7 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class PlanController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        PlanData planData;
+        private readonly PlanData planData;
 
 
         public PlanController(IConfiguration configuration)

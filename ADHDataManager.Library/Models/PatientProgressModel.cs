@@ -5,17 +5,19 @@ namespace ADHDataManager.Library.Models
     public class PatientProgressModel
     {
         // table 
-        public int progress_id { get; set; }
-        public DateTime date { get; set; }
-        public float weight { get; set; }
-        public float bmi { get; set; }
-        public string added_by { get; set; }
+        public string Id { get; set; }
+        public DateTime Date { get; set; }
+        public float Weight { get; set; }
+        public float BMI { get; set; }
+        public int PatientId { get; set; }
+        public string AddedBy { get; set; }
+
 
         // realation tables 
-        public int patient_Id { get; set; }
-        public int user_id { get; set; }
-        public string patient_first_name { get; set; }
 
-
+        public string PatientFirstName { get; set; }
+        public string PatientLastName { get; set; }
+        public string DoctorFirstName { get; set; }
+        public string DoctorLastName { get; set; }
     }
 }
