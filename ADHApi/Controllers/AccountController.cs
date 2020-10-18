@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ADHApi.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class AccountController : ControllerBase
@@ -34,7 +34,7 @@ namespace ADHApi.Controllers
             _userData = new UserData(configuration);
         }
 
-        // POST: api/Account/RegisterAccount
+        // POST: api/Account
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterAccount([FromBody] RegisterModel model)
@@ -75,6 +75,7 @@ namespace ADHApi.Controllers
             return BadRequest("Not valid");
         }
 
+        // PUT: api/Account
         [HttpPut]
         public IActionResult UpdateUser([FromBody] UserUpdateModel model)
         {
@@ -91,9 +92,10 @@ namespace ADHApi.Controllers
             return Ok($"{UserId} information Updated ");
         }
 
+        // PUT: api/Account/Admin/{id}
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        [Route("admin/{id}")]
+        [Route("Admin/{id}")]
         public IActionResult UpdateUser(string id, [FromBody] UserUpdateModel model)
         {
 
@@ -108,10 +110,10 @@ namespace ADHApi.Controllers
             return Ok($"User {id} information Updated ");
         }
 
-
+        // PUT: api/Account/Admin/{id}
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        [Route("admin/{id}")]
+        [Route("Admin/{id}")]
         public IActionResult DeleteUser(string id)
         {
             _userData.DeleteUser(id);

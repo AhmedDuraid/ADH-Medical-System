@@ -4,7 +4,7 @@ namespace ADHDataManager.Library.Models
 {
     public class ArticleModel
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Ar{DateTime.UtcNow.Year}{DateTime.UtcNow.Month}{DateTime.UtcNow}";
         public string Titel { get; set; }
         public string Body { get; set; }
         public DateTime CreateDate { get; set; }

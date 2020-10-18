@@ -14,7 +14,7 @@ namespace ADHDataManager.Library.Models
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public DateTime BirthDate { get; set; }
-        public char Gender { get; set; }
+        public string Gender { get; set; }
         public string Nationality { get; set; }
         public DateTime CreateDate { get; set; }
         public string Address { get; set; }

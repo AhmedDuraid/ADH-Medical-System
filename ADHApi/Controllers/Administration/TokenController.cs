@@ -27,11 +27,10 @@ namespace ADHApi.Controllers.Administration
             _userRoleData = new UserRoleData(configuration);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(string username, string password, string grant_type)
+        // GET: api/Token/UpdateUser
+        [HttpGet]
+        public async Task<IActionResult> Create(string username, string password)
         {
-
-
             if (await IsValidUsernameAndPassword(username, password))
             {
                 return new ObjectResult(await GenerateToken(username));
@@ -40,7 +39,6 @@ namespace ADHApi.Controllers.Administration
             {
                 return NotFound();
             }
-
         }
 
         private async Task<bool> IsValidUsernameAndPassword(string username, string password)

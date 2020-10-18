@@ -19,5 +19,9 @@
     <ProjectReference Include="..\ADHDataManager.Library\ADHDataManager.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Public\" />
+  </ItemGroup>
+
 
 </Project>
