@@ -5,7 +5,7 @@ namespace ADHApi.CoustomProvider
 {
     public class ApplicationUser : IIdentity
     {
-        public virtual string Id { get; set; } = DateTime.UtcNow.Year.ToString() + Guid.NewGuid().ToString();
+        public virtual string Id { get; set; } = $"{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}{Guid.NewGuid()}";
         public virtual string UserName { get; set; }
         public virtual string Email { get; set; }
         public virtual bool EmailConfirmed { get; set; }

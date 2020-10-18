@@ -19,13 +19,12 @@ namespace ADHApi.Controllers.Administration
     public class TokenController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly string _connectionString;
-        private readonly UserRoleData _userRoleData = new UserRoleData();
+        private readonly UserRoleData _userRoleData;
 
         public TokenController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
-            _connectionString = configuration.GetConnectionString("AHDConnection");
+            _userRoleData = new UserRoleData(configuration);
         }
 
         [HttpPost]
@@ -60,8 +59,7 @@ namespace ADHApi.Controllers.Administration
 
             // get all this user roles to be added to the claim
 
-            var roles = _userRoleData.LoadUserRoleByID<UserRoleModel, dynamic>
-                  (_connectionString, new { @UserId = user.Id }, "dbo.spUserRole_GetUserRoleById_Auth");
+            var roles = _userRoleData.LoadUserRoleByID<UserRoleModel, dynamic>(user.Id);
 
             var claims = new List<Claim> {
 

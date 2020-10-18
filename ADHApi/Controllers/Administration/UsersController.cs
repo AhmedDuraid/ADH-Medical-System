@@ -18,7 +18,7 @@ namespace ADHApi.Controllers.Administration
         public UsersController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("AHDConnection");
-            _userData = new UserData();
+            _userData = new UserData(configuration);
         }
 
         // GET: api/<UserController>
@@ -26,7 +26,7 @@ namespace ADHApi.Controllers.Administration
         public List<UserModel> GetUsers()
         {
 
-            var users = _userData.GetUsers(_connectionString);
+            var users = _userData.GetUsers();
 
             return users;
         }
@@ -35,7 +35,7 @@ namespace ADHApi.Controllers.Administration
         [HttpGet("{id}")]
         public List<UserModel> GetUser(string id)
         {
-            var user = _userData.GetUserById(id, _connectionString);
+            var user = _userData.GetUserById(id);
 
             return user;
         }

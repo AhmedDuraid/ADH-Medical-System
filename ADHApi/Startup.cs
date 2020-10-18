@@ -94,7 +94,6 @@ namespace ADHApi
                 x.SwaggerEndpoint("/swagger/v1/swagger.json", "ADH Api v1");
             });
 
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -10,32 +10,33 @@ namespace ADHApi.CoustomProvider
     public class CustomUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>
     {
-        private readonly string _connectionString;
-        private readonly AccountData _userData = new AccountData();
+
+        private readonly AccountData _userData;
 
 
         public CustomUserStore(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AHDConnection");
-
+            _userData = new AccountData(configuration);
         }
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var p = new
+
+
+            var Parameters = new
             {
                 @UserId = user.Id.ToString(),
-                @UserName = user.UserName.ToString(),
-                @Email = user.Email.ToString(),
-                @Password = user.PasswordHash.ToString(),
+                @UserName = user.UserName,
+                @Email = user.Email,
+                @Password = user.PasswordHash,
                 @NormalizedUserName = user.NormalizedUserName,
                 @FirstName = user.FirstName,
                 @LastName = user.LastName,
                 @NormalizedEmail = user.NormalizedEmail
             };
 
-            await _userData.AddNewUser<dynamic>(_connectionString, p, "dbo.spUsers_AddUser_Auth");
+            await _userData.AddNewUser<dynamic>(Parameters);
 
             return IdentityResult.Success;
 
@@ -55,25 +56,18 @@ namespace ADHApi.CoustomProvider
         public async Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             var Parameters = new { @UserId = userId.ToString() };
-
-            var userInfo = await _userData.LoadUserById<ApplicationUser, dynamic>
-                (_connectionString, Parameters, "dbo.spUsers_GetUserById_Auth");
+            var userInfo = await _userData.LoadUserById<ApplicationUser, dynamic>(Parameters);
 
             return userInfo;
-
         }
 
         public async Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var Parameters = new
-            {
-                @NormalizedUserName = normalizedUserName
-            };
+            var Parameters = new { @NormalizedUserName = normalizedUserName };
 
-            var UserInfo = await _userData.LoadUserByName
-                <ApplicationUser, dynamic>(_connectionString, Parameters, "dbo.spUsers_GetUserByName_Auth");
+            var UserInfo = await _userData.LoadUserByName<ApplicationUser, dynamic>(Parameters);
 
             return UserInfo;
         }
@@ -128,11 +122,7 @@ namespace ADHApi.CoustomProvider
         public async Task<ApplicationUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
             var Parameters = new { @NormalizedEmail = normalizedEmail };
-
-            var UserInfo = await _userData.LoadUserByEmail<ApplicationUser, dynamic>
-                (
-                _connectionString, Parameters, "dbo.spUsers_GetUserByEmail_Auth"
-                );
+            var UserInfo = await _userData.LoadUserByEmail<ApplicationUser, dynamic>(Parameters);
 
             return UserInfo;
         }
