@@ -8,7 +8,7 @@ namespace ADHApi.Controllers.Administration
 {
     [Route("api/[controller]/admin")]
     [ApiController]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class RoleController : ControllerBase
     {
 
