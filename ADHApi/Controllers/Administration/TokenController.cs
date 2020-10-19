@@ -3,6 +3,7 @@ using ADHApi.Models;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,13 @@ namespace ADHApi.Controllers.Administration
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserRoleData _userRoleData;
+        private readonly IConfiguration _configuration;
 
-        public TokenController(UserManager<ApplicationUser> userManager, IUserRoleData userRoleData)
+        public TokenController(UserManager<ApplicationUser> userManager, IUserRoleData userRoleData, IConfiguration configuration)
         {
             _userManager = userManager;
             _userRoleData = userRoleData;
+            _configuration = configuration;
         }
 
         // GET: api/Token/UpdateUser
@@ -74,7 +77,7 @@ namespace ADHApi.Controllers.Administration
             }
 
 
-            string tokenPassword = "secretKeysecretKeysecretKeysecretKey";
+            string tokenPassword = _configuration.GetValue<string>("Secrets:SecurityKey");
 
             // create new token
             var token = new JwtSecurityToken(
