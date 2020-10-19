@@ -63,7 +63,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         // POST: api/Article/Staff
         [HttpPost("Staff")]
         [Authorize(Roles = "Doctor")]
-        public IActionResult AddNewArticle([FromBody] ArticleInterfaceModel userInput)
+        public IActionResult AddNewArticle([FromBody] ApiArticleModel userInput)
         {
             var Article = new ArticleModel()
             {
@@ -79,7 +79,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // PUT api/<ArticleController>/UpdateArticle/
         [HttpPut("{articleId}")]
-        public IActionResult UpdateArticle(string articleId, [FromBody] ArticleInterfaceModel model)
+        public IActionResult UpdateArticle(string articleId, [FromBody] ApiArticleModel model)
         {
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var Article = new ArticleModel()
@@ -112,9 +112,28 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetPublicArticles()
         {
             var Result = articlesData.FindArticles(true);
+            List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
+
+            foreach (var item in Result)
+            {
+                var Article = new PublicArticleModel
+                {
+                    Id = item.Id,
+                    Titel = item.Titel,
+                    Body = item.Body,
+                    CreateDate = item.CreateDate,
+                    LastUpdate = item.LastUpdate,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    UserName = item.UserName
+                };
+                ArticleList.Add(Article);
+            }
+
             if (Result != null)
             {
-                return Ok(Result);
+
+                return Ok(ArticleList);
             }
             return NotFound();
         }
@@ -125,23 +144,58 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
 
             var Result = articlesData.FindArticleByID(id, true);
+            List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
+
+            foreach (var item in Result)
+            {
+                var Article = new PublicArticleModel
+                {
+                    Id = item.Id,
+                    Titel = item.Titel,
+                    Body = item.Body,
+                    CreateDate = item.CreateDate,
+                    LastUpdate = item.LastUpdate,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    UserName = item.UserName
+                };
+                ArticleList.Add(Article);
+            }
             if (Result != null)
             {
-                Ok(Result);
+                return Ok(ArticleList);
 
             }
             return NotFound();
         }
 
         // GET: api/Article/public/{id}
-        [HttpGet("public/user/{userId}")]
+        [HttpGet("public/user/{userName}")]
         [AllowAnonymous]
         public IActionResult GetAricleByUserName(string userName)
         {
             var Result = articlesData.FindArticlesByUserName(userName, true);
+            List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
+
+            foreach (var item in Result)
+            {
+                var Article = new PublicArticleModel
+                {
+                    Id = item.Id,
+                    Titel = item.Titel,
+                    Body = item.Body,
+                    CreateDate = item.CreateDate,
+                    LastUpdate = item.LastUpdate,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    UserName = item.UserName
+                };
+                ArticleList.Add(Article);
+            }
+
             if (Result != null)
             {
-                return Ok(Result);
+                return Ok(ArticleList);
 
             }
             return NotFound();

@@ -7,31 +7,22 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class ArticleData
     {
-        private readonly string _connectionString;
-        private readonly string _connectionName = "AHDConnection";
         private readonly SqlDataAccess _sqlDataAccess;
 
         public ArticleData(IConfiguration configuration)
         {
-
-            _connectionString = configuration.GetConnectionString(_connectionName);
-            _sqlDataAccess = new SqlDataAccess();
-
+            _sqlDataAccess = new SqlDataAccess(configuration);
         }
 
         public List<ArticleModel> FindArticles(bool show)
         {
-            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindAllArticles_show",
-                new { @Show = show },
-                 _connectionString);
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindAllArticles_show", new { @Show = show });
 
             return output;
         }
         public List<ArticleModel> FindArticles()
         {
-            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticles_staff",
-                 new { },
-                  _connectionString);
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticles_staff", new { });
 
             return output;
         }
@@ -40,8 +31,7 @@ namespace ADHDataManager.Library.DataAccess
         {
             var Parameters = new { @ArticleId = id, @Show = show };
 
-            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesById_shown", Parameters,
-                 _connectionString);
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesById_shown", Parameters);
 
             return output;
 
@@ -51,8 +41,7 @@ namespace ADHDataManager.Library.DataAccess
         {
             var Parameters = new { @UserName = userName, @Show = show };
 
-            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesByUsername_shown", Parameters,
-                 _connectionString);
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesByUsername_shown", Parameters);
 
             return output;
 
@@ -61,9 +50,7 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<ArticleModel> FindArticlesByUserId(string userId)
         {
-            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindAreticlesByUserID_staff",
-                new { @UserId = userId },
-                 _connectionString);
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindAreticlesByUserID_staff", new { @UserId = userId });
 
             return output;
         }
@@ -80,7 +67,7 @@ namespace ADHDataManager.Library.DataAccess
 
             };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spArticles_AddNewArticle", Parameters, _connectionString);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spArticles_AddNewArticle", Parameters);
         }
 
         public void UpdateArticle(ArticleModel model)
@@ -94,20 +81,18 @@ namespace ADHDataManager.Library.DataAccess
                 @UserId = model.UserId
             };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spArticles_UpdateArticles", Parameters, _connectionString);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spArticles_UpdateArticles", Parameters);
         }
 
         public void DeleteArticle(string articleId)
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-
             var Parameters = new
             {
                 @ArticleId = articleId,
 
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spArticles_DeleteArticle", Parameters, _connectionString);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spArticles_DeleteArticle", Parameters);
         }
     }
 }

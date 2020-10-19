@@ -7,21 +7,16 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class PatientNoteData
     {
-
-        private readonly string connectionName = "AHDConnection";
-        private readonly string _connectionString;
         private readonly SqlDataAccess sqlDataAccess;
 
         public PatientNoteData(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString(connectionName);
-            sqlDataAccess = new SqlDataAccess();
+            sqlDataAccess = new SqlDataAccess(configuration);
         }
 
         public List<PatientNoteModel> GetNotes()
         {
-            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindAll", new { },
-                 _connectionString);
+            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindAll", new { });
 
             return output;
         }
@@ -29,8 +24,7 @@ namespace ADHDataManager.Library.DataAccess
         public List<PatientNoteModel> GetNotesByPatientId(string patientId)
         {
             var Parameters = new { @PatientId = patientId };
-            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientId", Parameters,
-                 _connectionString);
+            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientId", Parameters);
 
             return output;
         }
@@ -38,16 +32,14 @@ namespace ADHDataManager.Library.DataAccess
         public List<PatientNoteModel> GetNotesByPatientId_Show(string patientId)
         {
             var Parameters = new { @PatientId = patientId };
-            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientId_Show", Parameters,
-                 _connectionString);
+            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientId_Show", Parameters);
 
             return output;
         }
         public List<PatientNoteModel> GetNotesByPatientAndDoctorId(string patientId, string doctorId)
         {
             var Parameters = new { @PatientId = patientId, @DoctortId = doctorId };
-            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientIdAndDoctorID", Parameters,
-                 _connectionString);
+            var output = sqlDataAccess.LoadData<PatientNoteModel, dynamic>("dbo.spPatientNote_FindByPatientIdAndDoctorID", Parameters);
 
             return output;
         }
@@ -63,16 +55,14 @@ namespace ADHDataManager.Library.DataAccess
                 @ShowToPatient = patientNote.ShowToPatient
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_AddNote", Parameters,
-                 _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_AddNote", Parameters);
         }
 
         public void DeleteNote(string noteId)
         {
             var Parameters = new { @NoteId = noteId };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_DeleteNoteById", Parameters,
-                 _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_DeleteNoteById", Parameters);
         }
 
         public void UpdatePatient_PatientAndDoctorId(PatientNoteModel noteModel)
@@ -85,8 +75,7 @@ namespace ADHDataManager.Library.DataAccess
                 @ShowToPatient = noteModel.ShowToPatient
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientAndDoctorID", Parameters,
-                 _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientAndDoctorID", Parameters);
         }
 
         public void UpdatePatient_PatientId(PatientNoteModel noteModel)
@@ -98,8 +87,7 @@ namespace ADHDataManager.Library.DataAccess
                 @ShowToPatient = noteModel.ShowToPatient
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientID", Parameters,
-                 _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientID", Parameters);
         }
     }
 }

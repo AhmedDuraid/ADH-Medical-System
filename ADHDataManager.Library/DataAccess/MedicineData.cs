@@ -7,30 +7,24 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class MedicineData
     {
-
-        private readonly string connectionName = "AHDConnection";
-        private readonly string _connectionString;
         private readonly SqlDataAccess sqlDataAccess;
 
         public MedicineData(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString(connectionName);
-            sqlDataAccess = new SqlDataAccess();
+            sqlDataAccess = new SqlDataAccess(configuration);
         }
 
 
         public List<MedicineModel> GetMedicines()
         {
-            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindAll",
-                new { }, _connectionString);
+            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindAll", new { });
             return output;
         }
 
         public List<MedicineModel> GetMedicineByName(string medName)
         {
             var Parameters = new { @MedName = medName };
-            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindMedByName",
-                Parameters, _connectionString);
+            var output = sqlDataAccess.LoadData<MedicineModel, dynamic>("dbo.spMedicines_FindMedByName", Parameters);
 
             return output;
         }
@@ -46,8 +40,7 @@ namespace ADHDataManager.Library.DataAccess
                 @RecommendedDose = medicine.RecommendedDose
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_AddNewMed",
-                Parameters, _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_AddNewMed", Parameters);
         }
 
         public void UpdateMed(MedicineModel medicine)
@@ -61,8 +54,7 @@ namespace ADHDataManager.Library.DataAccess
                 @MedId = medicine.Id
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_UpdateMed",
-                Parameters, _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_UpdateMed", Parameters);
         }
         public void DeleteMed(string medId)
         {
@@ -71,8 +63,7 @@ namespace ADHDataManager.Library.DataAccess
                 @MedId = medId
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_DeleteMed",
-                Parameters, _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spMedicines_DeleteMed", Parameters);
         }
     }
 }

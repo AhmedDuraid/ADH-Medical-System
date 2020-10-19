@@ -7,20 +7,16 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class PlanData
     {
-        private readonly string connectionName = "AHDConnection";
-        private readonly string _connectionString;
         private readonly SqlDataAccess dataAccess;
 
         public PlanData(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString(connectionName);
-            dataAccess = new SqlDataAccess();
+            dataAccess = new SqlDataAccess(configuration);
         }
 
         public List<PlanModel> GetPlans()
         {
-            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindAll",
-                new { }, _connectionString);
+            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindAll", new { });
 
             return output;
         }
@@ -29,8 +25,7 @@ namespace ADHDataManager.Library.DataAccess
         {
             var Parameters = new { @PlanType = planType };
 
-            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindByType",
-                Parameters, _connectionString);
+            var output = dataAccess.LoadData<PlanModel, dynamic>("dbo.spPlans_FindByType", Parameters);
 
             return output;
         }
@@ -51,8 +46,7 @@ namespace ADHDataManager.Library.DataAccess
                 @Description = plan.Description
             };
 
-            dataAccess.SaveData<dynamic>("dbo.spPlans_AddNew",
-                Parapeters, _connectionString);
+            dataAccess.SaveData<dynamic>("dbo.spPlans_AddNew", Parapeters);
         }
 
         public void UpdatePlan(PlanModel plan)
@@ -71,16 +65,14 @@ namespace ADHDataManager.Library.DataAccess
                 @Description = plan.Description
             };
 
-            dataAccess.SaveData<dynamic>("dbo.spPlans_UpdatePlan",
-                Parapeters, _connectionString);
+            dataAccess.SaveData<dynamic>("dbo.spPlans_UpdatePlan", Parapeters);
         }
 
         public void DeletePlan(string id)
         {
             var Parapeters = new { @Id = id };
 
-            dataAccess.SaveData<dynamic>("dbo.spPlans_DeletePlan",
-                Parapeters, _connectionString);
+            dataAccess.SaveData<dynamic>("dbo.spPlans_DeletePlan", Parapeters);
         }
     }
 }

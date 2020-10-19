@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -9,23 +8,17 @@ namespace ADHDataManager.Library.DataAccess
 
     public class UserData
     {
-        // interface with the API 
+
         private readonly SqlDataAccess _sqlDataAccess;
-        private readonly string _connectionString;
-        private readonly string _connectionName = "AHDConnection";
 
         public UserData(IConfiguration configuration)
         {
-            _sqlDataAccess = new SqlDataAccess();
-            _connectionString = configuration.GetConnectionString(_connectionName);
-
+            _sqlDataAccess = new SqlDataAccess(configuration);
         }
 
         public List<UserModel> GetUsers()
         {
-
-            var output = _sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_GetUsers",
-                new { }, _connectionString);
+            var output = _sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_GetUsers", new { });
 
             return output;
         }
@@ -35,44 +28,37 @@ namespace ADHDataManager.Library.DataAccess
             if (id != null)
             {
                 var Parameters = new { @UserId = id };
-
-                var output = _sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_FindUserByID",
-                    Parameters, _connectionString);
+                var output = _sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUsers_FindUserByID", Parameters);
 
                 return output;
             }
             return null;
         }
 
-        public void UpdateUser(string id, string firstName, string middleName, string lastName,
-            DateTime birthDate, string phoneNumber, char gender, string nationality, string address)
+        public void UpdateUser(UserModel user)
         {
             var Parameters = new
             {
-                @UserId = id,
-                @FirstName = firstName,
-                @MiddleName = middleName,
-                @LastName = lastName,
-                @BirthDate = birthDate,
-                @PhoneNumber = phoneNumber,
-                @Gender = gender,
-                @Nationality = nationality,
-                @Address = address
+                @UserId = user.Id,
+                @FirstName = user.FirstName,
+                @MiddleName = user.MiddleName,
+                @LastName = user.LastName,
+                @BirthDate = user.BirthDate,
+                @PhoneNumber = user.PhoneNumber,
+                @Gender = user.Gender,
+                @Nationality = user.Nationality,
+                @Address = user.Address
 
             };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_UpdateUserByID", Parameters, _connectionString);
-
+            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_UpdateUserByID", Parameters);
         }
 
         public void DeleteUser(string userId)
         {
             var parameters = new { @UserId = userId };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_DeleteUser", parameters, _connectionString);
-
+            _sqlDataAccess.SaveData<dynamic>("dbo.spUsers_DeleteUser", parameters);
         }
-
-
     }
 }

@@ -7,22 +7,15 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class AssignedPlanData
     {
-        private readonly string connectionName = "AHDConnection";
-        private readonly string _connectionString;
         SqlDataAccess sqlDataAccess;
         public AssignedPlanData(IConfiguration configuration)
         {
-            sqlDataAccess = new SqlDataAccess();
-            _connectionString = configuration.GetConnectionString(connectionName);
+            sqlDataAccess = new SqlDataAccess(configuration);
         }
-
 
         public List<AssignedPlanModel> GetAssignedPlans()
         {
-            SqlDataAccess sqlDataAccess = new SqlDataAccess();
-
-            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindAll",
-                new { }, _connectionString);
+            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindAll", new { });
 
             return output;
         }
@@ -31,9 +24,7 @@ namespace ADHDataManager.Library.DataAccess
         public List<AssignedPlanModel> GetAssignedPlansByDoctorID(string doctorID)
         {
             var Parameters = new { @DoctorId = doctorID };
-
-            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindByAllDoctorId",
-                Parameters, _connectionString);
+            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindByAllDoctorId", Parameters);
 
             return output;
         }
@@ -41,9 +32,7 @@ namespace ADHDataManager.Library.DataAccess
         public List<AssignedPlanModel> GetAssignedPlansByPaitnetID(string patientId)
         {
             var Parameters = new { @PatientID = patientId };
-
-            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindByAllPatientID",
-                Parameters, _connectionString);
+            var output = sqlDataAccess.LoadData<AssignedPlanModel, dynamic>("dbo.spAssignedPlan_FindByAllPatientID", Parameters);
 
             return output;
         }
@@ -60,7 +49,7 @@ namespace ADHDataManager.Library.DataAccess
             };
 
             sqlDataAccess.SaveData<dynamic>("dbo.spAssignedPlan_AddNew",
-                Parameters, _connectionString);
+                Parameters);
         }
     }
 }

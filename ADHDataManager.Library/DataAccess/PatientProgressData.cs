@@ -7,32 +7,26 @@ namespace ADHDataManager.Library.DataAccess
 {
     public class PatientProgressData
     {
-
-        private readonly string connectionName = "AHDConnection";
-        private readonly string _connectionString;
         private readonly SqlDataAccess sqlDataAccess;
 
         public PatientProgressData(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString(connectionName);
-            sqlDataAccess = new SqlDataAccess();
+            sqlDataAccess = new SqlDataAccess(configuration);
         }
 
         public List<PatientProgressModel> GetPatientProgresses()
         {
-            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAll",
-                new { }, _connectionString);
+            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAll", new { });
+
             return output;
         }
 
         public List<PatientProgressModel> GetPatientProgressesByPatientId(string patientId)
         {
             var Parameters = new { @PatientId = patientId };
+            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAllByPatientId", Parameters);
 
-            var output = sqlDataAccess.LoadData<PatientProgressModel, dynamic>("dbo.spPatientProgress_FindAllByPatientId",
-                Parameters, _connectionString);
             return output;
-
         }
 
         public void AddProgress(PatientProgressModel progress)
@@ -46,16 +40,14 @@ namespace ADHDataManager.Library.DataAccess
                 @AddedBy = progress.AddedBy
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_AddNew",
-                    Parameters, _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_AddNew", Parameters);
         }
 
         public void DeleteProgress(string progressId)
         {
             var Parameters = new { @ProgressId = progressId };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_DeleteByID",
-                    Parameters, _connectionString);
+            sqlDataAccess.SaveData<dynamic>("dbo.spPatientProgress_DeleteByID", Parameters);
         }
     }
 }

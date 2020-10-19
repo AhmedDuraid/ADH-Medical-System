@@ -3,6 +3,7 @@ using ADHApi.Models;
 using ADHApi.Models.User;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
+using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -77,7 +78,7 @@ namespace ADHApi.Controllers
 
         // PUT: api/Account
         [HttpPut]
-        public IActionResult UpdateUser([FromBody] UserUpdateModel model)
+        public IActionResult UpdateUser([FromBody] UserUpdateModel userInput)
         {
             if (!ModelState.IsValid)
             {
@@ -85,9 +86,20 @@ namespace ADHApi.Controllers
             }
 
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var UserInfo = new UserModel()
+            {
+                Id = UserId,
+                FirstName = userInput.FirstName,
+                MiddleName = userInput.MiddleName,
+                LastName = userInput.LastName,
+                BirthDate = userInput.BirthDate,
+                PhoneNumber = userInput.PhoneNumber,
+                Gender = userInput.Gender,
+                Nationality = userInput.Nationality,
+                Address = userInput.Address
+            };
 
-            _userData.UpdateUser(UserId, model.FirstName, model.MiddleName, model.LastName, model.BirthDate,
-                model.PhoneNumber, model.Gender, model.Nationality, model.Address);
+            _userData.UpdateUser(UserInfo);
 
             return Ok($"{UserId} information Updated ");
         }
@@ -96,7 +108,7 @@ namespace ADHApi.Controllers
         [HttpPut]
         [Authorize(Roles = "Admin")]
         [Route("Admin/{id}")]
-        public IActionResult UpdateUser(string id, [FromBody] UserUpdateModel model)
+        public IActionResult UpdateUser(string id, [FromBody] UserUpdateModel userInput)
         {
 
             if (!ModelState.IsValid)
@@ -104,8 +116,20 @@ namespace ADHApi.Controllers
                 return BadRequest("Model not valid");
             }
 
-            _userData.UpdateUser(id, model.FirstName, model.MiddleName,
-                model.LastName, model.BirthDate, model.PhoneNumber, model.Gender, model.Nationality, model.Address);
+            var UserInfo = new UserModel()
+            {
+                Id = id,
+                FirstName = userInput.FirstName,
+                MiddleName = userInput.MiddleName,
+                LastName = userInput.LastName,
+                BirthDate = userInput.BirthDate,
+                PhoneNumber = userInput.PhoneNumber,
+                Gender = userInput.Gender,
+                Nationality = userInput.Nationality,
+                Address = userInput.Address
+            };
+
+            _userData.UpdateUser(UserInfo);
 
             return Ok($"User {id} information Updated ");
         }

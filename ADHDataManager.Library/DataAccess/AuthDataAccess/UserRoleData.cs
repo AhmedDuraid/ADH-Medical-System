@@ -7,20 +7,16 @@ namespace ADHDataManager.Library.DataAccess.AuthDataAccess
     public class UserRoleData
     {
         private readonly SqlDataAccess _sqlDataAccess;
-        private readonly string _connectionString;
-        private readonly string connectionName = "AHDConnection";
 
         public UserRoleData(IConfiguration configuration)
         {
-            _sqlDataAccess = new SqlDataAccess();
-            _connectionString = configuration.GetConnectionString(connectionName);
-
+            _sqlDataAccess = new SqlDataAccess(configuration);
         }
         public List<T> LoadUserRoleByID<T, U>(string userId)
         {
             var Parameters = new { @UserId = userId };
 
-            var output = _sqlDataAccess.LoadData<T, dynamic>("dbo.spUserRole_GetUserRoleById_Auth", Parameters, _connectionString);
+            var output = _sqlDataAccess.LoadData<T, dynamic>("dbo.spUserRole_GetUserRoleById_Auth", Parameters);
 
             return output;
 
@@ -29,7 +25,7 @@ namespace ADHDataManager.Library.DataAccess.AuthDataAccess
         {
             var Parameters = new { @UserId = userId, @RoleId = roleId };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spUserRole_AddUserRole_Auth", Parameters, _connectionString);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spUserRole_AddUserRole_Auth", Parameters);
 
         }
     }

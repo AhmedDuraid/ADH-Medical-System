@@ -9,12 +9,11 @@ namespace ADHApi.CoustomProvider
 {
     public class CustomRoleStore : IRoleStore<ApplicationRole>
     {
-        private readonly string _connectionString;
-        RoleData _roleData = new RoleData();
+        private readonly RoleData _roleData;
 
         public CustomRoleStore(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AHDConnection");
+            _roleData = new RoleData(configuration);
 
         }
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
@@ -22,7 +21,7 @@ namespace ADHApi.CoustomProvider
             cancellationToken.ThrowIfCancellationRequested();
             var Parameters = new { @RoleID = role.Id, @RoleName = role.Name, @NormalizedRoleName = role.NormalizedRoleName };
 
-            await _roleData.AddNewRole<dynamic>(_connectionString, Parameters, "dbo.spRoles_AddNewRole_Auth");
+            await _roleData.AddNewRole<dynamic>(Parameters, "dbo.spRoles_AddNewRole_Auth");
 
             return IdentityResult.Success;
         }
@@ -43,8 +42,7 @@ namespace ADHApi.CoustomProvider
 
             var Parameters = new { @RoleID = roleId };
 
-            var Role = await _roleData.FindRoleByID<ApplicationRole, dynamic>
-                (_connectionString, Parameters, "dbo.spRoles_GetRoleByID_Auth");
+            var Role = await _roleData.FindRoleByID<ApplicationRole, dynamic>(Parameters, "dbo.spRoles_GetRoleByID_Auth");
 
             return Role;
 
@@ -53,10 +51,9 @@ namespace ADHApi.CoustomProvider
         public async Task<ApplicationRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var Parameters = new { @NormalizedRoleName = normalizedRoleName };
 
-            var Role = await _roleData.FindRoleByName<ApplicationRole, dynamic>
-                (_connectionString, Parameters, "dbo.spRoles_GetRoleByName_Auth");
+            var Parameters = new { @NormalizedRoleName = normalizedRoleName };
+            var Role = await _roleData.FindRoleByName<ApplicationRole, dynamic>(Parameters, "dbo.spRoles_GetRoleByName_Auth");
 
             return Role;
         }
