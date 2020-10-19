@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHApi.Controllers.StaffAndPatients
@@ -10,10 +9,10 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class AssignedMedicineController : ControllerBase
     {
-        private readonly AssignedMedicineData assignedMedicine;
-        public AssignedMedicineController(IConfiguration configuration)
+        private readonly IAssignedMedicineData _assignedMedicine;
+        public AssignedMedicineController(IAssignedMedicineData assignedMedicineData)
         {
-            assignedMedicine = new AssignedMedicineData(configuration);
+            _assignedMedicine = assignedMedicineData;
 
         }
 
@@ -21,7 +20,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet]
         public List<AssignedMedicineModel> GetAssignedMed()
         {
-            var Results = assignedMedicine.GetAssignedMeds();
+            var Results = _assignedMedicine.GetAssignedMeds();
             return Results;
         }
 
@@ -29,7 +28,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}")]
         public List<AssignedMedicineModel> GetAssignedMedByPatientId(string patientId)
         {
-            var Results = assignedMedicine.GetAssignedPatientId(patientId);
+            var Results = _assignedMedicine.GetAssignedPatientId(patientId);
 
             return Results;
         }
@@ -38,7 +37,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{doctorId}")]
         public List<AssignedMedicineModel> GetAssignedMedByDoctorId(string doctorId)
         {
-            var Results = assignedMedicine.GetAssignedDoctorId(doctorId);
+            var Results = _assignedMedicine.GetAssignedDoctorId(doctorId);
 
             return Results;
         }
@@ -48,7 +47,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public void PostNewAssignedMed([FromBody] AssignedMedicineModel model)
         {
 
-            assignedMedicine.AddAssignedMed(model);
+            _assignedMedicine.AddAssignedMed(model);
         }
     }
 }

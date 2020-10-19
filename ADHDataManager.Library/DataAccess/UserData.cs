@@ -1,19 +1,18 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
 
-    public class UserData
+    public class UserData : IUserData
     {
 
-        private readonly SqlDataAccess _sqlDataAccess;
+        private readonly ISqlDataAccess _sqlDataAccess;
 
-        public UserData(IConfiguration configuration)
+        public UserData(ISqlDataAccess sqlDataAccess)
         {
-            _sqlDataAccess = new SqlDataAccess(configuration);
+            _sqlDataAccess = sqlDataAccess;
         }
 
         public List<UserModel> GetUsers()

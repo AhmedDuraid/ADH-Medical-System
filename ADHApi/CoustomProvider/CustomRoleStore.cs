@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,11 +8,11 @@ namespace ADHApi.CoustomProvider
 {
     public class CustomRoleStore : IRoleStore<ApplicationRole>
     {
-        private readonly RoleData _roleData;
+        private readonly IRoleData _roleData;
 
-        public CustomRoleStore(IConfiguration configuration)
+        public CustomRoleStore(IRoleData roleData)
         {
-            _roleData = new RoleData(configuration);
+            _roleData = roleData;
 
         }
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)

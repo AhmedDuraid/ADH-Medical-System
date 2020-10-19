@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHApi.Controllers.StaffAndPatients
@@ -10,11 +9,11 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class FeedbackController : ControllerBase
     {
-        private readonly FeedbackData feedbackData;
+        private readonly IFeedbackData _feedbackData;
 
-        public FeedbackController(IConfiguration configuration)
+        public FeedbackController(IFeedbackData feedbackData)
         {
-            feedbackData = new FeedbackData(configuration);
+            _feedbackData = feedbackData;
         }
 
         // GET: api/staffAndPatients/Feedback/GetFeedbacks
@@ -22,7 +21,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetFeedbacks()
         {
 
-            var feedbacks = feedbackData.GetFeedbacks();
+            var feedbacks = _feedbackData.GetFeedbacks();
 
             return Ok(feedbacks);
 
@@ -33,7 +32,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet]
         public List<FeedbackModel> GetFeedbacksBotReaded()
         {
-            var Feedback = feedbackData.GetFeedbackByNotReaded();
+            var Feedback = _feedbackData.GetFeedbackByNotReaded();
 
             return Feedback;
         }
@@ -42,7 +41,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{readerId}")]
         public List<FeedbackModel> GetFeedbackReaderID(string readerId)
         {
-            var Feedback = feedbackData.GetFeedbackByReaderId(readerId);
+            var Feedback = _feedbackData.GetFeedbackByReaderId(readerId);
 
             return Feedback;
         }
@@ -51,7 +50,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public void AddFeedback([FromBody] FeedbackModel feedback)
         {
-            feedbackData.AddNewFeedback(feedback);
+            _feedbackData.AddNewFeedback(feedback);
 
         }
 
@@ -59,7 +58,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut]
         public IActionResult UpdateFeedback([FromBody] string readerId, string feedbackId)
         {
-            feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
+            _feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
 
             return Ok();
         }

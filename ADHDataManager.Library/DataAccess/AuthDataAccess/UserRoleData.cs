@@ -1,16 +1,15 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess.AuthDataAccess
 {
-    public class UserRoleData
+    public class UserRoleData : IUserRoleData
     {
-        private readonly SqlDataAccess _sqlDataAccess;
+        private readonly ISqlDataAccess _sqlDataAccess;
 
-        public UserRoleData(IConfiguration configuration)
+        public UserRoleData(ISqlDataAccess sqlDataAccess)
         {
-            _sqlDataAccess = new SqlDataAccess(configuration);
+            _sqlDataAccess = sqlDataAccess;
         }
         public List<T> LoadUserRoleByID<T, U>(string userId)
         {

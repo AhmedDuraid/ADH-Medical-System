@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,19 +8,19 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class PatientProgressController : ControllerBase
     {
-        private readonly PatientProgressData patientProgressData;
+        private readonly IPatientProgressData _patientProgressData;
 
 
-        public PatientProgressController(IConfiguration configuration)
+        public PatientProgressController(IPatientProgressData patientProgressData)
         {
-            patientProgressData = new PatientProgressData(configuration);
+            _patientProgressData = patientProgressData;
         }
 
         // GET: api/staffAndPatients/PatientProgress/GetProgress
         [HttpGet]
         public IActionResult GetProgress()
         {
-            var Progresses = patientProgressData.GetPatientProgresses();
+            var Progresses = _patientProgressData.GetPatientProgresses();
 
             return Ok(Progresses);
         }
@@ -31,7 +30,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientID}")]
         public IActionResult GetByPatientID(string patientID)
         {
-            var Progresses = patientProgressData.GetPatientProgressesByPatientId(patientID);
+            var Progresses = _patientProgressData.GetPatientProgressesByPatientId(patientID);
 
             return Ok(Progresses);
         }
@@ -40,7 +39,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult AddNew([FromBody] PatientProgressModel patientProgress)
         {
-            patientProgressData.AddProgress(patientProgress);
+            _patientProgressData.AddProgress(patientProgress);
 
             return Ok();
         }
@@ -50,7 +49,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpDelete("{id}")]
         public IActionResult DeleteProgress(string id)
         {
-            patientProgressData.DeleteProgress(id);
+            _patientProgressData.DeleteProgress(id);
 
             return Ok();
         }

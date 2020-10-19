@@ -3,7 +3,6 @@ using ADHApi.Models;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -19,12 +18,12 @@ namespace ADHApi.Controllers.Administration
     public class TokenController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly UserRoleData _userRoleData;
+        private readonly IUserRoleData _userRoleData;
 
-        public TokenController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public TokenController(UserManager<ApplicationUser> userManager, IUserRoleData userRoleData)
         {
             _userManager = userManager;
-            _userRoleData = new UserRoleData(configuration);
+            _userRoleData = userRoleData;
         }
 
         // GET: api/Token/UpdateUser

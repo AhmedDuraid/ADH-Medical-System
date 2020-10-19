@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,19 +8,19 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class MedicineController : ControllerBase
     {
-        private readonly MedicineData medicineData;
+        private readonly IMedicineData _medicineData;
 
 
-        public MedicineController(IConfiguration configuration)
+        public MedicineController(IMedicineData medicineData)
         {
-            medicineData = new MedicineData(configuration);
+            _medicineData = medicineData;
         }
 
         // GET: api/staffAndPatients/Medicine/GetMedicines
         [HttpGet]
         public IActionResult GetMedicines()
         {
-            var Medicines = medicineData.GetMedicines();
+            var Medicines = _medicineData.GetMedicines();
 
             return Ok(Medicines);
         }
@@ -30,7 +29,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{MedName}")]
         public IActionResult GetMedicineByName(string MedName)
         {
-            var Medicine = medicineData.GetMedicineByName(MedName);
+            var Medicine = _medicineData.GetMedicineByName(MedName);
 
             return Ok(Medicine);
         }
@@ -39,7 +38,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult AddNew([FromBody] MedicineModel medicine)
         {
-            medicineData.AddMedicines(medicine);
+            _medicineData.AddMedicines(medicine);
 
             return Ok();
         }
@@ -48,7 +47,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut]
         public IActionResult UpdateMedicine([FromBody] MedicineModel medicine)
         {
-            medicineData.UpdateMed(medicine);
+            _medicineData.UpdateMed(medicine);
 
             return Ok();
         }
@@ -57,7 +56,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpDelete("{id}")]
         public IActionResult DeleteMedicine(string id)
         {
-            medicineData.DeleteMed(id);
+            _medicineData.DeleteMed(id);
 
             return Ok();
         }

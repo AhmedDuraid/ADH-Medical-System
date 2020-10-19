@@ -7,7 +7,6 @@ using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -20,19 +19,20 @@ namespace ADHApi.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly UserData _userData;
-        private readonly UserRoleData _userRoleData;
+        private readonly IUserData _userData;
+        private readonly IUserRoleData _userRoleData;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            IConfiguration configuration
+            IUserRoleData userRoleData,
+            IUserData userData
           )
 
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _userRoleData = new UserRoleData(configuration);
-            _userData = new UserData(configuration);
+            _userRoleData = userRoleData;
+            _userData = userData;
         }
 
         // POST: api/Account

@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -10,11 +9,11 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class AssignedPlanController : ControllerBase
     {
 
-        private readonly AssignedPlanData assignedPlanData;
+        private readonly IAssignedPlanData _assignedPlanData;
 
-        public AssignedPlanController(IConfiguration configuration)
+        public AssignedPlanController(IAssignedPlanData assignedPlanData)
         {
-            assignedPlanData = new AssignedPlanData(configuration);
+            _assignedPlanData = assignedPlanData;
         }
 
         // GET: api/staffAndPatients/AssignedPlan/GetAssignedPlans
@@ -22,7 +21,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetAssignedPlans()
         {
 
-            var AssignedPlans = assignedPlanData.GetAssignedPlans();
+            var AssignedPlans = _assignedPlanData.GetAssignedPlans();
 
             return Ok(AssignedPlans);
         }
@@ -31,7 +30,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}")]
         public IActionResult GetByPatientID(string patientId)
         {
-            var AssignedPlans = assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
+            var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
 
             return Ok(AssignedPlans);
         }
@@ -40,7 +39,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{doctorID}")]
         public IActionResult GetByDoctorID(string doctorID)
         {
-            var AssignedPlans = assignedPlanData.GetAssignedPlansByDoctorID(doctorID);
+            var AssignedPlans = _assignedPlanData.GetAssignedPlansByDoctorID(doctorID);
 
             return Ok(AssignedPlans);
         }
@@ -50,7 +49,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult PostNewAssigne([FromBody] AssignedPlanModel assigned)
         {
 
-            assignedPlanData.AddAssignedPlan(assigned);
+            _assignedPlanData.AddAssignedPlan(assigned);
 
             return Ok();
 

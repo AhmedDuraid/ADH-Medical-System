@@ -3,7 +3,6 @@ using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -14,11 +13,12 @@ namespace ADHApi.Controllers.StaffAndPatients
     [Authorize]
     public class ArticleController : ControllerBase
     {
-        private readonly ArticleData articlesData;
 
-        public ArticleController(IConfiguration configuration)
+        private readonly IArticleData _articleData;
+
+        public ArticleController(IArticleData articleData)
         {
-            articlesData = new ArticleData(configuration);
+            _articleData = articleData;
         }
 
         // GET: api/ArticleController/Admin
@@ -26,7 +26,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin")]
         public IActionResult GetArticles()
         {
-            List<ArticleModel> articles = articlesData.FindArticles();
+            List<ArticleModel> articles = _articleData.FindArticles();
             if (articles == null)
             {
                 return Ok(articles);
@@ -39,7 +39,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin")]
         public IActionResult GetArticlesByUserId(string userId)
         {
-            List<ArticleModel> articles = articlesData.FindArticlesByUserId(userId);
+            List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
 
             return Ok(articles);
         }
@@ -50,7 +50,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetArticlesByUserId()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            List<ArticleModel> articles = articlesData.FindArticlesByUserId(userId);
+            List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
 
             if (articles == null)
             {
@@ -72,7 +72,7 @@ namespace ADHApi.Controllers.StaffAndPatients
                 UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                 Show = userInput.Show
             };
-            articlesData.AddArticle(Article);
+            _articleData.AddArticle(Article);
 
             return Ok($"article {Article.UserId} created");
         }
@@ -90,7 +90,7 @@ namespace ADHApi.Controllers.StaffAndPatients
                 Id = articleId,
                 UserId = UserId
             };
-            articlesData.UpdateArticle(Article);
+            _articleData.UpdateArticle(Article);
 
             return Ok();
         }
@@ -100,7 +100,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin")]
         public IActionResult Delete(string articleId)
         {
-            articlesData.DeleteArticle(articleId);
+            _articleData.DeleteArticle(articleId);
 
             return Ok();
         }
@@ -111,7 +111,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [AllowAnonymous]
         public IActionResult GetPublicArticles()
         {
-            var Result = articlesData.FindArticles(true);
+            var Result = _articleData.FindArticles(true);
             List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
 
             foreach (var item in Result)
@@ -143,7 +143,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetAricleByID(string id)
         {
 
-            var Result = articlesData.FindArticleByID(id, true);
+            var Result = _articleData.FindArticleByID(id, true);
             List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
 
             foreach (var item in Result)
@@ -174,7 +174,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [AllowAnonymous]
         public IActionResult GetAricleByUserName(string userName)
         {
-            var Result = articlesData.FindArticlesByUserName(userName, true);
+            var Result = _articleData.FindArticlesByUserName(userName, true);
             List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
 
             foreach (var item in Result)

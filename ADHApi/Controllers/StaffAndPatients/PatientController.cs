@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,18 +8,18 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class PatientController : ControllerBase
     {
 
-        private readonly PatientData patientData;
+        private readonly IPatientData _patientData;
 
-        public PatientController(IConfiguration configuration)
+        public PatientController(IPatientData patientData)
         {
-            patientData = new PatientData(configuration);
+            _patientData = patientData;
         }
 
         // GET: api/staffAndPatients/Patient/GetPatients
         [HttpGet]
         public IActionResult GetPatients()
         {
-            var Patients = patientData.GetPatients();
+            var Patients = _patientData.GetPatients();
 
             return Ok(Patients);
         }
@@ -29,7 +28,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{id}")]
         public IActionResult GetPatientByID(string id)
         {
-            var Patient = patientData.GetPatientByID(id);
+            var Patient = _patientData.GetPatientByID(id);
 
             return Ok(Patient);
         }

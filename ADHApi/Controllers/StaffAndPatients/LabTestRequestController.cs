@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,18 +8,18 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class LabTestRequestController : ControllerBase
     {
-        private readonly LabTestRequestsData labTestRequests;
+        private readonly ILabTestRequestsData _labTestRequestsData;
 
-        public LabTestRequestController(IConfiguration configuration)
+        public LabTestRequestController(ILabTestRequestsData labTestRequestsData)
         {
-            labTestRequests = new LabTestRequestsData(configuration);
+            _labTestRequestsData = labTestRequestsData;
         }
 
         // GET: api/staffAndPatients/LabTestRequest/GetRequests
         [HttpGet]
         public IActionResult GetRequests()
         {
-            var LabRequest = labTestRequests.GetTestRequests();
+            var LabRequest = _labTestRequestsData.GetTestRequests();
 
             return Ok(LabRequest);
         }
@@ -29,7 +28,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}")]
         public IActionResult GetRequestsByPatientId(string patientId)
         {
-            var LabRequest = labTestRequests.GetTestRequestByPatientId(patientId);
+            var LabRequest = _labTestRequestsData.GetTestRequestByPatientId(patientId);
 
             return Ok(LabRequest);
         }
@@ -38,7 +37,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{doctorName}")]
         public IActionResult GetRequestsByDoctorId(string doctorName)
         {
-            var LabRequest = labTestRequests.GetTestRequestByDoctorId(doctorName);
+            var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(doctorName);
 
             return Ok(LabRequest);
         }
@@ -48,7 +47,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult AddNewRequest([FromBody] LabTestRequestsModel testRequest)
         {
 
-            labTestRequests.AddTestRequests(testRequest);
+            _labTestRequestsData.AddTestRequests(testRequest);
 
             return Ok();
         }
@@ -58,7 +57,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult UpdateRequestResults([FromBody] LabTestRequestsModel testRequest)
         {
 
-            labTestRequests.AddTestResults(testRequest);
+            _labTestRequestsData.AddTestResults(testRequest);
 
             return Ok();
         }
@@ -69,7 +68,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult DeleteRequest(string requestId)
         {
 
-            labTestRequests.DeleteRequest(requestId);
+            _labTestRequestsData.DeleteRequest(requestId);
 
             return Ok();
         }

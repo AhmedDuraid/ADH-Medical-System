@@ -1,32 +1,29 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class AssignedMedicineData
+    public class AssignedMedicineData : IAssignedMedicineData
     {
-        private readonly SqlDataAccess sqlDataAccess;
+        private readonly ISqlDataAccess _sqlDataAccess;
 
-        public AssignedMedicineData(IConfiguration confugration)
+        public AssignedMedicineData(ISqlDataAccess sqlDataAccess)
         {
-            sqlDataAccess = new SqlDataAccess(confugration);
+            _sqlDataAccess = sqlDataAccess;
         }
-
-
 
         public List<AssignedMedicineModel> GetAssignedMeds()
         {
             var Parameters = new { };
-            var output = sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAll", Parameters);
+            var output = _sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAll", Parameters);
 
             return output;
         }
         public List<AssignedMedicineModel> GetAssignedPatientId(string id)
         {
             var Parameters = new { @PatientId = id };
-            var output = sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAllByPatientId", Parameters);
+            var output = _sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAllByPatientId", Parameters);
 
             return output;
         }
@@ -34,7 +31,7 @@ namespace ADHDataManager.Library.DataAccess
         public List<AssignedMedicineModel> GetAssignedDoctorId(string id)
         {
             var Parameters = new { @DoctorID = id };
-            var output = sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAllByDoctorId", Parameters);
+            var output = _sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindAllByDoctorId", Parameters);
 
             return output;
         }
@@ -48,7 +45,7 @@ namespace ADHDataManager.Library.DataAccess
                 @AddedBy = assignedMedicine.DoctoreID
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spAssignedMedicines_AddNew", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedMedicines_AddNew", Parameters);
         }
     }
 }

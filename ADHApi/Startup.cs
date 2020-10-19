@@ -1,4 +1,7 @@
 using ADHApi.CoustomProvider;
+using ADHDataManager.Library.DataAccess;
+using ADHDataManager.Library.DataAccess.AuthDataAccess;
+using ADHDataManager.Library.Internal.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -40,6 +43,27 @@ namespace ADHApi
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
             });
+
+            // Personal Services
+
+            services.AddTransient<ISqlDataAccess, SqlDataAccess>();
+            services.AddTransient<IRoleData, RoleData>();
+            services.AddTransient<IUserRoleData, UserRoleData>();
+            services.AddTransient<IAccountData, AccountData>();
+            services.AddTransient<IUserData, UserData>();
+            services.AddTransient<IArticleData, ArticleData>();
+            services.AddTransient<IAssignedMedicineData, AssignedMedicineData>();
+            services.AddTransient<IAssignedPlanData, AssignedPlanData>();
+            services.AddTransient<IFeedbackData, FeedbackData>();
+            services.AddTransient<ILabTestData, LabTestData>();
+            services.AddTransient<ILabTestRequestsData, LabTestRequestsData>();
+            services.AddTransient<IMedicineData, MedicineData>();
+            services.AddTransient<IPatientData, PatientData>();
+            services.AddTransient<IPatientNoteData, PatientNoteData>();
+            services.AddTransient<IPatientProgressData, PatientProgressData>();
+            services.AddTransient<IPlanData, PlanData>();
+
+
 
             //token services
             services.AddAuthentication(options =>

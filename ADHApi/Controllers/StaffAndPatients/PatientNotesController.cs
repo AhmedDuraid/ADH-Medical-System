@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,17 +8,17 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class PatientNotesController : ControllerBase
     {
-        private readonly PatientNoteData patientNote;
-        public PatientNotesController(IConfiguration configuration)
+        private readonly IPatientNoteData _patientNoteData;
+        public PatientNotesController(IPatientNoteData patientNoteData)
         {
-            patientNote = new PatientNoteData(configuration);
+            _patientNoteData = patientNoteData;
         }
 
         // GET: api/staffAndPatients/PatientNotes/GetNotes
         [HttpGet]
         public IActionResult GetNotes()
         {
-            var Notes = patientNote.GetNotes();
+            var Notes = _patientNoteData.GetNotes();
 
             return Ok(Notes);
         }
@@ -28,7 +27,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}")]
         public IActionResult GetNotes(string patientId)
         {
-            var Notes = patientNote.GetNotesByPatientId(patientId);
+            var Notes = _patientNoteData.GetNotesByPatientId(patientId);
 
             return Ok(Notes);
         }
@@ -37,7 +36,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}")]
         public IActionResult GetNotesForPatient(string patientId)
         {
-            var Notes = patientNote.GetNotesByPatientId_Show(patientId);
+            var Notes = _patientNoteData.GetNotesByPatientId_Show(patientId);
 
             return Ok(Notes);
         }
@@ -46,7 +45,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{patientId}/{doctorId}")]
         public IActionResult GetNotesForDoctor(string patientId, string doctorId)
         {
-            var Notes = patientNote.GetNotesByPatientAndDoctorId(patientId, doctorId);
+            var Notes = _patientNoteData.GetNotesByPatientAndDoctorId(patientId, doctorId);
 
             return Ok(Notes);
         }
@@ -55,7 +54,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult AddNew([FromBody] PatientNoteModel patientNoteModel)
         {
-            patientNote.AddNewPatientNote(patientNoteModel);
+            _patientNoteData.AddNewPatientNote(patientNoteModel);
 
             return Ok();
         }
@@ -64,7 +63,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut]
         public IActionResult UpdateNote_PatientDoctor([FromBody] PatientNoteModel patientNoteModel)
         {
-            patientNote.UpdatePatient_PatientAndDoctorId(patientNoteModel);
+            _patientNoteData.UpdatePatient_PatientAndDoctorId(patientNoteModel);
 
             return Ok();
         }
@@ -74,7 +73,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult UpdateNote([FromBody] PatientNoteModel patientNoteModel)
         {
-            patientNote.UpdatePatient_PatientId(patientNoteModel);
+            _patientNoteData.UpdatePatient_PatientId(patientNoteModel);
 
             return Ok();
         }
@@ -84,7 +83,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost("{noteId}")]
         public IActionResult Delete(string noteId)
         {
-            patientNote.DeleteNote(noteId);
+            _patientNoteData.DeleteNote(noteId);
 
             return Ok();
         }

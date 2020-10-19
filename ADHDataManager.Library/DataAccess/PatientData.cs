@@ -1,29 +1,28 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class PatientData
+    public class PatientData : IPatientData
     {
-        private readonly SqlDataAccess sqlDataAccess;
+        private readonly ISqlDataAccess _sqlDataAccess;
 
-        public PatientData(IConfiguration configuration)
+        public PatientData(ISqlDataAccess sqlDataAccess)
         {
-            sqlDataAccess = new SqlDataAccess(configuration);
+            _sqlDataAccess = sqlDataAccess;
         }
 
         public List<PatientModel> GetPatients()
         {
-            var output = sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinets", new { });
+            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinets", new { });
             return output;
         }
 
         public List<PatientModel> GetPatientByID(string id)
         {
             var Parameters = new { @UserId = id };
-            var output = sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinetById", Parameters);
+            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinetById", Parameters);
 
             return output;
         }

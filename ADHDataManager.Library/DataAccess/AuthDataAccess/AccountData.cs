@@ -1,17 +1,16 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
-using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace ADHDataManager.Library.DataAccess.AuthDataAccess
 {
-    public class AccountData
+    public class AccountData : IAccountData
     {
-        private readonly SqlDataAccess _sqlDataAccess;
 
-        public AccountData(IConfiguration configuration)
+        private readonly ISqlDataAccess _sqlDataAccess;
+
+        public AccountData(ISqlDataAccess sqlDataAccess)
         {
-            _sqlDataAccess = new SqlDataAccess(configuration);
-
+            _sqlDataAccess = sqlDataAccess;
         }
         public async Task AddNewUser<T>(T parameters)
         {

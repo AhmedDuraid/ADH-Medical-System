@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,19 +8,19 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class PlanController : ControllerBase
     {
-        private readonly PlanData planData;
+        private readonly IPlanData _planData;
 
 
-        public PlanController(IConfiguration configuration)
+        public PlanController(IPlanData planData)
         {
-            planData = new PlanData(configuration);
+            _planData = planData;
         }
 
         // GET: api/staffAndPatients/Plan/GetPlans
         [HttpGet]
         public IActionResult GetPlans()
         {
-            var Plan = planData.GetPlans();
+            var Plan = _planData.GetPlans();
 
             return Ok(Plan);
         }
@@ -30,7 +29,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpGet("{type}")]
         public IActionResult GetPlanByType(string type)
         {
-            var Plan = planData.GetPlansByType(type);
+            var Plan = _planData.GetPlansByType(type);
 
             return Ok(Plan);
         }
@@ -39,7 +38,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult AddNew([FromBody] PlanModel plan)
         {
-            planData.AddPlan(plan);
+            _planData.AddPlan(plan);
 
             return Ok();
         }
@@ -48,7 +47,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut]
         public IActionResult UpdatePlan([FromBody] PlanModel plan)
         {
-            planData.UpdatePlan(plan);
+            _planData.UpdatePlan(plan);
 
             return Ok();
         }
@@ -57,7 +56,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut("{id}")]
         public IActionResult DeletePlan(string id)
         {
-            planData.DeletePlan(id);
+            _planData.DeletePlan(id);
 
             return Ok();
         }

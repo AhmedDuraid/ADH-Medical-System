@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ADHDataManager.Library.Internal.DataAccess
 {
-    internal class SqlDataAccess
+    public class SqlDataAccess : ISqlDataAccess
     {
         private readonly string _connectionName = "AHDConnection";
         private readonly string _connectionString;

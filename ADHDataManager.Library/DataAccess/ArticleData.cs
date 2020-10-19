@@ -5,13 +5,15 @@ using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class ArticleData
+    public class ArticleData : IArticleData
     {
-        private readonly SqlDataAccess _sqlDataAccess;
 
-        public ArticleData(IConfiguration configuration)
+        private readonly ISqlDataAccess _sqlDataAccess;
+
+        public ArticleData(ISqlDataAccess sqlDataAccess)
         {
-            _sqlDataAccess = new SqlDataAccess(configuration);
+
+            _sqlDataAccess = sqlDataAccess;
         }
 
         public List<ArticleModel> FindArticles(bool show)

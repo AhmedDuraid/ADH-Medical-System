@@ -1,7 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -9,11 +8,11 @@ namespace ADHApi.Controllers.StaffAndPatients
     [ApiController]
     public class LabTestController : ControllerBase
     {
-        private readonly LabTestData labTest;
+        private readonly ILabTestData _labTest;
 
-        public LabTestController(IConfiguration configuration)
+        public LabTestController(ILabTestData labTestData)
         {
-            labTest = new LabTestData(configuration);
+            _labTest = labTestData;
         }
 
         // GET: api/StaffAndPatients/LabTest/GetTests
@@ -21,7 +20,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetTests()
         {
 
-            var Tests = labTest.GetTests();
+            var Tests = _labTest.GetTests();
 
             return Ok(Tests);
         }
@@ -31,7 +30,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetTestByName(string testName)
         {
 
-            var test = labTest.GetTestByName(testName);
+            var test = _labTest.GetTestByName(testName);
 
             return Ok(test);
         }
@@ -40,7 +39,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPost]
         public IActionResult AddNewTest([FromBody] LabTestModel testInfo)
         {
-            labTest.AddNewTest(testInfo);
+            _labTest.AddNewTest(testInfo);
 
             return Ok();
         }
@@ -49,7 +48,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpPut]
         public IActionResult UpdateTest([FromBody] LabTestModel testInfo)
         {
-            labTest.UpdateTest(testInfo);
+            _labTest.UpdateTest(testInfo);
 
             return Ok();
         }
@@ -58,7 +57,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpDelete("{testId}")]
         public IActionResult DeleteTest(string testId)
         {
-            labTest.DeleteTest(testId);
+            _labTest.DeleteTest(testId);
 
             return Ok();
         }

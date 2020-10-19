@@ -1,22 +1,21 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class LabTestData
+    public class LabTestData : ILabTestData
     {
-        private readonly SqlDataAccess sqlDataAccess;
-        public LabTestData(IConfiguration configuration)
+        private readonly ISqlDataAccess _sqlDataAccess;
+        public LabTestData(ISqlDataAccess sqlDataAccess)
         {
-            sqlDataAccess = new SqlDataAccess(configuration);
+            _sqlDataAccess = sqlDataAccess;
         }
 
         public List<LabTestModel> GetTests()
         {
             var Parameters = new { };
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindAll",
+            var output = _sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindAll",
                 Parameters);
             return output;
         }
@@ -24,7 +23,7 @@ namespace ADHDataManager.Library.DataAccess
         public List<LabTestModel> GetTestByName(string testName)
         {
             var Parameters = new { @TestName = testName };
-            var output = sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindTestByName", Parameters);
+            var output = _sqlDataAccess.LoadData<LabTestModel, dynamic>("dbo.spLabTests_FindTestByName", Parameters);
 
             return output;
         }
@@ -38,7 +37,7 @@ namespace ADHDataManager.Library.DataAccess
                 @Description = labTest.Description
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_AddNewTest", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_AddNewTest", Parameters);
         }
 
         public void UpdateTest(LabTestModel labTest)
@@ -50,14 +49,14 @@ namespace ADHDataManager.Library.DataAccess
                 @Description = labTest.Description
             };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_UpdateTest", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_UpdateTest", Parameters);
         }
 
         public void DeleteTest(string id)
         {
             var Parameters = new { @TestID = id };
 
-            sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_DeleteTest", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spLabTests_DeleteTest", Parameters);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,12 +10,12 @@ namespace ADHApi.CoustomProvider
         IUserEmailStore<ApplicationUser>
     {
 
-        private readonly AccountData _userData;
+        private readonly IAccountData _userData;
 
 
-        public CustomUserStore(IConfiguration configuration)
+        public CustomUserStore(IAccountData accountData)
         {
-            _userData = new AccountData(configuration);
+            _userData = accountData;
         }
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {

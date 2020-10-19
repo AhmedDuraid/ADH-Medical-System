@@ -1,35 +1,35 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
 {
-    public class FeedbackData
+    public class FeedbackData : IFeedbackData
     {
-        private readonly SqlDataAccess dataAccess;
-        public FeedbackData(IConfiguration configuration)
+        private readonly ISqlDataAccess _sqlDataAccess;
+
+        public FeedbackData(ISqlDataAccess sqlDataAccess)
         {
-            dataAccess = new SqlDataAccess(configuration);
+            _sqlDataAccess = sqlDataAccess;
         }
 
         public List<FeedbackModel> GetFeedbacks()
         {
-            List<FeedbackModel> output = dataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAll", new { });
+            List<FeedbackModel> output = _sqlDataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAll", new { });
 
             return output;
         }
 
         public List<FeedbackModel> GetFeedbackByNotReaded()
         {
-            List<FeedbackModel> output = dataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAllNotReaded", new { });
+            List<FeedbackModel> output = _sqlDataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAllNotReaded", new { });
 
             return output;
         }
 
         public List<FeedbackModel> GetFeedbackByReaderId(string readerId)
         {
-            List<FeedbackModel> output = dataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAllReadedId", new { @ReaderId = readerId });
+            List<FeedbackModel> output = _sqlDataAccess.LoadData<FeedbackModel, dynamic>("dbo.spFeedback_FindAllReadedId", new { @ReaderId = readerId });
 
             return output;
         }
@@ -45,7 +45,7 @@ namespace ADHDataManager.Library.DataAccess
                 @FeedbackBody = feedback.FeedbackBody
             };
 
-            dataAccess.SaveData<dynamic>("dbo.spFeedback_AddNew", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spFeedback_AddNew", Parameters);
         }
 
         public void UpdateFeedbackToReaded(string readerId, string feedbackId)
@@ -56,7 +56,7 @@ namespace ADHDataManager.Library.DataAccess
                 @FeedbackId = feedbackId
             };
 
-            dataAccess.SaveData<dynamic>("dbo.spFeedback_UpdateFeedbackToReaded", Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spFeedback_UpdateFeedbackToReaded", Parameters);
         }
     }
 }

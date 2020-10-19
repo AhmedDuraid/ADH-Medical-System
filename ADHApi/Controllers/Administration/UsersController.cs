@@ -2,7 +2,6 @@
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 
@@ -14,11 +13,11 @@ namespace ADHApi.Controllers.Administration
     public class UsersController : ControllerBase
     {
 
-        private readonly UserData _userData;
+        private readonly IUserData _userData;
 
-        public UsersController(IConfiguration configuration)
+        public UsersController(IUserData userData)
         {
-            _userData = new UserData(configuration);
+            _userData = userData;
         }
 
         // GET: api/UserController/
