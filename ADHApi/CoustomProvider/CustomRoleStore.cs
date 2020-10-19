@@ -18,6 +18,7 @@ namespace ADHApi.CoustomProvider
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             var Parameters = new { @RoleID = role.Id, @RoleName = role.Name, @NormalizedRoleName = role.NormalizedRoleName };
 
             await _roleData.AddNewRole<dynamic>(Parameters, "dbo.spRoles_AddNewRole_Auth");
@@ -25,9 +26,11 @@ namespace ADHApi.CoustomProvider
             return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> DeleteAsync(ApplicationRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _roleData.DeleteRole(role.Id);
+
+            return IdentityResult.Success;
         }
 
         public void Dispose()
@@ -84,7 +87,17 @@ namespace ADHApi.CoustomProvider
 
         public Task<IdentityResult> UpdateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
+            //var Parameters = new
+            //{
+            //    @Name = role.Name,
+            //    @NormalizedRoleName = role.NormalizedRoleName,
+            //    @Id = role.Id
+            //};
+            //_roleData.UpdateRole(Parameters);
+
+            //return IdentityResult.Success;
             throw new NotImplementedException();
+
         }
     }
 }
