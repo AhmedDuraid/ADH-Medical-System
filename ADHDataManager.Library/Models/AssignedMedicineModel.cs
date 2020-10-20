@@ -20,10 +20,10 @@
 
 
         // table
-        public int Id { get; set; }
-        public int DoctoreID { get; set; }
-        public int MedicineId { get; set; }
-        public int PatientId { get; set; }
+        public string Id { get; set; }
+        public string DoctoreID { get; set; }
+        public string MedicineId { get; set; }
+        public string PatientId { get; set; }
 
 
 

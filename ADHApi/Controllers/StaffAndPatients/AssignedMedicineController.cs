@@ -1,12 +1,14 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/staffAndpatients/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AssignedMedicineController : ControllerBase
     {
         private readonly IAssignedMedicineData _assignedMedicine;
@@ -16,38 +18,75 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         }
 
-        // GET: api/staffAndpatients/AssignedMedicine/GetAssignedMed
-        [HttpGet]
-        public List<AssignedMedicineModel> GetAssignedMed()
+        // GET: api/AssignedMedicine/Admin
+        [HttpGet("Admin")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAssignedMed()
         {
-            var Results = _assignedMedicine.GetAssignedMeds();
-            return Results;
+            var assignedMedicines = _assignedMedicine.GetAssignedMeds();
+
+            if (assignedMedicines != null)
+            {
+                return Ok(assignedMedicines);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndpatients/AssignedMedicine/GetAssignedMedByPatientId/id
-        [HttpGet("{patientId}")]
-        public List<AssignedMedicineModel> GetAssignedMedByPatientId(string patientId)
+        // GET: api/AssignedMedicine/Patient
+        [HttpGet("patient")]
+        [Authorize(Roles = "Patient")]
+        public IActionResult GetAssignedMedByPatientId()
         {
-            var Results = _assignedMedicine.GetAssignedPatientId(patientId);
+            var patientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return Results;
+            var assignedMedicines = _assignedMedicine.GetAssignedPatientId(patientId);
+
+            if (assignedMedicines != null)
+            {
+                return Ok(assignedMedicines);
+            }
+            return NotFound();
         }
 
-        // GET: api/staffAndpatients/AssignedMedicine/GetAssignedMedByDoctorId/id
-        [HttpGet("{doctorId}")]
-        public List<AssignedMedicineModel> GetAssignedMedByDoctorId(string doctorId)
+        // GET: api/AssignedMedicine/Doctor
+        [HttpGet("Doctor")]
+        [Authorize(Roles = "Doctor")]
+        public IActionResult GetAssignedMedByDoctorId()
         {
-            var Results = _assignedMedicine.GetAssignedDoctorId(doctorId);
+            var DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var assignedMedicines = _assignedMedicine.GetAssignedDoctorId(DoctorId);
 
-            return Results;
+            if (assignedMedicines != null)
+            {
+                Ok(assignedMedicines);
+            }
+
+            return NotFound();
         }
 
-        // POST: api/staffAndpatients/AssignedMedicine/PostNewAssignedMed
+        // POST: api/AssignedMedicine
         [HttpPost]
-        public void PostNewAssignedMed([FromBody] AssignedMedicineModel model)
+        [Authorize(Roles = "Doctor, Admin")]
+        public IActionResult PostNewAssignedMed([FromBody] AssignedMedicineModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _assignedMedicine.AddAssignedMed(model);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Doctor, Admin")]
+        public IActionResult Delete(string id)
         {
 
-            _assignedMedicine.AddAssignedMed(model);
+            _assignedMedicine.DeleteAssignedMed(id);
+
+            return Ok();
         }
     }
 }

@@ -47,5 +47,11 @@ namespace ADHDataManager.Library.DataAccess
 
             _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedMedicines_AddNew", Parameters);
         }
+
+        public void DeleteAssignedMed(string assignedId)
+        {
+            _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedMedicines_Delete", new { @AssignedId = assignedId });
+
+        }
     }
 }
