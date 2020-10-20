@@ -1,4 +1,6 @@
-﻿namespace ADHDataManager.Library.Models
+﻿using System;
+
+namespace ADHDataManager.Library.Models
 {
     public class AssignedMedicineModel
     {
@@ -20,7 +22,7 @@
 
 
         // table
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Assigne-Med{DateTime.Now.ToBinary()}";
         public string DoctoreID { get; set; }
         public string MedicineId { get; set; }
         public string PatientId { get; set; }
