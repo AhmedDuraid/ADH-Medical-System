@@ -41,15 +41,19 @@ namespace ADHDataManager.Library.DataAccess
         {
             var Parameters = new
             {
-                @Id = AssignedPlan.Id,
-                @PatientId = AssignedPlan.PatientID,
-                @PlanId = AssignedPlan.PlanId,
-                @AddedBy = AssignedPlan.DoctorID,
-                @StartOn = AssignedPlan.StartOn
+                @Id=   AssignedPlan.Id,
+                @PatientId=  AssignedPlan.PatientID,
+                @PlanId= AssignedPlan.PlanId,
+                @AddedBy=  AssignedPlan.DoctorID,
+                @StartOn=  AssignedPlan.StartOn
             };
 
-            _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedPlan_AddNew",
-                Parameters);
+            _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedPlan_AddNew", Parameters);
+        }
+
+        public void DeletePlan(string id)
+        {
+            _sqlDataAccess.SaveData<dynamic>("dbo.spAssignedPlan_Delete", new { id });
         }
     }
 }

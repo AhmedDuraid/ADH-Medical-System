@@ -5,7 +5,7 @@ namespace ADHDataManager.Library.Models
     public class AssignedPlanModel
     {
         // table 
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Plan{DateTime.Now.ToBinary()}";
         public string PatientID { get; set; }
         public string DoctorID { get; set; }
         public string PlanId { get; set; }
