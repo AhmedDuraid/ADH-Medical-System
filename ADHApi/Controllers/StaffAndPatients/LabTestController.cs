@@ -1,11 +1,13 @@
 ﻿using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/StaffAndPatients/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager, Doctor")]
     public class LabTestController : ControllerBase
     {
         private readonly ILabTestData _labTest;
@@ -15,49 +17,64 @@ namespace ADHApi.Controllers.StaffAndPatients
             _labTest = labTestData;
         }
 
-        // GET: api/StaffAndPatients/LabTest/GetTests
+        // GET: api/LabTest
         [HttpGet]
         public IActionResult GetTests()
         {
-
             var Tests = _labTest.GetTests();
 
-            return Ok(Tests);
+            if (Tests.Count > 0)
+            {
+                return Ok(Tests);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("{testName}")]
-        // GET: api/StaffAndPatients/LabTest/GetTestByName/testName
+        // GET: api/LabTest/{testName}
         public IActionResult GetTestByName(string testName)
         {
-
             var test = _labTest.GetTestByName(testName);
 
-            return Ok(test);
+            if (test.Count > 0)
+            {
+                return Ok(test);
+            }
+
+            return NotFound();
         }
 
-        // POST: api/StaffAndPatients/LabTest/AddNewTest
-        [HttpPost]
-        public IActionResult AddNewTest([FromBody] LabTestModel testInfo)
+        // POST: api/LabTest/Admin
+        [HttpPost("Admin")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult AddNewTest([FromQuery] string testName, [FromQuery] string description)
         {
-            _labTest.AddNewTest(testInfo);
+            var Test = new LabTestModel() { Description = description, TestName = testName };
+
+            _labTest.AddNewTest(Test);
 
             return Ok();
         }
 
-        // PUT: api/StaffAndPatients/LabTest/UpdateTest
-        [HttpPut]
-        public IActionResult UpdateTest([FromBody] LabTestModel testInfo)
+        // PUT: api/LabTest/Admin/{id}/?
+        [HttpPut("Admin/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateTest(string id, string testName, string description)
         {
-            _labTest.UpdateTest(testInfo);
+            var UpdatedTest = new LabTestModel() { Id = id, Description = description, TestName = testName };
+
+            _labTest.UpdateTest(UpdatedTest);
 
             return Ok();
         }
 
-        // DELETE: api/StaffAndPatients/LabTest/UpdateTest/testId
-        [HttpDelete("{testId}")]
-        public IActionResult DeleteTest(string testId)
+        // DELETE: api/StaffAndPatients/LabTest/UpdateTest/id
+        [HttpDelete("Admin/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteTest(string id)
         {
-            _labTest.DeleteTest(testId);
+            _labTest.DeleteTest(id);
 
             return Ok();
         }
