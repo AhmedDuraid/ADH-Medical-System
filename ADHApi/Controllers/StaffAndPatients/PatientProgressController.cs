@@ -1,11 +1,15 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Models;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/StaffAndPatients/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PatientProgressController : ControllerBase
     {
         private readonly IPatientProgressData _patientProgressData;
@@ -16,37 +20,79 @@ namespace ADHApi.Controllers.StaffAndPatients
             _patientProgressData = patientProgressData;
         }
 
-        // GET: api/staffAndPatients/PatientProgress/GetProgress
+        // GET: api/PatientProgress/
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetProgress()
         {
             var Progresses = _patientProgressData.GetPatientProgresses();
 
-            return Ok(Progresses);
+            if (Progresses.Count > 0)
+            {
+                return Ok(Progresses);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndPatients/PatientProgress/GetByPatientID
+        // GET: api/PatientProgress/Patient
 
-        [HttpGet("{patientID}")]
+        [HttpGet("Patient")]
+        [Authorize(Roles = "Patient")]
+        public IActionResult GetByPatientID()
+        {
+            var PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var Progresses = _patientProgressData.GetPatientProgressesByPatientId(PatientId);
+
+            if (Progresses.Count > 0)
+            {
+                return Ok(Progresses);
+            }
+
+            return NotFound();
+        }
+
+        // GET: api/PatientProgress/
+        [HttpGet("Staff/{patientID}")]
+        [Authorize(Roles = "Admin, Doctor, Manager")]
         public IActionResult GetByPatientID(string patientID)
         {
             var Progresses = _patientProgressData.GetPatientProgressesByPatientId(patientID);
 
-            return Ok(Progresses);
+            if (Progresses.Count > 0)
+            {
+                return Ok(Progresses);
+
+            }
+
+            return NotFound();
         }
 
-        // POST: api/staffAndPatients/PatientProgress/AddNew
+
+        // POST: api/PatientProgress/
         [HttpPost]
-        public IActionResult AddNew([FromBody] PatientProgressModel patientProgress)
+        [Authorize(Roles = "Patient, Doctor")]
+        public IActionResult AddNew([FromBody] ApiPatientProgressModel userInput)
         {
-            _patientProgressData.AddProgress(patientProgress);
+
+            var NewProgress = new PatientProgressModel()
+            {
+                BMI = userInput.BMI,
+                Weight = userInput.Weight,
+                PatientId = userInput.PatientId,
+                AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            };
+
+
+            _patientProgressData.AddProgress(NewProgress);
 
             return Ok();
         }
 
-        // DELETE: api/staffAndPatients/PatientProgress/DeleteProgress
+        // DELETE: api/PatientProgress
         //admin
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteProgress(string id)
         {
             _patientProgressData.DeleteProgress(id);
