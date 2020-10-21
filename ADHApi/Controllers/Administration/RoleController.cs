@@ -50,22 +50,22 @@ namespace ADHApi.Controllers.Administration
             return BadRequest(result.Errors);
         }
 
-        // PUT api/<RoleController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRole(string id, [FromBody] ApplicationRole applicationRole)
+        // PUT api/<RoleController>
+        [HttpPut]
+        public async Task<IActionResult> UpdateRole([FromBody] ApplicationRole applicationRole)
         {
-            var searchResult = await _roleManager.FindByIdAsync(id);
+            var searchResult = await _roleManager.FindByIdAsync(applicationRole.Id);
 
             if (searchResult == null)
             {
-                return NotFound($"There is no Role with this ID {id}");
+                return NotFound($"There is no Role with this ID {applicationRole.Id}");
             }
 
             await _roleManager.UpdateNormalizedRoleNameAsync(applicationRole);
 
             var updatedRole = new ApplicationRole()
             {
-                Id = id,
+                Id = applicationRole.Id,
                 Name = applicationRole.Name,
                 NormalizedRoleName = applicationRole.NormalizedRoleName
             };
