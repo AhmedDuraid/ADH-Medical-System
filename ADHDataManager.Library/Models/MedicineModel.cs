@@ -1,8 +1,10 @@
-﻿namespace ADHDataManager.Library.Models
+﻿using System;
+
+namespace ADHDataManager.Library.Models
 {
     public class MedicineModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = $"Med{DateTime.Now.ToBinary()}";
         public string Name { get; set; }
         public string Description { get; set; }
         public string Contraindication { get; set; }

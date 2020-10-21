@@ -1,11 +1,14 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Models;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/StaffAndPatients/[controller]/[action]")]
+    [Route("api/[controller]/")]
     [ApiController]
+    [Authorize]
     public class MedicineController : ControllerBase
     {
         private readonly IMedicineData _medicineData;
@@ -16,44 +19,76 @@ namespace ADHApi.Controllers.StaffAndPatients
             _medicineData = medicineData;
         }
 
-        // GET: api/staffAndPatients/Medicine/GetMedicines
+        // GET: api/Medicine/
         [HttpGet]
+        [Authorize(Roles ="Admin, Doctor")]
         public IActionResult GetMedicines()
         {
             var Medicines = _medicineData.GetMedicines();
 
-            return Ok(Medicines);
+            if (Medicines.Count > 0)
+            {
+                return Ok(Medicines);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndPatients/Medicine/GetMedicineByName
-        [HttpGet("{MedName}")]
+        // GET: api/Medicine/MedName/{MedName}
+        [HttpGet("MedName/{MedName}")]
+        [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetMedicineByName(string MedName)
         {
             var Medicine = _medicineData.GetMedicineByName(MedName);
 
-            return Ok(Medicine);
+            if (Medicine.Count > 0)
+            {
+                return Ok(Medicine);
+
+            }
+
+            return NotFound();
         }
 
         // POST: api/staffAndPatients/Medicine/AddNew
         [HttpPost]
-        public IActionResult AddNew([FromBody] MedicineModel medicine)
+        [Authorize(Roles = "Admin")]
+        public IActionResult AddNew([FromBody] ApiMedicineModel userInput)
         {
-            _medicineData.AddMedicines(medicine);
+            var NewMed = new MedicineModel()
+            {
+                Name = userInput.Name,
+                Contraindication = userInput.Contraindication,
+                Description = userInput.Description,
+                RecommendedDose = userInput.RecommendedDose
+            };
+
+            _medicineData.AddMedicines(NewMed);
 
             return Ok();
         }
 
-        // PUT: api/staffAndPatients/Medicine/UpdateMedicine
-        [HttpPut]
-        public IActionResult UpdateMedicine([FromBody] MedicineModel medicine)
+        // PUT: api/Medicine/{id}
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateMedicine(string id, [FromBody] ApiMedicineModel userInput)
         {
-            _medicineData.UpdateMed(medicine);
+            var UpdateMed = new MedicineModel()
+            {
+                Id = id,
+                Description = userInput.Description,
+                Name = userInput.Name,
+                Contraindication = userInput.Contraindication,
+                RecommendedDose = userInput.RecommendedDose
+            };
+            _medicineData.UpdateMed(UpdateMed);
 
             return Ok();
         }
 
-        // DELETE: api/staffAndPatients/Medicine/DeleteMedicine
+        // DELETE: api/Medicine/
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteMedicine(string id)
         {
             _medicineData.DeleteMed(id);
