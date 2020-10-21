@@ -5,12 +5,12 @@ namespace ADHDataManager.Library.Models
     public class LabTestRequestsModel
     {
         // main table 
-        public int Id { get; set; }
+        public string Id { get; set; } = $"LabRequest{DateTime.Now.ToBinary()}";
         public DateTime Date { get; set; }
-        public int PatientId { get; set; }
-        public int TestId { get; set; }
+        public string PatientId { get; set; }
+        public string TestId { get; set; }
         public string Result { get; set; }
-        public int CreatorID { get; set; }
+        public string CreatorID { get; set; }
 
         // relation table
         public string PatientFirstName { get; set; }
