@@ -37,7 +37,7 @@ namespace ADHApi.Controllers
 
         // POST: api/Account
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> RegisterAccount([FromBody] RegisterModel model)
         {
             if (ModelState.IsValid)
