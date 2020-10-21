@@ -41,7 +41,13 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
             List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
 
-            return Ok(articles);
+            if (articles.Count > 0)
+            {
+                return Ok(articles);
+            }
+
+            return NotFound();
+
         }
 
         // GET api/ArticleController/Staff
@@ -63,7 +69,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         // POST: api/Article/Staff
         [HttpPost("Staff")]
         [Authorize(Roles = "Doctor")]
-        public IActionResult AddNewArticle([FromBody] ApiArticleModel userInput)
+        public IActionResult AddNewArticle([FromBody] ApiAddArticleModel userInput)
         {
             var Article = new ArticleModel()
             {
@@ -78,16 +84,22 @@ namespace ADHApi.Controllers.StaffAndPatients
         }
 
         // PUT api/<ArticleController>/UpdateArticle/
-        [HttpPut("{articleId}")]
-        public IActionResult UpdateArticle(string articleId, [FromBody] ApiArticleModel model)
+        [HttpPut]
+        public IActionResult UpdateArticle([FromBody] ApiUpdateArticleModel model)
         {
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var article = _articleData.FindArticleByID(UserId);
+
+            if (article[0].UserId != UserId)
+            {
+                return StatusCode(405);
+            }
             var Article = new ArticleModel()
             {
                 Body = model.Body,
                 Titel = model.Titel,
                 Show = model.Show,
-                Id = articleId,
+                Id = model.Id,
                 UserId = UserId
             };
             _articleData.UpdateArticle(Article);
@@ -97,9 +109,18 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // DELETE api/Article/Staff
         [HttpDelete("Staff/{articleId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Manager, Doctor")]
         public IActionResult Delete(string articleId)
         {
+            var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var article = _articleData.FindArticleByID(UserId);
+
+            if (article[0].UserId != UserId)
+            {
+                return StatusCode(405);
+            }
+
             _articleData.DeleteArticle(articleId);
 
             return Ok();

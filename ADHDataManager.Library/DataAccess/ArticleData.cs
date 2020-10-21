@@ -1,6 +1,5 @@
 ﻿using ADHDataManager.Library.Internal.DataAccess;
 using ADHDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace ADHDataManager.Library.DataAccess
@@ -34,6 +33,16 @@ namespace ADHDataManager.Library.DataAccess
             var Parameters = new { @ArticleId = id, @Show = show };
 
             var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesById_shown", Parameters);
+
+            return output;
+
+        }
+
+        public List<ArticleModel> FindArticleByID(string id)
+        {
+            var Parameters = new { @ArticleId = id };
+
+            var output = _sqlDataAccess.LoadData<ArticleModel, dynamic>("dbo.spArticles_FindArticlesById", Parameters);
 
             return output;
 

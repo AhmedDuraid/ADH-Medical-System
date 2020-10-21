@@ -8,6 +8,7 @@ namespace ADHDataManager.Library.DataAccess
         void AddArticle(ArticleModel article);
         void DeleteArticle(string articleId);
         List<ArticleModel> FindArticleByID(string id, bool show);
+        List<ArticleModel> FindArticleByID(string id);
         List<ArticleModel> FindArticles();
         List<ArticleModel> FindArticles(bool show);
         List<ArticleModel> FindArticlesByUserId(string userId);
