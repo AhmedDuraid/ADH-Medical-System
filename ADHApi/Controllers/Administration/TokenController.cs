@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ADHApi.Controllers.Administration
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TokenController : ControllerBase
     {
@@ -29,7 +29,7 @@ namespace ADHApi.Controllers.Administration
             _configuration = configuration;
         }
 
-        // GET: api/Token/UpdateUser
+        // GET: api/Token
         [HttpGet]
         public async Task<IActionResult> Create(string username, string password)
         {
