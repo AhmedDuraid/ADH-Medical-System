@@ -27,7 +27,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         public IActionResult GetArticles()
         {
             List<ArticleModel> articles = _articleData.FindArticles();
-            if (articles == null)
+            if (articles.Count > 0)
             {
                 return Ok(articles);
             }
