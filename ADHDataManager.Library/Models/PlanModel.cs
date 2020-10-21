@@ -1,8 +1,10 @@
-﻿namespace ADHDataManager.Library.Models
+﻿using System;
+
+namespace ADHDataManager.Library.Models
 {
     public class PlanModel
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Plan{DateTime.Now.ToBinary()}";
         public string Day1 { get; set; }
         public string Day2 { get; set; }
         public string Day3 { get; set; }
