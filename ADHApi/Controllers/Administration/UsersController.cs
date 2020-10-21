@@ -1,8 +1,6 @@
 ﻿using ADHDataManager.Library.DataAccess;
-using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 
 namespace ADHApi.Controllers.Administration
@@ -20,22 +18,32 @@ namespace ADHApi.Controllers.Administration
             _userData = userData;
         }
 
-        // GET: api/UserController/
-        [HttpGet]
-        public List<UserModel> GetUsers()
+        // GET: api/UserController/Admin
+        [HttpGet("Admin")]
+        public IActionResult GetUsers()
         {
             var users = _userData.GetUsers();
 
-            return users;
+            if (users.Count > 0)
+            {
+                return Ok(users);
+            }
+
+            return NotFound();
         }
 
-        // GET api/<UserController>/id
-        [HttpGet("{id}")]
-        public List<UserModel> GetUser(string id)
+        // GET api/<UserController>/Admin/{id}
+        [HttpGet("Admin/{id}")]
+        public IActionResult GetUser(string id)
         {
             var user = _userData.GetUserById(id);
 
-            return user;
+            if (user.Count > 0)
+            {
+                return Ok(user);
+            }
+
+            return NotFound();
         }
 
     }
