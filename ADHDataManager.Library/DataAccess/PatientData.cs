@@ -15,14 +15,14 @@ namespace ADHDataManager.Library.DataAccess
 
         public List<PatientModel> GetPatients()
         {
-            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinets", new { });
+            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUserRole_FindPatinets", new { });
             return output;
         }
 
         public List<PatientModel> GetPatientByID(string id)
         {
             var Parameters = new { @UserId = id };
-            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUsersRole_FindPatinetById", Parameters);
+            var output = _sqlDataAccess.LoadData<PatientModel, dynamic>("dbo.spUserRole_FindPatinetById", Parameters);
 
             return output;
         }

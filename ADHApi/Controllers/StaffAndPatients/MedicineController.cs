@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/[controller]/")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class MedicineController : ControllerBase
@@ -21,7 +21,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // GET: api/Medicine/
         [HttpGet]
-        [Authorize(Roles ="Admin, Doctor")]
+        [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetMedicines()
         {
             var Medicines = _medicineData.GetMedicines();
