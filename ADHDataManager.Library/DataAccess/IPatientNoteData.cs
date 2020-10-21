@@ -12,6 +12,5 @@ namespace ADHDataManager.Library.DataAccess
         List<PatientNoteModel> GetNotesByPatientId(string patientId);
         List<PatientNoteModel> GetNotesByPatientId_Show(string patientId);
         void UpdatePatient_PatientAndDoctorId(PatientNoteModel noteModel);
-        void UpdatePatient_PatientId(PatientNoteModel noteModel);
     }
 }

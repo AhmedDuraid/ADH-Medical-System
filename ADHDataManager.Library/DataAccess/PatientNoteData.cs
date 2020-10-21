@@ -68,8 +68,7 @@ namespace ADHDataManager.Library.DataAccess
         {
             var Parameters = new
             {
-                @PatientId = noteModel.PatientId,
-                @DoctortId = noteModel.AddedBy,
+                @Id = noteModel.Id,
                 @Body = noteModel.Body,
                 @ShowToPatient = noteModel.ShowToPatient
             };
@@ -77,16 +76,5 @@ namespace ADHDataManager.Library.DataAccess
             _sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientAndDoctorID", Parameters);
         }
 
-        public void UpdatePatient_PatientId(PatientNoteModel noteModel)
-        {
-            var Parameters = new
-            {
-                @PatientId = noteModel.PatientId,
-                @Body = noteModel.Body,
-                @ShowToPatient = noteModel.ShowToPatient
-            };
-
-            _sqlDataAccess.SaveData<dynamic>("dbo.spPatientNote_UpdatePatientByPatientID", Parameters);
-        }
     }
 }

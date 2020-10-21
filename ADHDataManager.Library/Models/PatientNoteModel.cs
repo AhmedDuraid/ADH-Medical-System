@@ -5,7 +5,7 @@ namespace ADHDataManager.Library.Models
     public class PatientNoteModel
     {
         // table 
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Note{DateTime.Now.ToBinary()}";
         public DateTime Date { get; set; }
         public string Body { get; set; }
         public int PatientId { get; set; }

@@ -1,10 +1,12 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Models;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
-    [Route("api/StaffAndPatients/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PatientNotesController : ControllerBase
     {
@@ -14,73 +16,95 @@ namespace ADHApi.Controllers.StaffAndPatients
             _patientNoteData = patientNoteData;
         }
 
-        // GET: api/staffAndPatients/PatientNotes/GetNotes
+        // GET: api/PatientNotes
         [HttpGet]
         public IActionResult GetNotes()
         {
             var Notes = _patientNoteData.GetNotes();
 
-            return Ok(Notes);
+            if (Notes.Count > 0)
+            {
+                return Ok(Notes);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndPatients/PatientNotes/GetNotes/patientId
-        [HttpGet("{patientId}")]
+        // GET: api/PatientNotes/GetNotes/Staff/{patientId}
+        [HttpGet("Staff/{patientId}")]
         public IActionResult GetNotes(string patientId)
         {
             var Notes = _patientNoteData.GetNotesByPatientId(patientId);
 
-            return Ok(Notes);
+            if (Notes.Count > 0)
+            {
+                return Ok(Notes);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndPatients/PatientNotes/GetNotesForPatient/patientId
-        [HttpGet("{patientId}")]
-        public IActionResult GetNotesForPatient(string patientId)
+        // GET: api/PatientNotes/Patient
+        [HttpGet("Patient")]
+        public IActionResult GetNotesPatient()
         {
-            var Notes = _patientNoteData.GetNotesByPatientId_Show(patientId);
+            var PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var Notes = _patientNoteData.GetNotesByPatientId_Show(PatientId);
 
-            return Ok(Notes);
+            if (Notes.Count > 0)
+            {
+                return Ok(Notes);
+            }
+
+            return NotFound();
         }
 
-        // GET: api/staffAndPatients/PatientNotes/GetNotesForDoctor/patientId
-        [HttpGet("{patientId}/{doctorId}")]
-        public IActionResult GetNotesForDoctor(string patientId, string doctorId)
+        // GET: api/PatientNotes/patientId
+        [HttpGet("Staff/PatientNote")]
+        public IActionResult GetNotesForDoctor([FromQuery] string patientId, [FromQuery] string doctorId)
         {
             var Notes = _patientNoteData.GetNotesByPatientAndDoctorId(patientId, doctorId);
 
-            return Ok(Notes);
+            if (Notes.Count > 0)
+            {
+                return Ok(Notes);
+            }
+            return NotFound();
         }
 
-        // POST: api/staffAndPatients/PatientNotes/AddNew
+        // POST: api/PatientNotes/
         [HttpPost]
-        public IActionResult AddNew([FromBody] PatientNoteModel patientNoteModel)
+        public IActionResult AddNew([FromBody] ApiPatientNoteModel patientNoteModel)
         {
-            _patientNoteData.AddNewPatientNote(patientNoteModel);
+            var NewNote = new PatientNoteModel()
+            {
+                AddedBy = patientNoteModel.AddedBy,
+                Body = patientNoteModel.Body,
+                PatientId = patientNoteModel.PatientId,
+                ShowToPatient = patientNoteModel.ShowToPatient
+            };
+            _patientNoteData.AddNewPatientNote(NewNote);
 
             return Ok();
         }
 
-        // PUT: api/staffAndPatients/UpdateNote_PatientDoctor/AddNew
-        [HttpPut]
-        public IActionResult UpdateNote_PatientDoctor([FromBody] PatientNoteModel patientNoteModel)
+        // PUT: api/UpdateNote_PatientDoctor
+        [HttpPut("{id}")]
+        public IActionResult UpdateNote_PatientDoctor(string id, [FromQuery] string body, [FromQuery] bool show)
         {
-            _patientNoteData.UpdatePatient_PatientAndDoctorId(patientNoteModel);
+            var NewNote = new PatientNoteModel()
+            {
+                Body = body,
+                ShowToPatient = show,
+                Id = id
+            };
+            _patientNoteData.UpdatePatient_PatientAndDoctorId(NewNote);
 
             return Ok();
         }
 
-        // POST: api/staffAndPatients/UpdateNote/AddNew
-        // admin
-        [HttpPost]
-        public IActionResult UpdateNote([FromBody] PatientNoteModel patientNoteModel)
-        {
-            _patientNoteData.UpdatePatient_PatientId(patientNoteModel);
-
-            return Ok();
-        }
-
-        // DELETE: api/staffAndPatients/PatientNotes/AddNew
-        //admin
-        [HttpPost("{noteId}")]
+        // DELETE: api/PatientNotes/
+        [HttpDelete("{noteId}")]
         public IActionResult Delete(string noteId)
         {
             _patientNoteData.DeleteNote(noteId);
