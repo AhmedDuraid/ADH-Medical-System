@@ -1,10 +1,8 @@
-﻿using ADHApi.CoustomProvider;
-using ADHApi.Error;
+﻿using ADHApi.Error;
 using ADHApi.Models.Articles;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,13 +18,13 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
-        private readonly UserManager<ApplicationRole> _userManager;
+        private readonly IUserData _userData;
 
-        public ArticleController(IArticleData articleData, IApiErrorHandler apiErrorHandler, UserManager<ApplicationRole> userManager)
+        public ArticleController(IArticleData articleData, IApiErrorHandler apiErrorHandler, IUserData userData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
-            _userManager = userManager;
+            _userData = userData;
         }
 
         // GET: api/ArticleController/Admin
@@ -61,9 +59,9 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
             try
             {
-                var user = _userManager.FindByIdAsync(userId);
+                var user = _userData.GetUserById(userId);
 
-                if (user.Result != null)
+                if (user.Count > 0)
                 {
                     List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
 
