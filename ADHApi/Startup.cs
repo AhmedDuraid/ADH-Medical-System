@@ -2,6 +2,7 @@ using ADHApi.CoustomProvider;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using ADHDataManager.Library.Internal.DataAccess;
+using LogsHandler.Library.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -63,6 +64,7 @@ namespace ADHApi
             services.AddTransient<IPatientNoteData, PatientNoteData>();
             services.AddTransient<IPatientProgressData, PatientProgressData>();
             services.AddTransient<IPlanData, PlanData>();
+            services.AddTransient<ILogsSqlDataAccess, LogsSqlDataAccess>();
 
 
 

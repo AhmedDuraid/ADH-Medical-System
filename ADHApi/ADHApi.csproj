@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ADHDataManager.Library\ADHDataManager.Library.csproj" />
+    <ProjectReference Include="..\LogsHandler.Library\LogsHandler.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
