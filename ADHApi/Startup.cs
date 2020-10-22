@@ -1,4 +1,5 @@
 using ADHApi.CoustomProvider;
+using ADHApi.Error;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using ADHDataManager.Library.Internal.DataAccess;
@@ -65,6 +66,7 @@ namespace ADHApi
             services.AddTransient<IPatientProgressData, PatientProgressData>();
             services.AddTransient<IPlanData, PlanData>();
             services.AddTransient<ILogsSqlDataAccess, LogsSqlDataAccess>();
+            services.AddTransient<IApiErrorHandler, ApiErrorHandler>();
 
 
 
