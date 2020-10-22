@@ -1,4 +1,5 @@
 ﻿using ADHApi.CoustomProvider;
+using ADHApi.Error;
 using ADHApi.Models;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using Microsoft.AspNetCore.Identity;
@@ -21,26 +22,40 @@ namespace ADHApi.Controllers.Administration
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserRoleData _userRoleData;
         private readonly IConfiguration _configuration;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        public TokenController(UserManager<ApplicationUser> userManager, IUserRoleData userRoleData, IConfiguration configuration)
+        public TokenController(UserManager<ApplicationUser> userManager,
+            IUserRoleData userRoleData,
+            IConfiguration configuration,
+            IApiErrorHandler apiErrorHandler)
         {
             _userManager = userManager;
             _userRoleData = userRoleData;
             _configuration = configuration;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/Token
         [HttpGet]
         public async Task<IActionResult> Create(string username, string password)
         {
-            if (await IsValidUsernameAndPassword(username, password))
+            try
             {
-                return new ObjectResult(await GenerateToken(username));
+                if (await IsValidUsernameAndPassword(username, password))
+                {
+                    return new ObjectResult(await GenerateToken(username));
+                }
+                else
+                {
+                    return BadRequest("User Name or Password wrong");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound();
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
+
+            return StatusCode(500);
         }
 
         private async Task<bool> IsValidUsernameAndPassword(string username, string password)
