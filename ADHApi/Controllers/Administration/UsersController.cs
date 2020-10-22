@@ -1,7 +1,8 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Error;
+using ADHDataManager.Library.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System;
 
 namespace ADHApi.Controllers.Administration
 {
@@ -12,38 +13,60 @@ namespace ADHApi.Controllers.Administration
     {
 
         private readonly IUserData _userData;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        public UsersController(IUserData userData)
+        public UsersController(IUserData userData, IApiErrorHandler apiErrorHandler)
         {
             _userData = userData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/UserController/Admin
         [HttpGet("Admin")]
         public IActionResult GetUsers()
         {
-            var users = _userData.GetUsers();
-
-            if (users.Count > 0)
+            try
             {
-                return Ok(users);
+                var users = _userData.GetUsers();
+
+                if (users.Count > 0)
+                {
+                    return Ok(users);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+
             }
 
-            return NotFound();
+            return StatusCode(500);
+
         }
 
         // GET api/<UserController>/Admin/{id}
         [HttpGet("Admin/{id}")]
         public IActionResult GetUser(string id)
         {
-            var user = _userData.GetUserById(id);
-
-            if (user.Count > 0)
+            try
             {
-                return Ok(user);
+                var user = _userData.GetUserById(id);
+
+                if (user.Count > 0)
+                {
+                    return Ok(user);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
     }
