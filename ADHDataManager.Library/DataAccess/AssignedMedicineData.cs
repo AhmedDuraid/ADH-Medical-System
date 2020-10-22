@@ -35,6 +35,14 @@ namespace ADHDataManager.Library.DataAccess
 
             return output;
         }
+
+        public List<AssignedMedicineModel> GetAssignedById(string id)
+        {
+            var Parameters = new { @Id = id };
+            var output = _sqlDataAccess.LoadData<AssignedMedicineModel, dynamic>("dbo.spAssignedMedicines_FindByID", Parameters);
+
+            return output;
+        }
         public void AddAssignedMed(AssignedMedicineModel assignedMedicine)
         {
             var Parameters = new

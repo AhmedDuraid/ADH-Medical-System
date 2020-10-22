@@ -15,6 +15,7 @@ namespace ADHApi.Controllers.StaffAndPatients
     [Authorize]
     public class ArticleController : ControllerBase
     {
+        // TODO change Get methodes from 3 different methods to one 
 
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;

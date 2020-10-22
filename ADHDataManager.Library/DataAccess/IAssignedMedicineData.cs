@@ -7,6 +7,7 @@ namespace ADHDataManager.Library.DataAccess
     {
         void AddAssignedMed(AssignedMedicineModel assignedMedicine);
         void DeleteAssignedMed(string assignedId);
+        List<AssignedMedicineModel> GetAssignedById(string id);
         List<AssignedMedicineModel> GetAssignedDoctorId(string id);
         List<AssignedMedicineModel> GetAssignedMeds();
         List<AssignedMedicineModel> GetAssignedPatientId(string id);
