@@ -1,7 +1,11 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Error;
+using ADHApi.Models.AssignedPlan;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
@@ -11,57 +15,86 @@ namespace ADHApi.Controllers.StaffAndPatients
     [Authorize]
     public class AssignedPlanController : ControllerBase
     {
+        // TODO Before create new plan check if the input PatientId is: Patient, he is in the Database (PHASE 3)
+        // TODO Before DELETE APlan, check if  doctor create what he will delete  (PHASE 3)
 
         private readonly IAssignedPlanData _assignedPlanData;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        public AssignedPlanController(IAssignedPlanData assignedPlanData)
+        public AssignedPlanController(IAssignedPlanData assignedPlanData, IApiErrorHandler apiErrorHandler)
         {
             _assignedPlanData = assignedPlanData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/AssignedPlan/Admin
-        [HttpGet("Admin")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Authorize(Roles = "Admin, Patient")]
         public IActionResult GetAssignedPlans()
         {
-            var AssignedPlans = _assignedPlanData.GetAssignedPlans();
+            string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            List<AssignedPlanModel> AssignedPlans;
 
-            if (AssignedPlans.Count > 0)
+            try
             {
-                return Ok(AssignedPlans);
+                switch (UserRole)
+                {
+                    case "Admin":
+                        {
+                            AssignedPlans = _assignedPlanData.GetAssignedPlans();
 
+                            if (AssignedPlans.Count > 0)
+                            {
+                                return Ok(AssignedPlans);
+
+                            }
+                            return NotFound();
+                        }
+                    case "Patient":
+                        {
+                            AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(UserId);
+
+                            if (AssignedPlans.Count > 0)
+                            {
+                                return Ok(AssignedPlans);
+                            }
+
+                            return NotFound();
+                        }
+                    default:
+                        return BadRequest();
+                }
             }
-            return NotFound();
-        }
-
-        // GET: api/AssignedPlan/Patient
-        [HttpGet("Patient")]
-        [Authorize(Roles = "Patient")]
-        public IActionResult GetByPatientID()
-        {
-            var PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(PatientId);
-
-            if (AssignedPlans.Count > 0)
+            catch (Exception ex)
             {
-                return Ok(AssignedPlans);
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         [HttpGet("Doctor/{patientId}")]
         [Authorize(Roles = "Doctor, Admin")]
         public IActionResult GetByPatientID(string patientId)
         {
-            var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
-
-            if (AssignedPlans.Count > 0)
+            try
             {
-                return Ok(AssignedPlans);
+                var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
+
+                if (AssignedPlans.Count > 0)
+                {
+                    return Ok(AssignedPlans);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/AssignedPlan/Doctor
@@ -69,33 +102,53 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Doctor")]
         public IActionResult GetByDoctorID()
         {
-            var DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var AssignedPlans = _assignedPlanData.GetAssignedPlansByDoctorID(DoctorId);
-
-            if (AssignedPlans.Count > 0)
+            try
             {
-                return Ok(AssignedPlans);
+                var DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var AssignedPlans = _assignedPlanData.GetAssignedPlansByDoctorID(DoctorId);
+
+                if (AssignedPlans.Count > 0)
+                {
+                    return Ok(AssignedPlans);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // POST: api/AssignedPlan
         [HttpPost]
-        [Authorize(Roles = "Doctor, Admin")]
-        public IActionResult PostNewAssigne([FromBody] AssignedPlanModel assigned)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult PostNewAssigne([FromBody] ApiCreateAssignedPlanModel assignedPlanInput)
         {
-            var assignePlan = new AssignedPlanModel()
+            try
             {
-                PatientID = assigned.PatientID,
-                PlanId = assigned.PlanId,
-                DoctorID = assigned.DoctorID,
-                StartOn = assigned.StartOn
-            };
-            _assignedPlanData.AddAssignedPlan(assignePlan);
+                string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var assignePlan = new AssignedPlanModel()
+                {
+                    PatientID = assignedPlanInput.PatientID,
+                    PlanId = assignedPlanInput.PlanId,
+                    DoctorID = DoctorId,
+                    StartOn = assignedPlanInput.StartOn
+                };
 
-            return Ok();
+                _assignedPlanData.AddAssignedPlan(assignePlan);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
 
         }
 
@@ -104,9 +157,18 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Doctor, Admin")]
         public IActionResult Delete(string id)
         {
-            _assignedPlanData.DeletePlan(id);
+            try
+            {
+                _assignedPlanData.DeletePlan(id);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }
