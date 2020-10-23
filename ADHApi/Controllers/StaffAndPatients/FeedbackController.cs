@@ -1,7 +1,10 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Error;
+using ADHApi.Models.Feedback;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
@@ -12,10 +15,12 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class FeedbackController : ControllerBase
     {
         private readonly IFeedbackData _feedbackData;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        public FeedbackController(IFeedbackData feedbackData)
+        public FeedbackController(IFeedbackData feedbackData, IApiErrorHandler apiErrorHandler)
         {
             _feedbackData = feedbackData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/Feedback/
@@ -23,14 +28,23 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin")]
         public IActionResult GetFeedbacks()
         {
-            var feedbacks = _feedbackData.GetFeedbacks();
-
-            if (feedbacks.Count > 0)
+            try
             {
-                return Ok(feedbacks);
+                var feedbacks = _feedbackData.GetFeedbacks();
+
+                if (feedbacks.Count > 0)
+                {
+                    return Ok(feedbacks);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/Feedback
@@ -38,15 +52,24 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult GetFeedbacksNotReaded()
         {
-            var Feedback = _feedbackData.GetFeedbackByNotReaded();
-
-            if (Feedback.Count > 0)
+            try
             {
-                return Ok(Feedback);
+                var Feedback = _feedbackData.GetFeedbackByNotReaded();
 
+                if (Feedback.Count > 0)
+                {
+                    return Ok(Feedback);
+
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/Feedback
@@ -54,38 +77,76 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Manager")]
         public IActionResult GetFeedbackReaderID()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var Feedback = _feedbackData.GetFeedbackByReaderId(userId);
-
-            if (Feedback.Count > 0)
+            try
             {
-                return Ok(Feedback);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var Feedback = _feedbackData.GetFeedbackByReaderId(userId);
+
+                if (Feedback.Count > 0)
+                {
+                    return Ok(Feedback);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/Feedback/readerId
         [HttpGet("Admin/{readerId}")]
         public IActionResult GetFeedbackReaderID(string readerId)
         {
-            var Feedback = _feedbackData.GetFeedbackByReaderId(readerId);
-
-            if (Feedback.Count > 0)
+            try
             {
-                return Ok(Feedback);
+                var Feedback = _feedbackData.GetFeedbackByReaderId(readerId);
 
+                if (Feedback.Count > 0)
+                {
+                    return Ok(Feedback);
+
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // POST: api/Feedback
         [HttpPost]
         [AllowAnonymous]
-        public void AddFeedback([FromBody] FeedbackModel feedback)
+        public IActionResult AddFeedback([FromBody] ApiCreateFeedbackModel feedbackInput)
         {
-            _feedbackData.AddNewFeedback(feedback);
+            try
+            {
+                var Feedback = new FeedbackModel()
+                {
+                    Titel = feedbackInput.Titel,
+                    Name = feedbackInput.Name,
+                    Email = feedbackInput.Email,
+                    Phone = feedbackInput.Phone,
+                    FeedbackBody = feedbackInput.FeedbackBody
+                };
+
+                _feedbackData.AddNewFeedback(Feedback);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // POST: api/Feedback
@@ -93,11 +154,20 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Manager, Admin")]
         public IActionResult UpdateFeedback([FromQuery] string feedbackId)
         {
-            var readerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            try
+            {
+                var readerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
+                _feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
 
-            return Ok("Updated");
+                return Ok("Updated");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }

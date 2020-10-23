@@ -4,7 +4,7 @@ namespace ADHDataManager.Library.Models
 {
     public class FeedbackModel
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = $"Feedback{DateTime.Now.ToBinary()}";
         public string Titel { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
