@@ -1,4 +1,4 @@
-﻿namespace ADHApi.Models
+﻿namespace ADHApi.Models.Medicine
 {
     public class ApiMedicineModel
     {
