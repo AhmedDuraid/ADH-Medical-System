@@ -1,8 +1,10 @@
-﻿using ADHApi.Models.LabRequest;
+﻿using ADHApi.Error;
+using ADHApi.Models.LabRequest;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
@@ -12,12 +14,14 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class LabTestRequestController : ControllerBase
     {
         private readonly ILabTestRequestsData _labTestRequestsData;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        // TODO create store procuders and connect to the database 
+        // TODO before DELETE, Check request ID have same doctor id 
 
-        public LabTestRequestController(ILabTestRequestsData labTestRequestsData)
+        public LabTestRequestController(ILabTestRequestsData labTestRequestsData, IApiErrorHandler apiErrorHandler)
         {
             _labTestRequestsData = labTestRequestsData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/LabTestRequest
@@ -25,61 +29,97 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, LabTester")]
         public IActionResult GetRequests()
         {
-            var LabRequest = _labTestRequestsData.GetTestRequests();
-
-            if (LabRequest.Count > 0)
+            try
             {
-                return Ok(LabRequest);
+                var LabRequest = _labTestRequestsData.GetTestRequests();
+
+                if (LabRequest.Count > 0)
+                {
+                    return Ok(LabRequest);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
-        // GET: api/LabTestRequest/Patient/{patientId}
+        // GET: api/Patient/{patientId}
         [HttpGet("Patient/{patientId}")]
         [Authorize(Roles = "Admin, Doctor, LabTester")]
         public IActionResult GetRequestsByPatientId(string patientId)
         {
-            var LabRequest = _labTestRequestsData.GetTestRequestByPatientId(patientId);
-
-            if (LabRequest.Count > 0)
+            try
             {
-                return Ok(LabRequest);
+                var LabRequest = _labTestRequestsData.GetTestRequestByPatientId(patientId);
+
+                if (LabRequest.Count > 0)
+                {
+                    return Ok(LabRequest);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
-        // GET: api/LabTestRequest/Doctor/{doctorName}
+        // GET: api/Doctor/{doctorName}
         [HttpGet("Doctor/{doctorName}")]
         [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetRequestsByDoctorId(string doctorName)
         {
-            var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(doctorName);
-
-            if (LabRequest.Count > 0)
+            try
             {
-                return Ok(LabRequest);
+                var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(doctorName);
+
+                if (LabRequest.Count > 0)
+                {
+                    return Ok(LabRequest);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
-        // POST: api/LabTestRequest/query 
+        // POST: api/LabTestRequest 
         [HttpPost]
         [Authorize(Roles = "Doctor")]
         public IActionResult AddNewRequest(ApiAddTestRequestsModel userInput)
         {
-            var NewTestRequest = new LabTestRequestsModel()
+            try
             {
-                PatientId = userInput.PatientId,
-                TesterId = userInput.TestId,
-                CreatorID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            };
+                var NewTestRequest = new LabTestRequestsModel()
+                {
+                    PatientId = userInput.PatientId,
+                    TesterId = userInput.TestId,
+                    CreatorID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                };
 
-            _labTestRequestsData.AddTestRequests(NewTestRequest);
+                _labTestRequestsData.AddTestRequests(NewTestRequest);
 
-            return Ok($"lab Request Added to Patient {NewTestRequest.PatientId} ");
+                return Ok($"lab Request Added to Patient {NewTestRequest.PatientId} ");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // PUT: api/LabTestRequest
@@ -87,16 +127,25 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Tester")]
         public IActionResult UpdateRequestResults(APILabRequestUpdateModel userInput)
         {
-            var UpdateRTest = new LabTestRequestsModel()
+            try
             {
-                TesterId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                Id = userInput.Id,
-                Result = userInput.Result
-            };
+                var UpdateRTest = new LabTestRequestsModel()
+                {
+                    TesterId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    Id = userInput.Id,
+                    Result = userInput.Result
+                };
 
-            _labTestRequestsData.AddTestResults(UpdateRTest);
+                _labTestRequestsData.AddTestResults(UpdateRTest);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // DELETE: api/LabTestRequest
@@ -104,9 +153,18 @@ namespace ADHApi.Controllers.StaffAndPatients
         [HttpDelete("{requestId}")]
         public IActionResult DeleteRequest(string requestId)
         {
-            _labTestRequestsData.DeleteRequest(requestId);
+            try
+            {
+                _labTestRequestsData.DeleteRequest(requestId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }
