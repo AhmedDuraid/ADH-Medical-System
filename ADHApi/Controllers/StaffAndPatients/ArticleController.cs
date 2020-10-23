@@ -29,21 +29,43 @@ namespace ADHApi.Controllers.StaffAndPatients
         }
 
         // GET: api/ArticleController/Admin
-        [HttpGet("Admin")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetArticles()
         {
+            string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            List<ArticleModel> articles;
+
             try
             {
-                List<ArticleModel> articles = _articleData.FindArticles();
-
-                if (articles.Count > 0)
+                switch (UserRole)
                 {
-                    return Ok(articles);
+                    case "Admin":
+                        {
+                            articles = _articleData.FindArticles();
+
+                            if (articles.Count > 0)
+                            {
+                                return Ok(articles);
+                            }
+
+                            return NotFound("There is no Articles to show");
+                        }
+                    case "Doctor":
+                        {
+                            articles = _articleData.FindArticlesByUserId(UserId);
+
+                            if (articles.Count > 0)
+                            {
+                                return Ok(articles);
+                            }
+
+                            return NotFound();
+                        }
+                    default:
+                        return BadRequest();
                 }
-
-                return NotFound();
-
             }
             catch (Exception ex)
             {
@@ -51,6 +73,7 @@ namespace ADHApi.Controllers.StaffAndPatients
             }
 
             return StatusCode(500);
+
         }
 
         // GET api/Article/{id}
@@ -60,42 +83,9 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
             try
             {
-                var user = _userData.GetUserById(userId);
-
-                if (user.Count > 0)
-                {
-                    List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
-
-                    if (articles.Count > 0)
-                    {
-                        return Ok(articles);
-                    }
-
-                    return NotFound();
-                }
-
-                return BadRequest($"No User with Id {userId}");
-
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET api/ArticleController/Staff
-        [HttpGet("Staff")]
-        [Authorize(Roles = "Doctor")]
-        public IActionResult GetArticlesByUserId()
-        {
-            try
-            {
-                string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
 
-                if (articles == null)
+                if (articles.Count > 0)
                 {
                     return Ok(articles);
                 }
@@ -105,11 +95,11 @@ namespace ADHApi.Controllers.StaffAndPatients
             catch (Exception ex)
             {
                 _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-
             }
 
             return StatusCode(500);
         }
+
 
         // POST: api/Article/Staff
         [HttpPost("Staff")]
