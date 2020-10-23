@@ -1,7 +1,10 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Error;
+using ADHApi.Models.LabTest;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -11,72 +14,124 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class LabTestController : ControllerBase
     {
         private readonly ILabTestData _labTest;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-        public LabTestController(ILabTestData labTestData)
+        public LabTestController(ILabTestData labTestData, IApiErrorHandler apiErrorHandler)
         {
             _labTest = labTestData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/LabTest
         [HttpGet]
         public IActionResult GetTests()
         {
-            var Tests = _labTest.GetTests();
-
-            if (Tests.Count > 0)
+            try
             {
-                return Ok(Tests);
+                var Tests = _labTest.GetTests();
+
+                if (Tests.Count > 0)
+                {
+                    return Ok(Tests);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         [HttpGet("{testName}")]
         // GET: api/LabTest/{testName}
         public IActionResult GetTestByName(string testName)
         {
-            var test = _labTest.GetTestByName(testName);
-
-            if (test.Count > 0)
+            try
             {
-                return Ok(test);
+                var test = _labTest.GetTestByName(testName);
+
+                if (test.Count > 0)
+                {
+                    return Ok(test);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // POST: api/LabTest/Admin
         [HttpPost("Admin")]
         [Authorize(Roles = "Admin")]
-        public IActionResult AddNewTest([FromQuery] string testName, [FromQuery] string description)
+        public IActionResult AddNewTest(ApiCreateLabTestModel labTestInput)
         {
-            var Test = new LabTestModel() { Description = description, TestName = testName };
+            try
+            {
+                var Test = new LabTestModel() { Description = labTestInput.Description, TestName = labTestInput.Description };
 
-            _labTest.AddNewTest(Test);
+                _labTest.AddNewTest(Test);
 
-            return Ok();
+                return Ok("Created");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
-        // PUT: api/LabTest/Admin/{id}/?
+        // PUT: api/LabTest/Admin/{id}
         [HttpPut("Admin/{id}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult UpdateTest(string id, string testName, string description)
+        public IActionResult UpdateTest(string id, ApiCreateLabTestModel labTestInput)
         {
-            var UpdatedTest = new LabTestModel() { Id = id, Description = description, TestName = testName };
+            try
+            {
+                var UpdatedTest = new LabTestModel()
+                {
+                    Id = id,
+                    Description = labTestInput.Description,
+                    TestName = labTestInput.TestName
+                };
 
-            _labTest.UpdateTest(UpdatedTest);
+                _labTest.UpdateTest(UpdatedTest);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
-        // DELETE: api/StaffAndPatients/LabTest/UpdateTest/id
+        // DELETE: api/LabTest/id
         [HttpDelete("Admin/{id}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteTest(string id)
         {
-            _labTest.DeleteTest(id);
+            try
+            {
+                _labTest.DeleteTest(id);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }
