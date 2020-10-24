@@ -8,8 +8,8 @@ namespace ADHDataManager.Library.Models
         public string Id { get; set; } = $"Note{DateTime.Now.ToBinary()}";
         public DateTime Date { get; set; }
         public string Body { get; set; }
-        public int PatientId { get; set; }
-        public int AddedBy { get; set; }
+        public string PatientId { get; set; }
+        public string AddedBy { get; set; }
         public bool ShowToPatient { get; set; }
 
         // realtion table 

@@ -1,115 +1,198 @@
-﻿using ADHApi.Models;
+﻿using ADHApi.Error;
+using ADHApi.Models.PatientNotes;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PatientNotesController : ControllerBase
     {
         private readonly IPatientNoteData _patientNoteData;
-        public PatientNotesController(IPatientNoteData patientNoteData)
+        private readonly IApiErrorHandler _apiErrorHandler;
+
+        // TODO before update patient note, check if the token doctor is the same doctor in note  "PHASE 3"
+        // TODO before DELETE, check who delete note his id in the row. if not he can't delete ""PHASE 3"
+
+        public PatientNotesController(IPatientNoteData patientNoteData, IApiErrorHandler apiErrorHandler)
         {
             _patientNoteData = patientNoteData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/PatientNotes
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetNotes()
         {
-            var Notes = _patientNoteData.GetNotes();
-
-            if (Notes.Count > 0)
+            try
             {
-                return Ok(Notes);
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotes();
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
-        // GET: api/PatientNotes/GetNotes/Staff/{patientId}
+        // GET: api/PatientNotes/Staff/{patientId}
         [HttpGet("Staff/{patientId}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetNotes(string patientId)
         {
-            var Notes = _patientNoteData.GetNotesByPatientId(patientId);
-
-            if (Notes.Count > 0)
+            try
             {
-                return Ok(Notes);
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientId(patientId);
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/PatientNotes/Patient
         [HttpGet("Patient")]
+        [Authorize(Roles = "Patient")]
         public IActionResult GetNotesPatient()
         {
-            var PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var Notes = _patientNoteData.GetNotesByPatientId_Show(PatientId);
-
-            if (Notes.Count > 0)
+            try
             {
-                return Ok(Notes);
+                string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientId_Show(PatientId);
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
-        // GET: api/PatientNotes/patientId
-        [HttpGet("Staff/PatientNote")]
-        public IActionResult GetNotesForDoctor([FromQuery] string patientId, [FromQuery] string doctorId)
+        // GET: api/PatientNotes/Doctor/PatientNote/{patientId}
+        [HttpGet("Doctor/PatientNote/{patientId}")]
+        [Authorize(Roles = "Doctor")]
+        public IActionResult GetNotesForDoctor(string patientId)
         {
-            var Notes = _patientNoteData.GetNotesByPatientAndDoctorId(patientId, doctorId);
-
-            if (Notes.Count > 0)
+            try
             {
-                return Ok(Notes);
+                string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientAndDoctorId(patientId, DoctorId);
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
+                }
+                return NotFound();
             }
-            return NotFound();
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // POST: api/PatientNotes/
         [HttpPost]
-        public IActionResult AddNew([FromBody] ApiPatientNoteModel patientNoteModel)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult AddNew([FromBody] ApiAddPatientNoteModel patientNoteModel)
         {
-            var NewNote = new PatientNoteModel()
+            try
             {
-                AddedBy = patientNoteModel.AddedBy,
-                Body = patientNoteModel.Body,
-                PatientId = patientNoteModel.PatientId,
-                ShowToPatient = patientNoteModel.ShowToPatient
-            };
-            _patientNoteData.AddNewPatientNote(NewNote);
+                var NewNote = new PatientNoteModel()
+                {
+                    AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    Body = patientNoteModel.Body,
+                    PatientId = patientNoteModel.PatientId,
+                    ShowToPatient = patientNoteModel.ShowToPatient
+                };
 
-            return Ok();
+                _patientNoteData.AddNewPatientNote(NewNote);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // PUT: api/UpdateNote_PatientDoctor
         [HttpPut("{id}")]
-        public IActionResult UpdateNote_PatientDoctor(string id, [FromQuery] string body, [FromQuery] bool show)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult UpdateNote_PatientDoctor(string id, [FromBody] ApiUpdatePatientNoteModel input)
         {
-            var NewNote = new PatientNoteModel()
-            {
-                Body = body,
-                ShowToPatient = show,
-                Id = id
-            };
-            _patientNoteData.UpdatePatient_PatientAndDoctorId(NewNote);
 
-            return Ok();
+            try
+            {
+                var NewNote = new PatientNoteModel()
+                {
+                    Body = input.Body,
+                    ShowToPatient = input.ShowToPatient,
+                    Id = id
+                };
+                _patientNoteData.UpdatePatient_PatientAndDoctorId(NewNote);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // DELETE: api/PatientNotes/
         [HttpDelete("{noteId}")]
         public IActionResult Delete(string noteId)
         {
-            _patientNoteData.DeleteNote(noteId);
+            try
+            {
+                _patientNoteData.DeleteNote(noteId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }
