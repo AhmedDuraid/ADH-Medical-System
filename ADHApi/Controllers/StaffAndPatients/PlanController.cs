@@ -1,7 +1,10 @@
-﻿using ADHDataManager.Library.DataAccess;
+﻿using ADHApi.Error;
+using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace ADHApi.Controllers.StaffAndPatients
 {
@@ -10,11 +13,12 @@ namespace ADHApi.Controllers.StaffAndPatients
     public class PlanController : ControllerBase
     {
         private readonly IPlanData _planData;
+        private readonly IApiErrorHandler _apiErrorHandler;
 
-
-        public PlanController(IPlanData planData)
+        public PlanController(IPlanData planData, IApiErrorHandler apiErrorHandler)
         {
             _planData = planData;
+            _apiErrorHandler = apiErrorHandler;
         }
 
         // GET: api/Plan/
@@ -22,14 +26,23 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Doctor, Manager")]
         public IActionResult GetPlans()
         {
-            var Plan = _planData.GetPlans();
-
-            if (Plan.Count > 0)
+            try
             {
-                return Ok(Plan);
+                List<PlanModel> Plan = _planData.GetPlans();
+
+                if (Plan.Count > 0)
+                {
+                    return Ok(Plan);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // GET: api/Plan/{type}
@@ -37,14 +50,23 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Doctor, Manager")]
         public IActionResult GetPlanByType(string type)
         {
-            var Plan = _planData.GetPlansByType(type);
-
-            if (Plan.Count > 0)
+            try
             {
-                return Ok(Plan);
+                List<PlanModel> Plan = _planData.GetPlansByType(type);
+
+                if (Plan.Count > 0)
+                {
+                    return Ok(Plan);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
-            return NotFound();
+            return StatusCode(500);
         }
 
         // POST: api/Plan/
@@ -52,22 +74,31 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult AddNew([FromBody] PlanModel userInput)
         {
-            var NewPlan = new PlanModel()
+            try
             {
-                Type = userInput.Type,
-                Description = userInput.Description,
-                Day1 = userInput.Day1,
-                Day2 = userInput.Day2,
-                Day3 = userInput.Day3,
-                Day4 = userInput.Day4,
-                Day5 = userInput.Day5,
-                Day6 = userInput.Day6,
-                Day7 = userInput.Day7
-            };
+                PlanModel NewPlan = new PlanModel()
+                {
+                    Type = userInput.Type,
+                    Description = userInput.Description,
+                    Day1 = userInput.Day1,
+                    Day2 = userInput.Day2,
+                    Day3 = userInput.Day3,
+                    Day4 = userInput.Day4,
+                    Day5 = userInput.Day5,
+                    Day6 = userInput.Day6,
+                    Day7 = userInput.Day7
+                };
 
-            _planData.AddPlan(NewPlan);
+                _planData.AddPlan(NewPlan);
 
-            return Ok($"Plan added with and have the Id {NewPlan.Id} and type {NewPlan.Type}");
+                return Ok($"Plan added with and have the Id {NewPlan.Id} and type {NewPlan.Type}");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // PUT: api/Plan
@@ -75,9 +106,18 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult UpdatePlan([FromBody] PlanModel plan)
         {
-            _planData.UpdatePlan(plan);
+            try
+            {
+                _planData.UpdatePlan(plan);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
 
         // DELETE: api/Plan/{id}
@@ -85,9 +125,18 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult DeletePlan(string id)
         {
-            _planData.DeletePlan(id);
+            try
+            {
+                _planData.DeletePlan(id);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
         }
     }
 }
