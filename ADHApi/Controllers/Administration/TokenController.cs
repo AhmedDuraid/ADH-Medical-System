@@ -36,7 +36,7 @@ namespace ADHApi.Controllers.Administration
         }
 
         // GET: api/Token
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> Create(string username, string password)
         {
             try
