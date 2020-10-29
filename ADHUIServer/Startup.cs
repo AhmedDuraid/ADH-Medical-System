@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ADHUIServer.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ADHUIServer.Data;
+using UIDataAccess.Library.DataAccess;
+using UIDataAccess.Library.Services;
 
 namespace ADHUIServer
 {
@@ -29,6 +25,9 @@ namespace ADHUIServer
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+
+            services.AddTransient<ICreateClientService, CreateClientService>();
+            services.AddTransient<ILoginValidation, LoginValidation>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,0 +1,41 @@
+﻿@page "/login"
+
+@using ADHUIServer.Models
+@using UIDataAccess.Library.Models
+
+@inject ILoginValidation _loginValidation
+
+<h3>Login</h3>
+<div class="container">
+    <EditForm class="form-group" Model="@loginModle" OnValidSubmit="@SubmitLoginForm">
+
+        <p>
+            <InputText id="userName"
+                       @bind-Value="@loginModle.UserName"
+                       placeholder="UserName"
+                       class="form-control" />
+        </p>
+        <p>
+            <InputText id="password"
+                       class="form-control"
+                       @bind-Value="@loginModle.Password"
+                       placeholder="Password"
+                       type="password" />
+        </p>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+</div>
+
+@code {
+
+    private LoginModle loginModle = new LoginModle();
+    private UserTokenModel userToken = new UserTokenModel();
+
+
+    private async Task SubmitLoginForm()
+    {
+        userToken = await _loginValidation.GetUserToken(loginModle.UserName, loginModle.Password);
+    }
+
+}
