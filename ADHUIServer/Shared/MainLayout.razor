@@ -1,5 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
+@using ADHUIServer.Handlers
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.SessionStorage.ISessionStorageService SessionStorageService
+
 <div class="sidebar">
     <NavMenu />
 </div>
@@ -7,9 +12,17 @@
 <div class="main">
     <div class="top-row px-4">
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        <a href="/" @onclick="@Logout">LogOut</a>
     </div>
-
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code{
+
+    private void Logout()
+    {
+        ((CustomAuthenticationStateProvider)AuthenticationStateProvider).UserLogOut();
+    }
+}

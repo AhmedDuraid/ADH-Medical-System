@@ -2,19 +2,27 @@
 
 @using ADHUIServer.Models
 @using UIDataAccess.Library.Models
+@using ADHUIServer.Handlers
 
-@inject ILoginValidation _loginValidation
+
+@inject ILoginAccess ILoginValidation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+
 
 <h3>Login</h3>
 <div class="container">
     <EditForm class="form-group" Model="@loginModle" OnValidSubmit="@SubmitLoginForm">
-
+        <FluentValidationValidator />
+        <ValidationSummary />
         <p>
             <InputText id="userName"
                        @bind-Value="@loginModle.UserName"
                        placeholder="UserName"
                        class="form-control" />
         </p>
+
         <p>
             <InputText id="password"
                        class="form-control"
@@ -24,18 +32,64 @@
         </p>
 
         <button class="btn btn-primary" type="submit">Submit</button>
+        @if (HttpError)
+        {
+            <p>@userLoginInformationModel.Error.Message</p>
+
+        }
+        @if (Loading)
+        {
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+
+        }
+
     </EditForm>
 </div>
 
 @code {
 
     private LoginModle loginModle = new LoginModle();
-    private UserTokenModel userToken = new UserTokenModel();
+    private UserLoginInformationModel userLoginInformationModel = new UserLoginInformationModel();
+    private bool HttpError = false;
+    private bool Loading = false;
 
 
     private async Task SubmitLoginForm()
     {
-        userToken = await _loginValidation.GetUserToken(loginModle.UserName, loginModle.Password);
-    }
+        HttpError = false;
+        Loading = true;
 
+        userLoginInformationModel = await ILoginValidation.GetUserToken(loginModle.UserName, loginModle.Password);
+
+        if (userLoginInformationModel.Error.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            HttpError = false;
+
+            ((CustomAuthenticationStateProvider)AuthenticationStateProvider)
+            .AuthenticatedUser(userLoginInformationModel.Access_Token, userLoginInformationModel.UserName);
+
+            NavigationManager.NavigateTo("/");
+
+            Loading = false;
+        }
+
+        if (userLoginInformationModel.Error.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            Loading = false;
+            HttpError = true;
+        }
+        else
+        {
+            Loading = false;
+            HttpError = true;
+            userLoginInformationModel.Error.Message = "There is Problem";
+
+        }
+
+
+
+    }
 }
+

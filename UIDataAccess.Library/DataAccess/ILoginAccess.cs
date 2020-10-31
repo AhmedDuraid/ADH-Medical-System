@@ -3,8 +3,8 @@ using UIDataAccess.Library.Models;
 
 namespace UIDataAccess.Library.DataAccess
 {
-    public interface ILoginValidation
+    public interface ILoginAccess
     {
-        Task<UserTokenModel> GetUserToken(string username, string password);
+        Task<UserLoginInformationModel> GetUserToken(string username, string password);
     }
 }
