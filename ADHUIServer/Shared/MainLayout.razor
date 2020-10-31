@@ -12,7 +12,16 @@
 <div class="main">
     <div class="top-row px-4">
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        <a href="/" @onclick="@Logout">LogOut</a>
+
+        <AuthorizeView>
+            <Authorized>
+                <a href="/" @onclick="@Logout">LogOut</a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/login" @onclick="@Logout">Login</a>
+            </NotAuthorized>
+        </AuthorizeView>
+
     </div>
     <div class="content px-4">
         @Body
