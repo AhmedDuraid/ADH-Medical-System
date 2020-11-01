@@ -15,4 +15,8 @@
     <ProjectReference Include="..\UIDataAccess.Library\UIDataAccess.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Users\" />
+  </ItemGroup>
+
 </Project>

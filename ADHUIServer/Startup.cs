@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UIDataAccess.Library.DataAccess;
+using UIDataAccess.Library.DataAccess.Admin;
 using UIDataAccess.Library.Services;
 
 namespace ADHUIServer
@@ -33,6 +34,7 @@ namespace ADHUIServer
 
             services.AddTransient<ICreateClientService, CreateClientService>();
             services.AddTransient<ILoginAccess, LoginAccess>();
+            services.AddTransient<IUsersDataAccess, UsersDataAccess>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

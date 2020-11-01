@@ -4,7 +4,7 @@
     {
         public string Access_Token { get; set; }
         public string UserName { get; set; }
-        public ErrorModel Error { get; set; } = new ErrorModel();
+        public HttpInfoModel Error { get; set; } = new HttpInfoModel();
 
     }
 }

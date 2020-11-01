@@ -2,7 +2,7 @@
 
 namespace UIDataAccess.Library.Models
 {
-    public class ErrorModel
+    public class HttpInfoModel
     {
         public HttpStatusCode StatusCode { get; set; }
         public string Message { get; set; }

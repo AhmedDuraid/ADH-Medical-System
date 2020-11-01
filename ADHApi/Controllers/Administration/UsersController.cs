@@ -1,8 +1,10 @@
 ﻿using ADHApi.Error;
 using ADHDataManager.Library.DataAccess;
+using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 
 namespace ADHApi.Controllers.Administration
 {
@@ -27,7 +29,7 @@ namespace ADHApi.Controllers.Administration
         {
             try
             {
-                var users = _userData.GetUsers();
+                List<UserModel> users = _userData.GetUsers();
 
                 if (users.Count > 0)
                 {
