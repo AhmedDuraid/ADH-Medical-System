@@ -14,8 +14,8 @@
 <h3>Login</h3>
 <div class="container">
     <EditForm class="form-group" Model="@loginModle" OnValidSubmit="@SubmitLoginForm">
-        <FluentValidationValidator />
-        <ValidationSummary />
+        @*<FluentValidationValidator />
+            <ValidationSummary />*@
         <p>
             <InputText id="userName"
                        @bind-Value="@loginModle.UserName"
@@ -61,7 +61,10 @@
         HttpError = false;
         Loading = true;
 
-        userLoginInformationModel = await ILoginValidation.GetUserToken(loginModle.UserName, loginModle.Password);
+        // userLoginInformationModel = await ILoginValidation.GetUserToken(loginModle.UserName, loginModle.Password);
+
+        // for testing
+        userLoginInformationModel = await ILoginValidation.GetUserToken("TestUser", "Password123.");
 
         if (userLoginInformationModel.Error.StatusCode == System.Net.HttpStatusCode.OK)
         {
