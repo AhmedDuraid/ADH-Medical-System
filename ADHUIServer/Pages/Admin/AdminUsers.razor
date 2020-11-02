@@ -1,0 +1,34 @@
+﻿@page "/admin/users"
+
+@using UIDataAccess.Library.Models.Admin
+@using ADHUIServer.Components
+
+
+<h3>AdminUsers</h3>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <UsersList selectedUser="@EditUserInfo" />
+
+        @if (SelectedUser != null)
+        {
+            <UpdateUserForm UserInfo="@SelectedUser" />
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <p>You can not access this page </p>
+    </NotAuthorized>
+
+</AuthorizeView>
+
+@code {
+
+    private UserModle SelectedUser;
+
+    private void EditUserInfo(UserModle userInfo)
+    {
+        SelectedUser = userInfo;
+    }
+
+}

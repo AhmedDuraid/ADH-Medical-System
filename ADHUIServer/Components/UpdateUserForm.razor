@@ -1,0 +1,66 @@
+﻿@using UIDataAccess.Library.Models.Admin
+
+
+<h1>Edit User</h1>
+<EditForm class="form-group" Model="@UserInfo" OnValidSubmit="@SendNewUpdatedUser">
+    <p>
+        <InputText @bind-Value="@UserInfo.Id" placeholder="User Id" class="form-control" disabled="disabled" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.UserName" placeholder="User Name" class="form-control" disabled="disabled" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.Email" placeholder="Email" class="form-control" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.FirstName" placeholder="First Name" class="form-control" />
+    </p>
+    <p>
+        <InputText @bind-Value="@UserInfo.MiddleName" placeholder="Middle Name" class="form-control" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.LastName" placeholder="Last Name" class="form-control" />
+    </p>
+    <p>
+        <InputText @bind-Value="@UserInfo.PhoneNumber" placeholder="Phone Number" class="form-control" />
+    </p>
+
+    <p>
+        <InputDate @bind-Value="@UserInfo.BirthDate" placeholder="Birth Date" class="form-control" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.Gender" placeholder="Gender" class="form-control" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.Nationality" placeholder="Nationality" class="form-control" />
+    </p>
+
+    <p>
+        <InputText @bind-Value="@UserInfo.Address" placeholder="Address" class="form-control" />
+    </p>
+
+    <button type="submit" class="btn btn-primary">Update @UserInfo.UserName</button>
+
+</EditForm>
+
+
+
+@code {
+
+    [Parameter]
+    public UserModle UserInfo { get; set; }
+
+    private void SendNewUpdatedUser()
+    {
+        // send Http data
+        var user = UserInfo;
+
+    }
+
+}

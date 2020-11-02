@@ -1,0 +1,90 @@
+﻿@using UIDataAccess.Library.Models.Admin
+@using UIDataAccess.Library.DataAccess.Admin
+@using UIDataAccess.Library.Models
+
+@inject IUsersDataAccess IUsersDataAccess
+@inject Blazored.SessionStorage.ISessionStorageService ISessionStorageService
+
+@if (loading)
+{
+    <ADHUIServer.Components.Spinner />
+}
+else
+{
+
+    @if (usersList != null)
+    {
+        <table class="table table-striped table-hover table-sm table-responsive">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">UserName</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">EmailConfirmed</th>
+                    <th scope="col">IsAuthenticated</th>
+                    <th scope="col">FirstName</th>
+                    <th scope="col">MiddleName</th>
+                    <th scope="col">LastName</th>
+                    <th scope="col">PhoneNumber</th>
+                    <th scope="col">BirthDate</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Nationality</th>
+                    <th scope="col">CreateDate</th>
+                    <th scope="col">Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in usersList)
+                {
+                    <tr id="@user.Id"
+                        @onclick="() => selectedUser.InvokeAsync(user)">
+                        <th scope="row">@user.Id</th>
+                        <th>@user.UserName</th>
+                        <th>@user.Email</th>
+                        <th>@user.EmailConfirmed</th>
+                        <th>@user.IsAuthenticated</th>
+                        <th>@user.FirstName</th>
+                        <th>@user.MiddleName</th>
+                        <th>@user.LastName</th>
+                        <th>@user.PhoneNumber</th>
+                        <th>@user.BirthDate</th>
+                        <th>@user.Gender</th>
+                        <th>@user.Nationality</th>
+                        <th>@user.CreateDate</th>
+                        <th>@user.Address</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+
+    @if (HttpInfo.StatusCode == System.Net.HttpStatusCode.NotFound)
+    {
+        <p>There is no users</p>
+    }
+}
+
+
+@code{
+    private List<UserModle> usersList = new List<UserModle>();
+    private HttpInfoModel HttpInfo = new HttpInfoModel();
+
+    [Parameter]
+    public EventCallback<UserModle> selectedUser { get; set; }
+
+    private bool loading = true;
+    private string userToken;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        userToken = await ISessionStorageService.GetItemAsync<string>("Token");
+
+        (usersList, HttpInfo) = await IUsersDataAccess.GetUsers(userToken);
+
+        loading = false;
+
+    }
+
+}
