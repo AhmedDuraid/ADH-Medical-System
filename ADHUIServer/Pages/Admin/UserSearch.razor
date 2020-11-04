@@ -1,0 +1,31 @@
+﻿@page "/admin/users/search"
+
+
+<h3>UserSearch</h3>
+
+@*TODO >>>> move this page to one page the controlle in all user admin logic*@
+
+<EditForm class="form-group" Model="user" OnInvalidSubmit="SearchHandler">
+
+    <InputText @bind-Value="user.Id" placeholder="User Id" class="form-control" />
+
+</EditForm>
+@if (showUserInfo)
+{
+    <ADHUIServer.Components.UpdateUserForm UserInfo="user" />
+}
+
+@code {
+
+    private UIDataAccess.Library.Models.Admin.UserModle user;
+    private bool showUserInfo = false;
+
+    private void SearchHandler()
+    {
+        // send user info to API and check if there is user
+        // if there is user, pass it to updateUserForm
+
+
+    }
+
+}

@@ -4,6 +4,9 @@
 
 @inject IUsersDataAccess IUsersDataAccess
 @inject Blazored.SessionStorage.ISessionStorageService ISessionStorageService
+@*TODO >>>>change UserList to get the users from top comp and only display the user without logic,
+    create class to handel the logic of API calls. This phase only to create the UI, in next phase,
+    will work more in how the component works and how the logic will be *@
 
 @if (loading)
 {
