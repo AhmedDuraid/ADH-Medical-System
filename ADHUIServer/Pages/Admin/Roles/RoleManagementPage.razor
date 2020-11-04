@@ -3,32 +3,33 @@
 @using UIDataAccess.Library.Models.Admin;
 @using ADHUIServer.Components;
 
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <h3>RoleManagementPage</h3>
 
-<h3>RoleManagementPage</h3>
 
-@if (IsThereRole)
-{
-    <RoleTable Role="RolesList" SelectedRole="GetselectedRole" />
-    @if (ShowUpdateForm)
-    {
-        <UpdateRoleForm UserRole="SelectedRole" Action="RoleAction" UpdatedRole="GetUpdatedRole" />
-    }
+        @if (IsThereRole)
+        {
+            <RoleTable Role="RolesList" SelectedRole="GetSelectedRole" />
 
-    @if (ShowAddRoleForm)
-    {
-        <EditForm class="form-group" OnValidSubmit="SendAddRoleRequest">
-            <InputText placeholder="Role Name"
-                       class="form-control" />
-            <button type="submit" class="btn btn-primary">Add Role</button>
-        </EditForm>
-    }
-}
-<button class="btn btn-primary"
-        @onclick="@(()=> { ShowUpdateForm = false;
+            @if (ShowUpdateForm)
+            {
+                <UpdateRoleForm UserRole="SelectedRole" Action="RoleAction" UpdatedRole="GetUpdatedRole" />
+            }
+
+            @if (ShowAddRoleForm)
+            {
+                <AddRoleForm RoleInformation="SendAddRoleRequest" />
+            }
+        }
+        <button class="btn btn-primary"
+                @onclick="@(()=> { ShowUpdateForm = false;
                         ShowAddRoleForm = true;
                     })">
-    Add New
-</button>
+            Add New
+        </button>
+    </Authorized>
+</AuthorizeView>
 
 
 @code {
@@ -49,7 +50,7 @@
         return base.OnInitializedAsync();
     }
 
-    private void GetselectedRole(RoleModle role)
+    private void GetSelectedRole(RoleModle role)
     {
         SelectedRole = role;
         ShowUpdateForm = true;
@@ -76,11 +77,10 @@
                     // send Update request to the api
                     break;
                 }
-
         }
     }
 
-    private void SendAddRoleRequest()
+    private void SendAddRoleRequest(RoleModle role)
     {
         // send request to the api to add the enterd role
         ShowUpdateForm = false;

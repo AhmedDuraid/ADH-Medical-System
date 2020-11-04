@@ -1,0 +1,18 @@
+﻿<h3>AddRoleForm</h3>
+@using UIDataAccess.Library.Models.Admin
+
+<EditForm Model="role" class="form-group" OnValidSubmit="()=>RoleInformation.InvokeAsync(role)">
+    <InputText @bind-Value="role.Name" placeholder="Role Name"
+               class="form-control" />
+    <button type="submit" class="btn btn-primary">Add Role</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public EventCallback<RoleModle> RoleInformation { get; set; }
+
+    private RoleModle role = new RoleModle();
+
+
+}
