@@ -69,6 +69,7 @@
     <Compile Include="DataAccess\ILoginAccess.cs" />
     <Compile Include="DataAccess\LoginAccess.cs" />
     <Compile Include="Models\Admin\UserModle.cs" />
+    <Compile Include="Models\Admin\RoleModle.cs" />
     <Compile Include="Models\HttpInfoModel.cs" />
     <Compile Include="Models\UserLoginInformationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
