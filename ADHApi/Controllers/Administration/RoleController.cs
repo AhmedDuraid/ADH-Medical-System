@@ -123,7 +123,7 @@ namespace ADHApi.Controllers.Administration
             {
                 var FindRole = _roleManager.FindByIdAsync(id);
 
-                if (FindRole != null)
+                if (FindRole.Result != null)
                 {
                     var role = new ApplicationRole() { Id = id };
                     var Result = _roleManager.DeleteAsync(role);

@@ -1,4 +1,5 @@
 ﻿using ADHApi.Error;
+using ADHApi.Helpers;
 using ADHApi.Models.Articles;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
@@ -17,15 +18,21 @@ namespace ADHApi.Controllers.StaffAndPatients
     {
         // TODO change Get methodes from 3 different methods to one 
 
+        // TODO need to change to get user role, because user can have more than one User.FindVirst only get the first role that it find. all controllers need to be changed
+
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
         private readonly IUserData _userData;
+        private readonly IUserClaims _userClaims;
 
-        public ArticleController(IArticleData articleData, IApiErrorHandler apiErrorHandler, IUserData userData)
+        public ArticleController(IArticleData articleData, IApiErrorHandler apiErrorHandler, IUserData userData,
+            IUserClaims userClaims)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
             _userData = userData;
+            _userClaims = userClaims;
+            ;
         }
 
         // GET: api/ArticleController/Admin
@@ -33,39 +40,40 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetArticles()
         {
-            string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             List<ArticleModel> articles;
 
+            var UserRoles = _userClaims.GetUserRole(User.Claims);
+
             try
             {
-                switch (UserRole)
+                foreach (var role in UserRoles)
                 {
-                    case "Admin":
+                    if (role == "Admin")
+                    {
+                        articles = _articleData.FindArticles();
+
+                        if (articles.Count > 0)
                         {
-                            articles = _articleData.FindArticles();
-
-                            if (articles.Count > 0)
-                            {
-                                return Ok(articles);
-                            }
-
-                            return NotFound("There is no Articles to show");
+                            return Ok(articles);
                         }
-                    case "Doctor":
+
+                        return NotFound("There is no Articles to show");
+                    }
+                    if (role == "Doctor")
+                    {
+                        articles = _articleData.FindArticlesByUserId(UserId);
+
+                        if (articles.Count > 0)
                         {
-                            articles = _articleData.FindArticlesByUserId(UserId);
-
-                            if (articles.Count > 0)
-                            {
-                                return Ok(articles);
-                            }
-
-                            return NotFound();
+                            return Ok(articles);
                         }
-                    default:
-                        return BadRequest();
+
+                        return NotFound();
+                    }
+
                 }
+
             }
             catch (Exception ex)
             {
@@ -168,10 +176,13 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Manager, Doctor")]
         public IActionResult Delete(string articleId)
         {
+            var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            List<string> UserRoles = _userClaims.GetUserRole(User.Claims);
+
+
             try
             {
-                var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
                 var article = _articleData.FindArticleByID(articleId);
 
                 if (article == null)
@@ -179,12 +190,15 @@ namespace ADHApi.Controllers.StaffAndPatients
                     return BadRequest($"There is no Article with this Id {articleId} ");
                 }
 
-                // if he is admin, he can delete any article 
-                if (UserRole == "Admin")
+                foreach (var role in UserRoles)
                 {
-                    _articleData.DeleteArticle(articleId);
+                    // if he is admin, he can delete any article 
+                    if (role == "Admin")
+                    {
+                        _articleData.DeleteArticle(articleId);
 
-                    return Ok();
+                        return Ok();
+                    }
                 }
 
                 // if he is not admin, he can delete only his articles
