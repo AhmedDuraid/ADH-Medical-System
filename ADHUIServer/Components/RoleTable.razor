@@ -1,29 +1,32 @@
 ﻿<h3>RoleTable</h3>
 @using UIDataAccess.Library.Models.Admin
 
-<table class="table table-striped table-hover table-sm table-responsive">
+@if (Role != null)
+{
+    <table class="table table-striped table-hover table-sm table-responsive">
 
-    <thead>
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Role.Count > 0)
-        {
-            foreach (var item in Role)
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Role</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Role)
             {
-                <tr id="@item.Id"
-                    @onclick="()=>SelectedRole.InvokeAsync(item)">
-                    <th scope="row">@item.Id</th>
-                    <th scope="row">@item.Name</th>
-                </tr>
+            <tr id="@item.Id"@onclick="()=> SelectedRole.InvokeAsync(item)">
+                <th scope="row">@item.Id</th>
+                <th>@item.Name</th>
+            </tr>
             }
-        }
-    </tbody>
 
-</table>
+        </tbody>
+
+    </table>
+
+}
+
 
 @code {
     [Parameter]

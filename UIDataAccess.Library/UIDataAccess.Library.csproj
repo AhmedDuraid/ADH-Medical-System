@@ -64,7 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\Admin\IRoleDataAccess.cs" />
     <Compile Include="DataAccess\Admin\IUsersDataAccess.cs" />
+    <Compile Include="DataAccess\Admin\RoleDataAccess.cs" />
     <Compile Include="DataAccess\Admin\UsersDataAccess.cs" />
     <Compile Include="DataAccess\ILoginAccess.cs" />
     <Compile Include="DataAccess\LoginAccess.cs" />

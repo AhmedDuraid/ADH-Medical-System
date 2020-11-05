@@ -35,6 +35,7 @@ namespace ADHUIServer
             services.AddTransient<ICreateClientService, CreateClientService>();
             services.AddTransient<ILoginAccess, LoginAccess>();
             services.AddTransient<IUsersDataAccess, UsersDataAccess>();
+            services.AddTransient<IRoleDataAccess, RoleDataAccess>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -4,15 +4,14 @@
 
 <h3>UpdateRoleForm</h3>
 
-<EditForm class="form-group" OnSubmit="()=>UpdatedRole.InvokeAsync(UserRole)">
+<EditForm Model="UserRole" class="form-group" OnSubmit="()=>UpdatedRole.InvokeAsync(UserRole)">
     <InputText @bind-Value="UserRole.Id" placeholder="Id"
                class="form-control"
                disabled="disabled" />
 
     <InputText @bind-Value="UserRole.Name"
                placeholder="Role Name"
-               class="form-control"
-               disabled="disabled" />
+               class="form-control" />
 
     <button type="submit"
             class="btn btn-primary"
@@ -21,7 +20,7 @@
     </button>
 
     <button type="submit"
-            class="btn btn-primary"
+            class="btn btn-danger"
             @onclick="@(()=>SetAction("delete"))">
         Delete
     </button>
@@ -37,6 +36,7 @@
 
     [Parameter]
     public EventCallback<string> Action { get; set; }
+
 
     public async void SetAction(string action)
     {

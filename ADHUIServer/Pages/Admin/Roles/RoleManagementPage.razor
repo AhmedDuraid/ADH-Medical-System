@@ -3,6 +3,12 @@
 @using UIDataAccess.Library.Models.Admin;
 @using ADHUIServer.Components;
 
+@inject UIDataAccess.Library.DataAccess.Admin.IRoleDataAccess _roleDataAccess
+@inject Blazored.SessionStorage.ISessionStorageService _ISessionStorageService
+@*TODO>>> Handling the error case*@
+
+@*Check >>> the update modle need to click two time to update, check why. it can be because the modles in this page*@
+
 <AuthorizeView Roles="Admin">
     <Authorized>
         <h3>RoleManagementPage</h3>
@@ -12,8 +18,9 @@
         {
             <RoleTable Role="RolesList" SelectedRole="GetSelectedRole" />
 
-            @if (ShowUpdateForm)
+            @if (SelectedRole != null && ShowUpdateForm)
             {
+
                 <UpdateRoleForm UserRole="SelectedRole" Action="RoleAction" UpdatedRole="GetUpdatedRole" />
             }
 
@@ -22,14 +29,13 @@
                 <AddRoleForm RoleInformation="SendAddRoleRequest" />
             }
         }
-        <button class="btn btn-primary"
-                @onclick="@(()=> { ShowUpdateForm = false;
-                        ShowAddRoleForm = true;
-                    })">
+        <button class="btn btn-primary" @onclick="CloseUpdateFrom">
             Add New
         </button>
     </Authorized>
 </AuthorizeView>
+
+
 
 
 @code {
@@ -37,17 +43,30 @@
     private List<RoleModle> RolesList;
     private RoleModle SelectedRole;
     private RoleModle UpdatedRole;
+    private HttpInfoModel HttpInfo;
+    private string Token;
 
     private bool ShowUpdateForm = false;
     private bool ShowAddRoleForm = false;
     private bool IsThereRole = false;
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
-        // send request to the Api to get RolesList and
+        Token = await _ISessionStorageService.GetItemAsync<string>("Token");
 
-        IsThereRole = true;
-        return base.OnInitializedAsync();
+        (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
+
+        if (RolesList.Count > 0)
+        {
+            IsThereRole = true;
+        }
+
+    }
+
+    private void CloseUpdateFrom()
+    {
+        ShowUpdateForm = false;
+        ShowAddRoleForm = true;
     }
 
     private void GetSelectedRole(RoleModle role)
@@ -62,28 +81,47 @@
         UpdatedRole = updateRole;
     }
 
-    private void RoleAction(string action)
+    private async void RoleAction(string action)
     {
         // send Http request to the Api
+        ShowAddRoleForm = false;
         switch (action)
         {
             case "delete":
                 {
                     // send delete request
+                    await _roleDataAccess.DeleteRole(Token, SelectedRole.Id);
+                    ShowUpdateForm = false;
+
+
                     break;
                 }
             case "update":
                 {
                     // send Update request to the api
+                    ShowUpdateForm = false;
+                    await _roleDataAccess.UpdateRole(Token, UpdatedRole);
+
                     break;
                 }
+
         }
+        (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
+
+        StateHasChanged();
     }
 
-    private void SendAddRoleRequest(RoleModle role)
+    private async void SendAddRoleRequest(RoleModle role)
     {
         // send request to the api to add the enterd role
         ShowUpdateForm = false;
+
+        await _roleDataAccess.AddRole(Token, role.Name);
+        (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
+        ShowUpdateForm = false;
+        ShowAddRoleForm = false;
+        SelectedRole = null;
+        StateHasChanged();
 
     }
 
