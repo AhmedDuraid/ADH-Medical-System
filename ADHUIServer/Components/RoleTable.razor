@@ -1,38 +1,170 @@
-﻿<h3>RoleTable</h3>
-@using UIDataAccess.Library.Models.Admin
+﻿@using UIDataAccess.Library.Models.Admin
 
-@if (Role != null)
+@inject UIDataAccess.Library.DataAccess.Admin.IRoleDataAccess _roleDataAccess
+@inject Blazored.SessionStorage.ISessionStorageService _ISessionStorageService
+
+
+<h3>Roles</h3>
+
+@if (Loading)
 {
-    <table class="table table-striped table-hover table-sm table-responsive">
+    <Spinner />
+}
+else
+{
 
-        <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Role</th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (RolesList != null)
+    {
+        <table class="table table-striped table-hover table-sm table-responsive">
 
-            @foreach (var item in Role)
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Role</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in RolesList)
+                {
+                    <tr id="@item.Id" @onclick="@(()=> UpdateSelectRole(item))">
+                        <th scope="row">@item.Id</th>
+                        <th>@item.Name</th>
+                        <th>
+                            <button class="btn btn-warning"
+                                    @onclick="@(()=> UpdateSelectRole(item))">
+                                Update
+                            </button>
+
+                            <button class="btn btn-danger"
+                                    @onclick="@(e=>DeleteRole(item.Id))">
+                                Delete
+                            </button>
+                        </th>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <p>
+            <button class="btn btn-primary" @onclick="@ShowEditFormForNew">Add New </button>
+        </p>
+    }
+    else
+    {
+        <h1>There is no Role</h1>
+    }
+
+    @if (FromEdit)
+    {
+        <EditForm Model="SelectedRole">
+            <div class="form-group">
+                <label for="IdInput">ID</label>
+                <InputText @bind-Value="SelectedRole.Id"
+                           placeholder="Id"
+                           class="form-control"
+                           disabled="disabled"
+                           id="IdInput" />
+            </div>
+
+            <div class="form-group">
+                <label for="NameInput">Role Name</label>
+                <InputText @onchange="@((e)=>SelectedRole.Name = e.Value.ToString())"
+                           @bind-Value="SelectedRole.Name"
+                           placeholder="Role Name"
+                           class="form-control"
+                           id="NameInput" />
+                @if (HttpInfo.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    <small class="form-text text-muted">@HttpInfo.Message</small>
+                }
+
+            </div>
+
+            @if (IsNew)
             {
-            <tr id="@item.Id"@onclick="()=> SelectedRole.InvokeAsync(item)">
-                <th scope="row">@item.Id</th>
-                <th>@item.Name</th>
-            </tr>
+                <button class="btn btn-primary"
+                        @onclick="AddNewRole">
+                    Add Role
+                </button>
+
             }
+            else
+            {
+                <button class="btn btn-warning"
+                        @onclick="UpdateRole">
+                    Send Update
+                </button>
 
-        </tbody>
-
-    </table>
+            }
+        </EditForm>
+    }
 
 }
 
-
 @code {
-    [Parameter]
-    public List<RoleModle> Role { get; set; }
+
 
     [Parameter]
-    public EventCallback<RoleModle> SelectedRole { get; set; }
+    public string Token { get; set; }
 
+    private List<RoleModle> RolesList = new List<RoleModle>();
+    private RoleModle SelectedRole = new RoleModle();
+    private HttpInfoModel HttpInfo = new HttpInfoModel();
+
+    private bool Loading = true;
+    private bool FromEdit = false;
+    private bool IsNew;
+
+    protected async override Task OnInitializedAsync()
+    {
+        (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
+        Loading = false;
+    }
+
+    private void UpdateSelectRole(RoleModle role)
+    {
+        SelectedRole = role;
+        IsNew = false;
+        FromEdit = true;
+    }
+
+    private async void DeleteRole(string id)
+    {
+        await _roleDataAccess.DeleteRole(Token, id);
+        UpdateRolesTable();
+    }
+
+    private async void UpdateRole()
+    {
+        await _roleDataAccess.UpdateRole(Token, SelectedRole);
+        UpdateRolesTable();
+
+    }
+
+
+    private async void AddNewRole()
+    {
+
+        var task = await _roleDataAccess.AddRole(Token, SelectedRole.Name);
+        UpdateRolesTable();
+    }
+
+    private void ShowEditFormForNew()
+    {
+        SelectedRole = new RoleModle();
+        IsNew = true;
+        FromEdit = true;
+    }
+
+    private async void UpdateRolesTable()
+    {
+        Loading = true;
+        FromEdit = false;
+        RolesList = new List<RoleModle>();
+        (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
+        Loading = false;
+        StateHasChanged();
+    }
 }
