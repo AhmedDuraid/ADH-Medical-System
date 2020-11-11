@@ -1,0 +1,145 @@
+﻿@page "/admin/Users/Register"
+@using ADHUIServer.Models.Users
+
+@inject UIDataAccess.Library.DataAccess.Admin.IUsersDataAccess _IUsersDataAccess
+@inject ISessionStorageService _sessionStorageService
+
+
+<h3>RegisterUser</h3>
+
+<EditForm Model="@registerUser" OnValidSubmit="@SendForm">
+
+    <FluentValidationValidator />
+
+    <div class="form-group">
+        <label for="UserNameInput">UserName</label>
+        <input @bind-value="registerUser.UserName"
+               @bind-value:event="oninput"
+               type="text"
+               class="form-control"
+               id="UserNameInput"
+               placeholder="UserName"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.UserName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="EmailInput">Email</label>
+        <input @bind-value="registerUser.Email"
+               @bind-value:event="oninput"
+               type="email"
+               class="form-control"
+               id="EmailInput"
+               placeholder="Email"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="PasswordInput">Password</label>
+        <input type="password"
+               @bind-value="registerUser.Password"
+               @bind-value:event="oninput"
+               class="form-control"
+               id="PasswordInput"
+               placeholder="Password"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.Password)" />
+    </div>
+
+    <div class="form-group">
+        <label for="ConfirmPasswordInput">ConfirmPassword</label>
+        <input @bind-value="registerUser.ConfirmPassword"
+               @bind-value:event="oninput"
+               type="password"
+               class="form-control"
+               id="ConfirmPasswordInput"
+               placeholder="ConfirmPassword"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.ConfirmPassword)" />
+    </div>
+
+    <div class="form-group">
+        <label for="FirstNameInput">First Name</label>
+        <input @bind-value="registerUser.FirstName"
+               @bind-value:event="oninput"
+               type="text"
+               class="form-control"
+               id="FirstNameInput"
+               placeholder="FirstName"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.FirstName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastNameInput">Last Name</label>
+        <input @bind-value="registerUser.LastName"
+               @bind-value:event="oninput"
+               type="text"
+               class="form-control"
+               id="LastNameInput"
+               placeholder="LastName"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.LastName)" />
+    </div>
+
+
+    <div class="form-group">
+        <label for="RoleTypeInput">Role</label>
+        <input @bind-value="registerUser.RoleType"
+               @bind-value:event="oninput"
+               type="text"
+               class="form-control"
+               id="RoleTypeInput"
+               placeholder="Role"
+               disabled="@editInput" />
+        <ValidationMessage For="@(()=>registerUser.RoleType)" />
+    </div>
+
+    <button disabled="@editInput" class="btn btn-primary" type="submit">Send</button>
+    @if (editInput)
+    {
+        <ADHUIServer.Components.Spinner />
+    }
+
+    @if (responseMessage != null)
+    {
+        <p>@responseMessage</p>
+    }
+
+
+</EditForm>
+
+
+
+@code {
+
+    RegisterUserModel registerUser = new RegisterUserModel();
+
+    private string token;
+    private bool editInput = false;
+    private string responseMessage;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        token = await _sessionStorageService.GetItemAsync<string>("Token");
+
+    }
+
+    private async void SendForm()
+    {
+        editInput = true;
+        var res = await _IUsersDataAccess.RegisterUser<RegisterUserModel>(token, registerUser);
+        responseMessage = res.Message;
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            editInput = false;
+
+        }
+        StateHasChanged();
+
+    }
+
+}

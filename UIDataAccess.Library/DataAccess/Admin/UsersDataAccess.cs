@@ -44,5 +44,23 @@ namespace UIDataAccess.Library.DataAccess.Admin
 
             }
         }
+
+        public async Task<HttpInfoModel> RegisterUser<T>(string token, T registerInfo)
+        {
+            HttpInfoModel httpInfo = new HttpInfoModel();
+            _createClientService.ApiClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            using (HttpResponseMessage response =
+               await _createClientService.ApiClient.PostAsJsonAsync("api/Account", registerInfo))
+            {
+
+                httpInfo.StatusCode = response.StatusCode;
+                httpInfo.Message = await response.Content.ReadAsStringAsync();
+
+                return httpInfo;
+            }
+
+        }
     }
 }
