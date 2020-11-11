@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using ADHUIServer.Handlers;
+using ADHUIServer.Models;
+using ADHUIServer.Models.Users;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using UIDataAccess.Library.Models;
-using UIDataAccess.Library.Models.Admin;
-using UIDataAccess.Library.Services;
 
-namespace UIDataAccess.Library.DataAccess.Admin
+namespace ADHUIServer.Services
 {
     public class UsersDataAccess : IUsersDataAccess
     {
@@ -17,7 +17,7 @@ namespace UIDataAccess.Library.DataAccess.Admin
             _createClientService = createClientService;
         }
 
-        public async Task<(List<UserModle>, HttpInfoModel)> GetUsers(string token)
+        public async Task<(List<UserModel>, HttpInfoModel)> GetUsers(string token)
         {
             HttpInfoModel httpInfo = new HttpInfoModel();
 
@@ -29,7 +29,7 @@ namespace UIDataAccess.Library.DataAccess.Admin
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    List<UserModle> users = await response.Content.ReadAsAsync<List<UserModle>>();
+                    List<UserModel> users = await response.Content.ReadAsAsync<List<UserModel>>();
                     httpInfo.StatusCode = response.StatusCode;
 
                     return (users, httpInfo);

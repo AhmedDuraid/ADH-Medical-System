@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 
-namespace UIDataAccess.Library.Services
+namespace ADHUIServer.Handlers
 {
     public interface ICreateClientService
     {

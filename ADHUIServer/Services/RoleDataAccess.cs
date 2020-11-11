@@ -1,23 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using ADHUIServer.Handlers;
+using ADHUIServer.Models;
+using ADHUIServer.Models.Role;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using UIDataAccess.Library.Models;
-using UIDataAccess.Library.Models.Admin;
-using UIDataAccess.Library.Services;
 
-namespace UIDataAccess.Library.DataAccess.Admin
+namespace ADHUIServer.Services
 {
     public class RoleDataAccess : IRoleDataAccess
     {
         private readonly ICreateClientService _createClientService;
-
         public RoleDataAccess(ICreateClientService createClientService)
         {
             _createClientService = createClientService;
         }
 
-        public async Task<(List<RoleModle>, HttpInfoModel)> GetRoles(string token)
+        public async Task<(List<RoleModel>, HttpInfoModel)> GetRoles(string token)
         {
             _createClientService.ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -27,7 +26,7 @@ namespace UIDataAccess.Library.DataAccess.Admin
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    List<RoleModle> roles = await response.Content.ReadAsAsync<List<RoleModle>>();
+                    List<RoleModel> roles = await response.Content.ReadAsAsync<List<RoleModel>>();
                     RequestInfo.StatusCode = response.StatusCode;
 
                     return (roles, RequestInfo);
@@ -67,7 +66,7 @@ namespace UIDataAccess.Library.DataAccess.Admin
 
         }
 
-        public async Task<HttpInfoModel> UpdateRole(string token, RoleModle roleData)
+        public async Task<HttpInfoModel> UpdateRole(string token, RoleModel roleData)
         {
             _createClientService.ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpInfoModel httpInfo = new HttpInfoModel();

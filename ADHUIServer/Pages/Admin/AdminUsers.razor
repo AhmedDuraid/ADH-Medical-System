@@ -1,6 +1,6 @@
 ﻿@page "/admin/users"
 
-@using UIDataAccess.Library.Models.Admin
+@using ADHUIServer.Models.Users
 @using ADHUIServer.Components
 
 
@@ -24,9 +24,9 @@
 
 @code {
 
-    private UserModle SelectedUser;
+    private UserModel SelectedUser;
 
-    private void EditUserInfo(UserModle userInfo)
+    private void EditUserInfo(UserModel userInfo)
     {
         SelectedUser = userInfo;
     }

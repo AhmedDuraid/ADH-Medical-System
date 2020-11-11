@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using UIDataAccess.Library.Models;
+﻿using ADHUIServer.Models.Users;
+using System.Threading.Tasks;
 
-namespace UIDataAccess.Library.DataAccess
+namespace ADHUIServer.Services
 {
     public interface ILoginAccess
     {

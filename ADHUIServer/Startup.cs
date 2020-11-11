@@ -1,5 +1,6 @@
 using ADHUIServer.Data;
 using ADHUIServer.Handlers;
+using ADHUIServer.Services;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -7,9 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UIDataAccess.Library.DataAccess;
-using UIDataAccess.Library.DataAccess.Admin;
-using UIDataAccess.Library.Services;
 
 namespace ADHUIServer
 {

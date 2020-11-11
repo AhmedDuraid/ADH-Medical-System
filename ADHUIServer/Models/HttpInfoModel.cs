@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace UIDataAccess.Library.Models
+namespace ADHUIServer.Models
 {
     public class HttpInfoModel
     {

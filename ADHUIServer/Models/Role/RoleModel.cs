@@ -1,6 +1,6 @@
-﻿namespace UIDataAccess.Library.Models.Admin
+﻿namespace ADHUIServer.Models.Role
 {
-    public class RoleModle
+    public class RoleModel
     {
         public string Id { get; set; }
         public string Name { get; set; }

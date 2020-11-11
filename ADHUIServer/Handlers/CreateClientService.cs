@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace UIDataAccess.Library.Services
+namespace ADHUIServer.Handlers
 {
     public class CreateClientService : ICreateClientService
     {

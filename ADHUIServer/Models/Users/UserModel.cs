@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace UIDataAccess.Library.Models.Admin
+namespace ADHUIServer.Models.Users
 {
-    public class UserModle
+    public class UserModel
     {
         public string Id { get; set; }
         public string UserName { get; set; }

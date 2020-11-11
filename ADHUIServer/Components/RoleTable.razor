@@ -1,6 +1,7 @@
-﻿@using UIDataAccess.Library.Models.Admin
+﻿@using ADHUIServer.Models.Role
+@using ADHUIServer.Models
 
-@inject UIDataAccess.Library.DataAccess.Admin.IRoleDataAccess _roleDataAccess
+@inject IRoleDataAccess _roleDataAccess
 @inject Blazored.SessionStorage.ISessionStorageService _ISessionStorageService
 
 
@@ -109,8 +110,8 @@ else
     [Parameter]
     public string Token { get; set; }
 
-    private List<RoleModle> RolesList = new List<RoleModle>();
-    private RoleModle SelectedRole = new RoleModle();
+    private List<RoleModel> RolesList = new List<RoleModel>();
+    private RoleModel SelectedRole = new RoleModel();
     private HttpInfoModel HttpInfo = new HttpInfoModel();
 
     private bool Loading = true;
@@ -123,7 +124,7 @@ else
         Loading = false;
     }
 
-    private void UpdateSelectRole(RoleModle role)
+    private void UpdateSelectRole(RoleModel role)
     {
         SelectedRole = role;
         IsNew = false;
@@ -153,7 +154,7 @@ else
 
     private void ShowEditFormForNew()
     {
-        SelectedRole = new RoleModle();
+        SelectedRole = new RoleModel();
         IsNew = true;
         FromEdit = true;
     }
@@ -162,7 +163,7 @@ else
     {
         Loading = true;
         FromEdit = false;
-        RolesList = new List<RoleModle>();
+        RolesList = new List<RoleModel>();
         (RolesList, HttpInfo) = await _roleDataAccess.GetRoles(Token);
         Loading = false;
         StateHasChanged();

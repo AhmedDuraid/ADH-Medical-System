@@ -1,9 +1,9 @@
-﻿using System.Net.Http;
+﻿using ADHUIServer.Handlers;
+using ADHUIServer.Models.Users;
+using System.Net.Http;
 using System.Threading.Tasks;
-using UIDataAccess.Library.Models;
-using UIDataAccess.Library.Services;
 
-namespace UIDataAccess.Library.DataAccess
+namespace ADHUIServer.Services
 {
     public class LoginAccess : ILoginAccess
     {

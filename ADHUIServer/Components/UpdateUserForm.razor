@@ -1,6 +1,4 @@
-﻿@using UIDataAccess.Library.Models.Admin
-
-
+﻿
 <h1>Edit User</h1>
 <EditForm class="form-group" Model="@UserInfo" OnValidSubmit="@SendNewUpdatedUser">
     <p>
@@ -54,7 +52,7 @@
 @code {
 
     [Parameter]
-    public UserModle UserInfo { get; set; }
+    public ADHUIServer.Models.Users.UserModel UserInfo { get; set; }
 
     private void SendNewUpdatedUser()
     {

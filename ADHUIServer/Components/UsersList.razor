@@ -1,6 +1,6 @@
-﻿@using UIDataAccess.Library.Models.Admin
-@using UIDataAccess.Library.DataAccess.Admin
-@using UIDataAccess.Library.Models
+﻿
+@using ADHUIServer.Models.Users
+@using ADHUIServer.Models
 
 @inject IUsersDataAccess IUsersDataAccess
 @inject Blazored.SessionStorage.ISessionStorageService ISessionStorageService
@@ -70,11 +70,11 @@ else
 
 
 @code{
-    private List<UserModle> usersList = new List<UserModle>();
+    private List<UserModel> usersList = new List<UserModel>();
     private HttpInfoModel HttpInfo = new HttpInfoModel();
 
     [Parameter]
-    public EventCallback<UserModle> selectedUser { get; set; }
+    public EventCallback<UserModel> selectedUser { get; set; }
 
     private bool loading = true;
     private string userToken;
