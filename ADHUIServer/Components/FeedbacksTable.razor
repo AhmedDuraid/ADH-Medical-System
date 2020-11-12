@@ -1,0 +1,54 @@
+﻿@using ADHUIServer.Models.Feedback
+
+<h3>FeedbacksTable</h3>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Titel</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">FeedbackBody</th>
+            <th scope="col">Date</th>
+            <th scope="col">HasBeenRead</th>
+            <th scope="col">FeedbackBody</th>
+            <th scope="col">ReaderId</th>
+            <th scope="col">ReaderFirstName</th>
+            <th scope="col">ReaderLastName</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Feedbacks)
+        {
+            <tr>
+                <th scope="row">@item.Id</th>
+                <th>@item.Titel</th>
+                <th>@item.Name</th>
+                <th>@item.Email</th>
+                <th>@item.Phone</th>
+                <th>@item.FeedbackBody</th>
+                <th>@item.Date</th>
+                <th>@item.HasBeenRead</th>
+                <th>@item.FeedbackBody</th>
+                <th>@item.ReaderId</th>
+                <th>@item.ReaderFirstName</th>
+                <th>@item.ReaderLastName</th>
+                <th><button class="btn btn-warning">Mark As Read</button></th>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+
+@code {
+
+    [Parameter]
+    public List<FeedbackModel> Feedbacks { get; set; }
+
+}

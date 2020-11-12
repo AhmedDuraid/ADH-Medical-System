@@ -1,0 +1,69 @@
+﻿@page "/Admin/Feedback"
+
+@using ADHUIServer.Models.Feedback
+
+@inject IFeedbackAccess _IFeedbackAccess
+@inject ISessionStorageService _ISessionStorageService
+
+
+<h3>Feedback</h3>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+
+        <EditForm Context="Auth" Model="@feedback" OnSubmit="SearchFeedback">
+
+            <div class="form-group">
+                <label for="IdInput">Staff Id</label>
+                <input class="form-control"
+                       id="IdInput"
+                       @bind-value="@feedback.ReaderId"
+                       @bind-value:event="oninput"
+                       placeholder="Staff Id"
+                       disabled="@DisabledInput" />
+            </div>
+            <button disabled="@DisabledInput" class="btn btn-primary" type="submit">Check</button>
+        </EditForm>
+        <div>
+            <button disabled="@DisabledInput" class="btn btn-primary">All Feedbacks</button>
+            <button disabled="@DisabledInput" class="btn btn-primary">Not Readed Feedbacks</button>
+        </div>
+
+        <div>
+            @if (feedbakcList != null)
+            {
+                <ADHUIServer.Components.FeedbacksTable Feedbacks="feedbakcList" />
+
+            }
+        </div>
+    </Authorized>
+
+</AuthorizeView>
+
+@code {
+
+    private FeedbackModel feedback = new FeedbackModel();
+    private List<FeedbackModel> feedbakcList;
+    private HttpInfoModel httpInfo = new HttpInfoModel();
+    private string token;
+    private bool DisabledInput = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        token = await _ISessionStorageService.GetItemAsync<string>("Token");
+
+    }
+
+    private async void SearchFeedback()
+    {
+        DisabledInput = true;
+        feedbakcList = new List<FeedbackModel>();
+
+        (feedbakcList, httpInfo) = await _IFeedbackAccess.GetFeedbacksByReaderId_Admin(token, feedback.ReaderId);
+
+        DisabledInput = false;
+        StateHasChanged();
+
+    }
+
+}
