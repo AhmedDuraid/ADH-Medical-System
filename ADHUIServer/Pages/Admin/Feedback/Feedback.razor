@@ -5,37 +5,64 @@
 @inject IFeedbackAccess _IFeedbackAccess
 @inject ISessionStorageService _ISessionStorageService
 
-
-<h3>Feedback</h3>
-
 <AuthorizeView Roles="Admin">
     <Authorized>
+        <div class="container">
+            <div class="row">
 
-        <EditForm Context="Auth" Model="@feedback" OnSubmit="SearchFeedback">
+                <div class="col">
+                    <div class="input-group">
+                        <input class="form-control"
+                               id="IdInput"
+                               @bind-value="@feedback.ReaderId"
+                               @bind-value:event="oninput"
+                               placeholder="Staff Id"
+                               disabled="@DisabledInput" />
+                        <div class="input-group-prepend">
+                            <button disabled="@DisabledInput"
+                                    @onclick="@SearchFeedback"
+                                    class="btn btn-outline-primary"
+                                    type="button">
+                                Check
+                            </button>
+                        </div>
 
-            <div class="form-group">
-                <label for="IdInput">Staff Id</label>
-                <input class="form-control"
-                       id="IdInput"
-                       @bind-value="@feedback.ReaderId"
-                       @bind-value:event="oninput"
-                       placeholder="Staff Id"
-                       disabled="@DisabledInput" />
+                        <div class="input-group-prepend">
+                            <button disabled="@DisabledInput"
+                                    class="btn btn-outline-info"
+                                    @onclick="@GetFeedbacks"
+                                    type="button">
+                                All Feedbacks
+                            </button>
+                        </div>
+
+                        <div class="input-group-prepend">
+                            <button disabled="@DisabledInput"
+                                    class="btn btn-outline-info"
+                                    @onclick="@GetNotReadedFeedbacks"
+                                    type="button">
+                                Not Readed Feedbacks
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
-            <button disabled="@DisabledInput" class="btn btn-primary" type="submit">Check</button>
-        </EditForm>
-        <div>
-            <button disabled="@DisabledInput" class="btn btn-primary">All Feedbacks</button>
-            <button disabled="@DisabledInput" class="btn btn-primary">Not Readed Feedbacks</button>
-        </div>
 
-        <div>
-            @if (feedbakcList != null)
+            @if (feedbackList != null)
             {
-                <ADHUIServer.Components.FeedbacksTable Feedbacks="feedbakcList" />
+                <ADHUIServer.Components.FeedbacksTable Feedbacks="feedbackList" />
 
             }
+            <div class="row">
+                @if (Loading)
+                {
+                    <ADHUIServer.Components.Spinner />
+                }
+            </div>
         </div>
+
     </Authorized>
 
 </AuthorizeView>
@@ -43,10 +70,11 @@
 @code {
 
     private FeedbackModel feedback = new FeedbackModel();
-    private List<FeedbackModel> feedbakcList;
+    private List<FeedbackModel> feedbackList;
     private HttpInfoModel httpInfo = new HttpInfoModel();
     private string token;
     private bool DisabledInput = false;
+    private bool Loading = false;
 
     protected async override Task OnInitializedAsync()
     {
@@ -56,14 +84,55 @@
 
     private async void SearchFeedback()
     {
-        DisabledInput = true;
-        feedbakcList = new List<FeedbackModel>();
+        DisabledInputAndEnabledLoading();
+        ClearList();
 
-        (feedbakcList, httpInfo) = await _IFeedbackAccess.GetFeedbacksByReaderId_Admin(token, feedback.ReaderId);
+        (feedbackList, httpInfo) = await _IFeedbackAccess.GetFeedbacksByReaderId_Admin(token, feedback.ReaderId);
 
-        DisabledInput = false;
+        EnabledInputAndDisableLoading();
         StateHasChanged();
 
+    }
+
+    private async void GetFeedbacks()
+    {
+        DisabledInputAndEnabledLoading();
+        ClearList();
+
+        (feedbackList, httpInfo) = await _IFeedbackAccess.GetFeedbacks_Admin(token);
+
+        EnabledInputAndDisableLoading();
+        StateHasChanged();
+    }
+
+    private async void GetNotReadedFeedbacks()
+    {
+        DisabledInputAndEnabledLoading();
+        ClearList();
+
+        (feedbackList, httpInfo) = await _IFeedbackAccess.GetNotReadedFeedbacks(token);
+
+        EnabledInputAndDisableLoading();
+        StateHasChanged();
+    }
+
+    private void ClearList()
+    {
+        feedbackList = null;
+        StateHasChanged();
+    }
+
+    private void DisabledInputAndEnabledLoading()
+    {
+        DisabledInput = true;
+        Loading = true;
+
+    }
+
+    private void EnabledInputAndDisableLoading()
+    {
+        DisabledInput = false;
+        Loading = false;
     }
 
 }

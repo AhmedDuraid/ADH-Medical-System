@@ -1,48 +1,43 @@
 ﻿@using ADHUIServer.Models.Feedback
 
-<h3>FeedbacksTable</h3>
+@*ToDo Make each to card in one row to save space : in loop check the / if 0 and ad row else will not *@
 
-<table class="table">
+@foreach (var item in Feedbacks)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    @item.Id
+                    @if (!item.HasBeenRead)
+                    {
+                        <span class="badge badge-primary">New</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">@item.Titel</h3>
+                    <p class="card-text"><span class="font-weight-bold">Name: </span> @item.Name</p>
+                    <p class="card-text"><span class="font-weight-bold">Email:</span> @item.Email</p>
+                    <p class="card-text"><span class="font-weight-bold">Phone:</span> @item.Phone</p>
+                    <p class="card-text"><span class="font-weight-bold">Problem:</span> @item.FeedbackBody</p>
+                    <p class="card-text"><span class="font-weight-bold">Date:</span> @item.Date</p>
+                    @if (item.HasBeenRead)
+                    {
+                        <p class="card-text"><span class="font-weight-bold">Checked: </span> Yes</p>
+                        <p class="card-text"><span class="font-weight-bold">Checked by: </span>@item.ReaderId</p>
+                        <p class="card-text"><span class="font-weight-bold">Name:</span> @item.ReaderFirstName @item.ReaderLastName</p>
 
-    <thead>
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Titel</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone</th>
-            <th scope="col">FeedbackBody</th>
-            <th scope="col">Date</th>
-            <th scope="col">HasBeenRead</th>
-            <th scope="col">FeedbackBody</th>
-            <th scope="col">ReaderId</th>
-            <th scope="col">ReaderFirstName</th>
-            <th scope="col">ReaderLastName</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Feedbacks)
-        {
-            <tr>
-                <th scope="row">@item.Id</th>
-                <th>@item.Titel</th>
-                <th>@item.Name</th>
-                <th>@item.Email</th>
-                <th>@item.Phone</th>
-                <th>@item.FeedbackBody</th>
-                <th>@item.Date</th>
-                <th>@item.HasBeenRead</th>
-                <th>@item.FeedbackBody</th>
-                <th>@item.ReaderId</th>
-                <th>@item.ReaderFirstName</th>
-                <th>@item.ReaderLastName</th>
-                <th><button class="btn btn-warning">Mark As Read</button></th>
-            </tr>
-        }
-    </tbody>
-
-</table>
+                    }
+                    else
+                    {
+                        <p class="card-text"><span class="font-weight-bold">Checked:</span> No</p>
+                        <a class="btn btn-outline-warning">Mark as Checked</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 
 
