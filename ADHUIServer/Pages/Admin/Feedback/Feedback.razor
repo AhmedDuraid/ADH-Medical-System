@@ -52,7 +52,7 @@
 
             @if (feedbackList != null)
             {
-                <ADHUIServer.Components.FeedbacksTable Feedbacks="feedbackList" />
+                <ADHUIServer.Components.FeedbacksTable UpdateFeedback="@UpdateFeedbakToRead" Feedbacks="feedbackList" />
 
             }
             <div class="row">
@@ -60,6 +60,17 @@
                 {
                     <ADHUIServer.Components.Spinner />
                 }
+            </div>
+            <div class="row">
+                @if (FeedbackUpdateMessage)
+                {
+                    <div class="col-12">
+                        <div class="alert alert-primary" role="alert">
+                            Feedback Has Been Updated
+                        </div>
+                    </div>
+                }
+
             </div>
         </div>
 
@@ -75,6 +86,7 @@
     private string token;
     private bool DisabledInput = false;
     private bool Loading = false;
+    private bool FeedbackUpdateMessage = false;
 
     protected async override Task OnInitializedAsync()
     {
@@ -116,6 +128,19 @@
         StateHasChanged();
     }
 
+    private async void UpdateFeedbakToRead(string id)
+    {
+        DisabledInputAndEnabledLoading();
+        ClearList();
+
+        httpInfo = await _IFeedbackAccess.UpdateFeedback(token, id);
+
+        EnabledInputAndDisableLoading();
+        FeedbackUpdateMessage = true;
+        StateHasChanged();
+
+    }
+
     private void ClearList()
     {
         feedbackList = null;
@@ -133,6 +158,7 @@
     {
         DisabledInput = false;
         Loading = false;
+        FeedbackUpdateMessage = false;
     }
 
 }

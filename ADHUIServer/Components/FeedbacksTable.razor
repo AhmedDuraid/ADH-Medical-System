@@ -1,6 +1,8 @@
 ﻿@using ADHUIServer.Models.Feedback
 
-@*ToDo Make each to card in one row to save space : in loop check the / if 0 and ad row else will not *@
+@*TODD Make each two card in one row to save space : in loop check the / if 0 and ad row else will not *@
+
+@*TODO, Error in get reader information, from the stored procedures*@
 
 @foreach (var item in Feedbacks)
 {
@@ -31,7 +33,7 @@
                     else
                     {
                         <p class="card-text"><span class="font-weight-bold">Checked:</span> No</p>
-                        <a class="btn btn-outline-warning">Mark as Checked</a>
+                        <a class="btn btn-outline-warning" @onclick="@(()=>UpdateFeedback.InvokeAsync(item.Id))">Mark as Checked</a>
                     }
                 </div>
             </div>
@@ -39,11 +41,14 @@
     </div>
 }
 
-
-
 @code {
 
     [Parameter]
     public List<FeedbackModel> Feedbacks { get; set; }
+
+    [Parameter]
+    public EventCallback<string> UpdateFeedback { get; set; }
+
+
 
 }
