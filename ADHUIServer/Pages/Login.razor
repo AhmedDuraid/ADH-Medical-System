@@ -11,39 +11,64 @@
 
 
 
-<h3>Login</h3>
 <div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Login</h3>
+
+        </div>
+    </div>
     <EditForm class="form-group" Model="@loginModle" OnValidSubmit="@SubmitLoginForm">
         @*<FluentValidationValidator />
             <ValidationSummary />*@
-        <p>
-            <InputText id="userName"
-                       @bind-Value="@loginModle.UserName"
-                       placeholder="UserName"
-                       class="form-control" />
-        </p>
 
-        <p>
-            <InputText id="password"
-                       class="form-control"
-                       @bind-Value="@loginModle.Password"
-                       placeholder="Password"
-                       type="password" />
-        </p>
-
-        <button class="btn btn-primary" type="submit">Submit</button>
-        @if (HttpError)
-        {
-            <p>@userLoginInformationModel.Error.Message</p>
-
-        }
-        @if (Loading)
-        {
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
+        <div class="row">
+            <div class="col">
+                <p>
+                    <InputText id="userName"
+                               @bind-Value="@loginModle.UserName"
+                               placeholder="UserName"
+                               class="form-control" />
+                </p>
             </div>
+            <div class="col">
+                <p>
+                    <InputText id="password"
+                               class="form-control"
+                               @bind-Value="@loginModle.Password"
+                               placeholder="Password"
+                               type="password" />
+                </p>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+        <div class="row">
 
-        }
+            <div class="col">
+                @if (HttpError)
+                {
+                    <p>@userLoginInformationModel.Error.Message</p>
+
+                }
+            </div>
+            <div class="col">
+                @if (Loading)
+                {
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                }
+            </div>
+        </div>
+
+
+
+
+
+
 
     </EditForm>
 </div>

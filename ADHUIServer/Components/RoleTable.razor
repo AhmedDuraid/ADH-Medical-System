@@ -4,105 +4,130 @@
 @inject IRoleDataAccess _roleDataAccess
 @inject Blazored.SessionStorage.ISessionStorageService _ISessionStorageService
 
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Roles</h3>
+        </div>
+    </div>
 
-<h3>Roles</h3>
 
-@if (Loading)
-{
-    <Spinner />
-}
-else
-{
-
-    @if (RolesList != null)
+    @if (Loading)
     {
-        <table class="table table-striped table-hover table-sm table-responsive">
-
-            <thead>
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Role</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var item in RolesList)
-                {
-                    <tr id="@item.Id" @onclick="@(()=> UpdateSelectRole(item))">
-                        <th scope="row">@item.Id</th>
-                        <th>@item.Name</th>
-                        <th>
-                            <button class="btn btn-warning"
-                                    @onclick="@(()=> UpdateSelectRole(item))">
-                                Update
-                            </button>
-
-                            <button class="btn btn-danger"
-                                    @onclick="@(e=>DeleteRole(item.Id))">
-                                Delete
-                            </button>
-                        </th>
-                    </tr>
-                }
-            </tbody>
-
-        </table>
-        <p>
-            <button class="btn btn-primary" @onclick="@ShowEditFormForNew">Add New </button>
-        </p>
+        <div class="row">
+            <div class="col">
+                <Spinner />
+            </div>
+        </div>
     }
     else
     {
-        <h1>There is no Role</h1>
-    }
 
-    @if (FromEdit)
-    {
-        <EditForm Model="SelectedRole">
-            <div class="form-group">
-                <label for="IdInput">ID</label>
-                <InputText @bind-Value="SelectedRole.Id"
-                           placeholder="Id"
-                           class="form-control"
-                           disabled="disabled"
-                           id="IdInput" />
-            </div>
-
-            <div class="form-group">
-                <label for="NameInput">Role Name</label>
-                <InputText @onchange="@((e)=>SelectedRole.Name = e.Value.ToString())"
-                           @bind-Value="SelectedRole.Name"
-                           placeholder="Role Name"
-                           class="form-control"
-                           id="NameInput" />
-                @if (HttpInfo.StatusCode != System.Net.HttpStatusCode.OK)
+        @if (RolesList != null)
+        {
+            <div class="row">
+                @foreach (var item in RolesList)
                 {
-                    <small class="form-text text-muted">@HttpInfo.Message</small>
+                    <div class="col-3 m-1">
+                        <div class="card border-primary">
+                            <div class="card-header border-primary bg-white">
+                                @item.Name
+                            </div>
+
+                            <div class="card-body border-primary bg-white">
+                                <p class="card-text">
+                                    <span class="font-weight-bold">
+                                        Role Id:
+                                    </span>  @item.Id
+                                </p>
+                                <p class="card-text">
+                                    <span class="font-weight-bold">
+                                        Role Name:
+                                    </span>  @item.Name
+                                </p>
+                            </div>
+
+                            <div class="card-footer border-primary bg-white">
+                                <button class="btn btn-warning"
+                                        @onclick="@(()=> UpdateSelectRole(item))">
+                                    Update
+                                </button>
+                                <button class="btn btn-danger"
+                                        @onclick="@(e=>DeleteRole(item.Id))">
+                                    DELETE
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
                 }
-
             </div>
+            <div class="row">
+                <div class="col m-4">
+                    <button class="btn btn-primary" @onclick="@ShowEditFormForNew">Add New </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h1>There is no Role</h1>
+        }
 
-            @if (IsNew)
-            {
-                <button class="btn btn-primary"
-                        @onclick="AddNewRole">
-                    Add Role
-                </button>
 
-            }
-            else
-            {
-                <button class="btn btn-warning"
-                        @onclick="UpdateRole">
-                    Send Update
-                </button>
 
-            }
-        </EditForm>
+        @if (FromEdit)
+        {
+            <EditForm Model="SelectedRole">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <InputText @bind-Value="SelectedRole.Id"
+                                       placeholder="Id"
+                                       class="form-control"
+                                       disabled="@true"
+                                       id="IdInput" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <InputText @onchange="@((e)=>SelectedRole.Name = e.Value.ToString())"
+                                       @bind-Value="SelectedRole.Name"
+                                       placeholder="Role Name"
+                                       class="form-control"
+                                       id="NameInput" />
+                            @if (HttpInfo.StatusCode != System.Net.HttpStatusCode.OK)
+                            {
+                                <small class="form-text text-muted">@HttpInfo.Message</small>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        @if (IsNew)
+                        {
+                            <button class="btn btn-primary"
+                                    @onclick="AddNewRole">
+                                Add Role
+                            </button>
+
+                        }
+                        else
+                        {
+                            <button class="btn btn-warning"
+                                    @onclick="UpdateRole">
+                                Send Update
+                            </button>
+
+                        }
+
+
+                    </div>
+                </div>
+            </EditForm>
+        }
+
     }
-
-}
+</div>
 
 @code {
 
