@@ -4,89 +4,124 @@
 
 @inject IFeedbackAccess _IFeedbackAccess
 
+<div class="container">
+    <h3>Feedback</h3>
 
-<h3>PublicFeedback</h3>
-<EditForm Model="@feedbackModel" OnValidSubmit="SendFeedback">
+    <EditForm Model="@feedbackModel" OnValidSubmit="SendFeedback">
 
-    <FluentValidationValidator />
-    <div class="form-group">
-        <label for="TitelInput">Titel</label>
-        <input @bind-value="@feedbackModel.Titel"
-               @bind-value:event="oninput"
-               id="TitelInput"
-               class="form-control"
-               placeholder="Titel"
-               type="text"
-               disabled="@disabledInput" />
-        <ValidationMessage For="@(()=>feedbackModel.Titel)" />
-    </div>
+        <FluentValidationValidator />
 
-    <div class="form-group">
-        <label for="NameInput">Name</label>
-        <input @bind-value="@feedbackModel.Name"
-               @bind-value:event="oninput"
-               id="NamelInput"
-               class="form-control"
-               placeholder="Name"
-               type="text"
-               disabled="@disabledInput" />
-        <ValidationMessage For="@(()=>feedbackModel.Name)" />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="TitelInput">Titel</label>
+                    <input @bind-value="@feedbackModel.Titel"
+                           @bind-value:event="oninput"
+                           id="TitelInput"
+                           class="form-control"
+                           placeholder="Titel"
+                           type="text"
+                           disabled="@disabledInput" />
+                    <ValidationMessage For="@(()=>feedbackModel.Titel)" />
+                </div>
+            </div>
 
-    </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="NameInput">Name</label>
+                    <input @bind-value="@feedbackModel.Name"
+                           @bind-value:event="oninput"
+                           id="NamelInput"
+                           class="form-control"
+                           placeholder="Name"
+                           type="text"
+                           disabled="@disabledInput" />
+                    <ValidationMessage For="@(()=>feedbackModel.Name)" />
+                </div>
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label for="EmailInput">Email</label>
-        <input @bind-value="@feedbackModel.Email"
-               @bind-value:event="oninput"
-               id="EmailInput"
-               class="form-control"
-               placeholder="Email"
-               type="email"
-               disabled="@disabledInput" />
-        <ValidationMessage For="@(()=>feedbackModel.Email)" />
+        <div class="row">
 
-    </div>
+            <div class="col">
 
-    <div class="form-group">
-        <label for="PhoneInput">Phone</label>
-        <input @bind-value="@feedbackModel.Phone"
-               @bind-value:event="oninput"
-               id="PhoneInput"
-               class="form-control"
-               placeholder="Phone"
-               type="text"
-               disabled="@disabledInput" />
-        <ValidationMessage For="@(()=>feedbackModel.Phone)" />
+                <div class="form-group">
+                    <label for="EmailInput">Email</label>
+                    <input @bind-value="@feedbackModel.Email"
+                           @bind-value:event="oninput"
+                           id="EmailInput"
+                           class="form-control"
+                           placeholder="Email"
+                           type="email"
+                           disabled="@disabledInput" />
+                    <ValidationMessage For="@(()=>feedbackModel.Email)" />
+                </div>
 
-    </div>
+            </div>
 
-    <div class="form-group">
-        <label for="FeedbackBodyInput">Problem</label>
-        <textarea @bind-value="@feedbackModel.FeedbackBody"
-                  @bind-value:event="oninput"
-                  id="FeedbackBodyInput"
-                  class="form-control"
-                  placeholder="Describe your Problem"
-                  disabled="@disabledInput" />
-        <ValidationMessage For="@(()=>feedbackModel.FeedbackBody)" />
+            <div class="col">
+                <div class="form-group">
+                    <label for="PhoneInput">Phone</label>
+                    <input @bind-value="@feedbackModel.Phone"
+                           @bind-value:event="oninput"
+                           id="PhoneInput"
+                           class="form-control"
+                           placeholder="Phone"
+                           type="text"
+                           disabled="@disabledInput" />
+                    <ValidationMessage For="@(()=>feedbackModel.Phone)" />
+                </div>
+            </div>
 
-    </div>
-    <button disabled="@disabledInput" class="btn btn-primary" type="submit">Submit</button>
-</EditForm>
-@if (httpInfo.StatusCode == System.Net.HttpStatusCode.OK)
-{
-    <div class="alert alert-primary">
-        Thank you for your feedback, we will check your review and will contact you if we need more information
-    </div>
-}
+        </div>
 
-@if (error)
-{
-    <div class="alert alert-warning">
-        State Code : @httpInfo.StatusCode, Message: @httpInfo.Message
-    </div>
-}
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="FeedbackBodyInput">Problem</label>
+                    <textarea @bind-value="@feedbackModel.FeedbackBody"
+                              @bind-value:event="oninput"
+                              id="FeedbackBodyInput"
+                              class="form-control"
+                              placeholder="Describe your Problem"
+                              disabled="@disabledInput" />
+                    <ValidationMessage For="@(()=>feedbackModel.FeedbackBody)" />
 
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button disabled="@disabledInput" class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </EditForm>
+
+    @if (httpInfo.StatusCode == System.Net.HttpStatusCode.OK)
+    {
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-primary">
+                    Thank you for your feedback, we will check your review and will contact you if we need more information
+                </div>
+            </div>
+        </div>
+
+    }
+
+    @if (error)
+    {
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-warning">
+                    State Code : @httpInfo.StatusCode, Message: @httpInfo.Message
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
 
 @code {
 
