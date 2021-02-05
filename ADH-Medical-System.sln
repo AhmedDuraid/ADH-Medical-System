@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADHUIServer", "ADHUIServer\
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ADHDatabaseProject", "ADHDatabaseProject\ADHDatabaseProject.sqlproj", "{08E10D75-8ED7-4647-9359-30DC037DA909}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ADHErrorDatabaseProject", "ADHErrorDatabaseProject\ADHErrorDatabaseProject.sqlproj", "{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,12 @@ Global
 		{08E10D75-8ED7-4647-9359-30DC037DA909}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08E10D75-8ED7-4647-9359-30DC037DA909}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08E10D75-8ED7-4647-9359-30DC037DA909}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F52D25DF-5CC5-45B1-806F-E9ACA9B33784}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

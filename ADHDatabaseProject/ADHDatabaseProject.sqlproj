@@ -13,7 +13,7 @@
     </RootPath>
     <RootNamespace>ADHDatabaseProject</RootNamespace>
     <AssemblyName>ADHDatabaseProject</AssemblyName>
-    <ModelCollation>1033, CI</ModelCollation>
+    <ModelCollation>1025,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -22,6 +22,8 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>Arabic_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -56,5 +58,102 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="Publish" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\PatientNote.sql" />
+    <Build Include="dbo\Tables\PatientProgress.sql" />
+    <Build Include="dbo\Tables\Plan.sql" />
+    <Build Include="dbo\Tables\AssignedPlan.sql" />
+    <Build Include="dbo\Tables\Medicines.sql" />
+    <Build Include="dbo\Tables\UserRoles.sql" />
+    <Build Include="dbo\Tables\TestRequests.sql" />
+    <Build Include="dbo\Tables\Users.sql" />
+    <Build Include="dbo\Tables\Roles.sql" />
+    <Build Include="dbo\Tables\Articles.sql" />
+    <Build Include="dbo\Tables\AssignedMedicines.sql" />
+    <Build Include="dbo\Tables\Feedback.sql" />
+    <Build Include="dbo\Tables\LabTests.sql" />
+    <Build Include="dbo\Stored Procedures\spLabTests_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spLabTests_FindTestByName.sql" />
+    <Build Include="dbo\Stored Procedures\spLabTests_UpdateTest.sql" />
+    <Build Include="dbo\Stored Procedures\spLabTests_DeleteTest.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_FindAllByDoctorId.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_FindAllByPatientId.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_AddNewRequest.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_UpdateResult.sql" />
+    <Build Include="dbo\Stored Procedures\spTestRequests_DeleteRequest.sql" />
+    <Build Include="dbo\Stored Procedures\spMedicines_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spMedicines_FindMedByName.sql" />
+    <Build Include="dbo\Stored Procedures\spMedicines_AddNewMed.sql" />
+    <Build Include="dbo\Stored Procedures\spMedicines_UpdateMed.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_AddNewRole_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_GetRoleByID_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spMedicines_DeleteMed.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_GetRoleByName_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spPlans_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spUserRole_GetUserRoleById_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spPlans_FindByType.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_AddUser_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spPlans_AddNew.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_GetUserByEmail_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spPlans_UpdatePlan.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_GetUserByName_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spPlans_DeletePlan.sql" />
+    <Build Include="dbo\Stored Procedures\spUserRole_FindPatinets.sql" />
+    <Build Include="dbo\Stored Procedures\spUserRole_FindPatinetById.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_FindByPatientId_Show.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_FindByPatientIdAndDoctorID.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_FindByPatientId.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_UpdatePatientByPatientAndDoctorID.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_DeleteNoteById.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientNote_AddNote.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientProgress_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientProgress_FindAllByPatientId.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientProgress_DeleteByID.sql" />
+    <Build Include="dbo\Stored Procedures\spPatientProgress_AddNew.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_UpdateRole.sql" />
+    <Build Include="dbo\Stored Procedures\spRoles_DeleteRole.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedPlan_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\spLabTests_AddNewTest.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindArticlesById.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_FindByID.sql" />
+    <Build Include="dbo\Stored Procedures\spUserRole_AddUserRole_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_FindUserByID.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_UpdateUserByID.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_DeleteUser.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindAllArticles_show.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindArticlesById_shown.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_AddNewArticle.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindArticlesByUsername_shown.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindArticles_staff.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_FindAreticlesByUserID_staff.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_UpdateArticles.sql" />
+    <Build Include="dbo\Stored Procedures\spArticles_DeleteArticle.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_GetUserById_Auth.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_FindAllByPatientId.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_FindAllByDoctorId.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedMedicines_AddNew.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedPlan_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedPlan_FindByAllPatientID.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedPlan_FindByAllDoctorId.sql" />
+    <Build Include="dbo\Stored Procedures\spAssignedPlan_AddNew.sql" />
+    <Build Include="dbo\Stored Procedures\spFeedback_FindAll.sql" />
+    <Build Include="dbo\Stored Procedures\spFeedback_FindAllNotReaded.sql" />
+    <Build Include="dbo\Stored Procedures\spUsers_GetUsers.sql" />
+    <Build Include="dbo\Stored Procedures\spFeedback_FindAllReadedId.sql" />
+    <Build Include="dbo\Stored Procedures\spFeedback_AddNew.sql" />
+    <Build Include="dbo\Stored Procedures\spFeedback_UpdateFeedbackToReaded.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Publish\ADHDatabaseProject.publish.xml" />
   </ItemGroup>
 </Project>
