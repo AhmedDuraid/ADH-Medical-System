@@ -4,6 +4,7 @@ using ADHApi.Helpers;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using ADHDataManager.Library.Internal.DataAccess;
+using FluentValidation.AspNetCore;
 using LogsHandler.Library.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,10 +32,11 @@ namespace ADHApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            // Add fluent validation 
+            services.AddControllers().AddFluentValidation();
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, ApplicationRole>().AddDefaultTokenProviders();
+
             services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, CustomRoleStore>();
             services.Configure<IdentityOptions>(options =>
@@ -48,7 +50,7 @@ namespace ADHApi
                 options.User.RequireUniqueEmail = true;
             });
 
-            // Personal Services
+            // Project Services
 
             services.AddTransient<ISqlDataAccess, SqlDataAccess>();
             services.AddTransient<IRoleData, RoleData>();
