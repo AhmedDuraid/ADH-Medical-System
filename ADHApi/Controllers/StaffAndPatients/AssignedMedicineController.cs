@@ -91,7 +91,7 @@ namespace ADHApi.Controllers.StaffAndPatients
             {
                 if (ModelState.IsValid)
                 {
-                    var med = new AssignedMedicineModel()
+                    AssignedMedicineModel med = new ()
                     {
                         PatientId = model.PatientId,
                         MedicineId = model.MedicineId,

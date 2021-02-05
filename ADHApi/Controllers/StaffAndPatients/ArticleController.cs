@@ -116,7 +116,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
             try
             {
-                var Article = new ArticleModel()
+                ArticleModel Article = new()
                 {
                     Titel = userInput.Titel,
                     Body = userInput.Body,
@@ -138,7 +138,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // PUT api/<ArticleController>/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateArticle(string id, [FromBody] ApiUpdateArticleModel model)
+        public IActionResult UpdateArticle(string id, [FromBody] ApiAddArticleModel model)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace ADHApi.Controllers.StaffAndPatients
                     return StatusCode(405);
                 }
 
-                var Article = new ArticleModel()
+                ArticleModel Article = new()
                 {
                     Body = model.Body,
                     Titel = model.Titel,
@@ -239,7 +239,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
                 foreach (var item in Result)
                 {
-                    ArticleList.Add(new PublicArticleModel
+                    ArticleList.Add(new()
                     {
                         Id = item.Id,
                         Titel = item.Titel,
@@ -280,7 +280,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
                 foreach (var item in Result)
                 {
-                    ArticleList.Add(new PublicArticleModel
+                    ArticleList.Add(new()
                     {
                         Id = item.Id,
                         Titel = item.Titel,
@@ -317,11 +317,11 @@ namespace ADHApi.Controllers.StaffAndPatients
                     return NotFound();
                 }
 
-                List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
+                List<PublicArticleModel> ArticleList = new();
 
                 foreach (var item in Result)
                 {
-                    var Article = new PublicArticleModel
+                    PublicArticleModel Article = new()
                     {
                         Id = item.Id,
                         Titel = item.Titel,

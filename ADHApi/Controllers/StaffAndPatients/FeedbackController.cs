@@ -128,7 +128,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         {
             try
             {
-                var Feedback = new FeedbackModel()
+                FeedbackModel Feedback = new()
                 {
                     Titel = feedbackInput.Titel,
                     Name = feedbackInput.Name,

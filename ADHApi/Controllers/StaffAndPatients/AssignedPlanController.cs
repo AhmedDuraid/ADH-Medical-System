@@ -131,7 +131,7 @@ namespace ADHApi.Controllers.StaffAndPatients
             try
             {
                 string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var assignePlan = new AssignedPlanModel()
+                AssignedPlanModel assignePlan = new()
                 {
                     PatientID = assignedPlanInput.PatientID,
                     PlanId = assignedPlanInput.PlanId,

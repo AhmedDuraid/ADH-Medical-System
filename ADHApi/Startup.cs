@@ -1,9 +1,15 @@
 using ADHApi.CoustomProvider;
 using ADHApi.Error;
 using ADHApi.Helpers;
+using ADHApi.Models.Articles;
+using ADHApi.Models.AssignedMedicine;
+using ADHApi.Models.AssignedPlan;
+using ADHApi.Models.Feedback;
+using ADHApi.Validation;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using ADHDataManager.Library.Internal.DataAccess;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using LogsHandler.Library.DataAccess;
 using Microsoft.AspNetCore.Builder;
@@ -71,6 +77,12 @@ namespace ADHApi
             services.AddTransient<ILogsSqlDataAccess, LogsSqlDataAccess>();
             services.AddTransient<IApiErrorHandler, ApiErrorHandler>();
             services.AddTransient<IUserClaims, UserClaims>();
+
+            // Validation Transient
+            services.AddTransient<IValidator<ApiAddArticleModel>, ArticleValidation>();
+            services.AddTransient<IValidator<ApiAddAssignedMedicineModel>, AssignedMedicineValidation>();
+            services.AddTransient<IValidator<ApiCreateAssignedPlanModel>, AssignedPlanValidation>();
+            services.AddTransient<IValidator<ApiCreateFeedbackModel>, FeedbackValidation>();
 
 
 
