@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Articles] (
     [Id]         NVARCHAR (128) NOT NULL,
-    [Titel]      NVARCHAR (256) NOT NULL,
+    [Titel]      NVARCHAR (100) NOT NULL,
     [Body]       TEXT           NOT NULL,
     [CreateDate] DATETIME       CONSTRAINT [DF_articles_date] DEFAULT (getdate()) NOT NULL,
     [LastUpdate] DATETIME       CONSTRAINT [DF_articles_last_update] DEFAULT (getdate()) NOT NULL,

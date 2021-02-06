@@ -22,6 +22,7 @@ namespace ADHApi.Controllers.Administration
             _apiErrorHandler = apiErrorHandler;
         }
 
+        // GET api/Admin/Articles
         [HttpGet("Articles")]
         public IActionResult GetArticles()
         {

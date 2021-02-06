@@ -1,14 +1,17 @@
 using ADHApi.CoustomProvider;
 using ADHApi.Error;
 using ADHApi.Helpers;
-using ADHApi.Models.Articles;
+using ADHApi.Models;
 using ADHApi.Models.AssignedMedicine;
 using ADHApi.Models.AssignedPlan;
 using ADHApi.Models.Feedback;
 using ADHApi.Validation;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
 using ADHDataManager.Library.Internal.DataAccess;
+using ADHDataManager.Library.Models;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using LogsHandler.Library.DataAccess;
@@ -35,9 +38,24 @@ namespace ADHApi
 
         public IConfiguration Configuration { get; }
 
+        private IMapper AutoMapperConfigurations()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ArticleViewModel, ArticleModel>();
+                cfg.CreateMap<ArticleModel, PrivateArticelDisplayModel>();
+                cfg.CreateMap<ArticleModel, PublicArticleDisplayModel>();
+            });
+            var mapper = config.CreateMapper();
+
+            return mapper;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
             // Add fluent validation 
             services.AddControllers().AddFluentValidation();
 
@@ -55,6 +73,9 @@ namespace ADHApi
                 options.Password.RequiredUniqueChars = 1;
                 options.User.RequireUniqueEmail = true;
             });
+
+            // AutoMapper config
+            services.AddSingleton(AutoMapperConfigurations());
 
             // Project Services
 
@@ -79,11 +100,11 @@ namespace ADHApi
             services.AddTransient<IUserClaims, UserClaims>();
 
             // Validation Transient
-            services.AddTransient<IValidator<ApiAddArticleModel>, ArticleValidation>();
+            services.AddTransient<IValidator<ArticleViewModel>, ArticleViewModelValidations>();
+
             services.AddTransient<IValidator<ApiAddAssignedMedicineModel>, AssignedMedicineValidation>();
             services.AddTransient<IValidator<ApiCreateAssignedPlanModel>, AssignedPlanValidation>();
             services.AddTransient<IValidator<ApiCreateFeedbackModel>, FeedbackValidation>();
-
 
 
             //token services

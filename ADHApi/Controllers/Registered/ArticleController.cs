@@ -1,15 +1,16 @@
 ﻿using ADHApi.Error;
-using ADHApi.Helpers;
-using ADHApi.Models.Articles;
+using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace ADHApi.Controllers.StaffAndPatients
+namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,22 +19,20 @@ namespace ADHApi.Controllers.StaffAndPatients
     {
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
-        private readonly IUserData _userData;
-        private readonly IUserClaims _userClaims;
+        private readonly IMapper _mapper;
 
-        public ArticleController(IArticleData articleData, IApiErrorHandler apiErrorHandler, IUserData userData,
-            IUserClaims userClaims)
+        public ArticleController(IArticleData articleData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
-            _userData = userData;
-            _userClaims = userClaims;
-            ;
+            _mapper = mapper;
         }
 
-        // GET: api/ArticleController/Admin
+        // GET: api/Article
         [HttpGet]
-        [Authorize(Roles = "Admin, Doctor")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult GetArticles()
         {
             try
@@ -42,12 +41,14 @@ namespace ADHApi.Controllers.StaffAndPatients
 
                 List<ArticleModel> articles = _articleData.FindArticlesByUserId(UserId);
 
+                var model = _mapper.Map<List<PrivateArticelDisplayModel>>(articles);
+
                 if (articles.Count > 0)
                 {
-                    return Ok(articles);
+                    return Ok(model);
                 }
 
-                return NotFound();
+                return NotFound("No Articels found");
             }
             catch (Exception ex)
             {
@@ -57,24 +58,19 @@ namespace ADHApi.Controllers.StaffAndPatients
             return StatusCode(500);
         }
 
-        // POST: api/Article/Staff
-        [HttpPost("Staff")]
+        // POST: api/Article
+        [HttpPost]
         [Authorize(Roles = "Doctor")]
-        public IActionResult AddNewArticle([FromBody] ApiAddArticleModel userInput)
+        public IActionResult AddNewArticle([FromBody] ArticleViewModel userInput)
         {
             try
             {
-                ArticleModel Article = new()
-                {
-                    Titel = userInput.Titel,
-                    Body = userInput.Body,
-                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    Show = userInput.Show
-                };
+                ArticleModel model = _mapper.Map<ArticleModel>(userInput);
+                model.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                _articleData.AddArticle(Article);
+                _articleData.AddArticle(model);
 
-                return Ok($"article {Article.UserId} created");
+                return Ok($"article {model.Id} created");
             }
             catch (Exception ex)
             {
@@ -87,7 +83,7 @@ namespace ADHApi.Controllers.StaffAndPatients
         // PUT api/<ArticleController>/{id}
         [HttpPut("{id}")]
         [Authorize(Roles = "Doctor")]
-        public IActionResult UpdateArticle(string id, [FromBody] ApiAddArticleModel model)
+        public IActionResult UpdateArticle(string id, [FromBody] ArticleViewModel input)
         {
             try
             {
@@ -99,18 +95,13 @@ namespace ADHApi.Controllers.StaffAndPatients
                     return StatusCode(405);
                 }
 
-                ArticleModel Article = new()
-                {
-                    Body = model.Body,
-                    Titel = model.Titel,
-                    Show = model.Show,
-                    Id = id,
-                    UserId = UserId
-                };
+                var model = _mapper.Map<ArticleModel>(input);
+                model.Id = id;
+                model.UserId = UserId;
 
-                _articleData.UpdateArticle(Article);
+                _articleData.UpdateArticle(model);
 
-                return Ok();
+                return Ok($"Article {model.Id} Updated");
             }
             catch (Exception ex)
             {
@@ -121,14 +112,13 @@ namespace ADHApi.Controllers.StaffAndPatients
         }
 
         // DELETE api/Article/Staff
-        [HttpDelete("Staff/{articleId}")]
+        [HttpDelete("{articleId}")]
         [Authorize(Roles = "Doctor")]
         public IActionResult Delete(string articleId)
         {
-            var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             try
             {
+                var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var article = _articleData.FindArticleByID(articleId);
 
                 if (article == null)
@@ -143,7 +133,6 @@ namespace ADHApi.Controllers.StaffAndPatients
                 }
                 else
                 {
-
                     _articleData.DeleteArticle(articleId);
 
                     return Ok($"Artilce With Id = {articleId} Deleted");
