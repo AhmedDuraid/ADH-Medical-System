@@ -2,7 +2,6 @@ using ADHApi.CoustomProvider;
 using ADHApi.Error;
 using ADHApi.Helpers;
 using ADHApi.Models;
-using ADHApi.Models.AssignedMedicine;
 using ADHApi.Models.AssignedPlan;
 using ADHApi.Models.Feedback;
 using ADHApi.Validation;
@@ -45,6 +44,8 @@ namespace ADHApi
                 cfg.CreateMap<ArticleViewModel, ArticleModel>();
                 cfg.CreateMap<ArticleModel, PrivateArticelDisplayModel>();
                 cfg.CreateMap<ArticleModel, PublicArticleDisplayModel>();
+                cfg.CreateMap<AssignedMedicineModel, PatientAssignedMedicineDisplayModel>();
+                cfg.CreateMap<AssignedMedicineViewModel, AssignedMedicineModel>();
             });
             var mapper = config.CreateMapper();
 
@@ -58,6 +59,8 @@ namespace ADHApi
 
             // Add fluent validation 
             services.AddControllers().AddFluentValidation();
+
+            // Identity services
 
             services.AddIdentity<ApplicationUser, ApplicationRole>().AddDefaultTokenProviders();
 
@@ -101,8 +104,8 @@ namespace ADHApi
 
             // Validation Transient
             services.AddTransient<IValidator<ArticleViewModel>, ArticleViewModelValidations>();
+            services.AddTransient<IValidator<AssignedMedicineViewModel>, AssignedMedicineValidation>();
 
-            services.AddTransient<IValidator<ApiAddAssignedMedicineModel>, AssignedMedicineValidation>();
             services.AddTransient<IValidator<ApiCreateAssignedPlanModel>, AssignedPlanValidation>();
             services.AddTransient<IValidator<ApiCreateFeedbackModel>, FeedbackValidation>();
 

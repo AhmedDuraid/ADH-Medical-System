@@ -1,7 +1,9 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models.AssignedMedicine;
+using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,62 +17,56 @@ namespace ADHApi.Controllers.Registered
     [Authorize]
     public class AssignedMedicineController : ControllerBase
     {
+        // TODO :   Add Assigned Med By ID
         private readonly IAssignedMedicineData _assignedMedicine;
         private readonly IApiErrorHandler _apiErrorHandler;
+        private readonly IMapper _mapper;
 
-        public AssignedMedicineController(IAssignedMedicineData assignedMedicineData, IApiErrorHandler apiErrorHandler)
+        public AssignedMedicineController(IAssignedMedicineData assignedMedicineData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _assignedMedicine = assignedMedicineData;
             _apiErrorHandler = apiErrorHandler;
+            _mapper = mapper;
         }
 
-        // GET: api/AssignedMedicine/Admin
+        // GET: api/AssignedMedicine
         [HttpGet]
-        [Authorize(Roles = "Admin, Patient, Doctor")]
+        [Authorize(Roles = "Patient, Doctor")]
         public IActionResult GetAssignedMed()
         {
-            string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             List<AssignedMedicineModel> assignedMedicines;
+            string RoleType = ClaimTypes.Role.ToString();
 
             try
             {
-                switch (UserRole)
+                if (User.HasClaim(RoleType, "Patient"))
                 {
-                    case "Admin":
-                        {
-                            assignedMedicines = _assignedMedicine.GetAssignedMeds();
+                    assignedMedicines = _assignedMedicine.GetAssignedPatientId(UserId);
 
-                            if (assignedMedicines != null)
-                            {
-                                return Ok(assignedMedicines);
-                            }
+                    var model = _mapper.Map<PatientAssignedMedicineDisplayModel>(assignedMedicines);
 
-                            return NotFound();
-                        }
-                    case "Patient":
-                        {
-                            assignedMedicines = _assignedMedicine.GetAssignedPatientId(UserId);
+                    if (assignedMedicines.Count > 0)
+                    {
+                        return Ok(model);
+                    }
 
-                            if (assignedMedicines != null)
-                            {
-                                return Ok(assignedMedicines);
-                            }
-
-                            return NotFound();
-
-                        }
-                    case "Doctor":
-                        {
-                            assignedMedicines = _assignedMedicine.GetAssignedDoctorId(UserId);
-
-                            if (assignedMedicines != null)
-                            {
-                                Ok(assignedMedicines);
-                            }
-                            return NotFound();
-                        }
+                    return NotFound();
                 }
+
+                if (User.HasClaim(RoleType, "Doctor"))
+                {
+                    assignedMedicines = _assignedMedicine.GetAssignedDoctorId(UserId);
+
+                    if (assignedMedicines.Count > 0)
+                    {
+                        Ok(assignedMedicines);
+                    }
+                    return NotFound();
+                }
+
             }
             catch (Exception ex)
             {
@@ -80,30 +76,23 @@ namespace ADHApi.Controllers.Registered
             return StatusCode(500);
         }
 
-
-
         // POST: api/AssignedMedicine
         [HttpPost]
-        [Authorize(Roles = "Doctor, Admin")]
-        public IActionResult PostNewAssignedMed([FromBody] ApiAddAssignedMedicineModel model)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult PostNewAssignedMed([FromBody] AssignedMedicineViewModel input)
         {
+            string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             try
             {
-                if (ModelState.IsValid)
-                {
-                    AssignedMedicineModel med = new()
-                    {
-                        PatientId = model.PatientId,
-                        MedicineId = model.MedicineId,
-                        DoctoreID = model.DoctoreID
-                    };
 
-                    _assignedMedicine.AddAssignedMed(med);
+                var model = _mapper.Map<AssignedMedicineModel>(input);
+                model.DoctoreID = UserId;
 
-                    return Ok();
-                }
+                _assignedMedicine.AddAssignedMed(model);
 
-                return BadRequest();
+                return Ok($"Added");
+
             }
             catch (Exception ex)
             {
@@ -120,7 +109,6 @@ namespace ADHApi.Controllers.Registered
             try
             {
                 var AssignedMed = _assignedMedicine.GetAssignedById(id);
-                string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
                 string UserID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (AssignedMed == null)
@@ -128,18 +116,9 @@ namespace ADHApi.Controllers.Registered
                     return NotFound($"There is to Assigned Medicine with this ID {id} ");
                 }
 
-                // if user is admin
-                if (UserRole == "Admin")
-                {
-                    _assignedMedicine.DeleteAssignedMed(id);
-
-                    return Ok($"{id} Deleted");
-                }
-
-                // if user not admin 
                 if (AssignedMed[0].DoctoreID != UserID)
                 {
-                    return BadRequest($"You user {UserID} CAN'T DELETE This Record {id}");
+                    return NotFound($"You user {UserID} CAN'T DELETE This Record {id}");
                 }
 
                 _assignedMedicine.DeleteAssignedMed(id);
