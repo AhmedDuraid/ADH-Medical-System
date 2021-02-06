@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
 
-namespace ADHApi.Controllers.StaffAndPatients
+namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]

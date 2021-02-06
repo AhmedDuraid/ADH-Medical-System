@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace ADHApi.Controllers.StaffAndPatients
+namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
-namespace ADHApi.Controllers.StaffAndPatients
+namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]

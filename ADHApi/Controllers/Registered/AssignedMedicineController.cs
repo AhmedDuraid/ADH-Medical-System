@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace ADHApi.Controllers.StaffAndPatients
+namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -91,7 +91,7 @@ namespace ADHApi.Controllers.StaffAndPatients
             {
                 if (ModelState.IsValid)
                 {
-                    AssignedMedicineModel med = new ()
+                    AssignedMedicineModel med = new()
                     {
                         PatientId = model.PatientId,
                         MedicineId = model.MedicineId,
