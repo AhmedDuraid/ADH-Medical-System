@@ -16,10 +16,6 @@ namespace ADHApi.Controllers.StaffAndPatients
     [Authorize]
     public class ArticleController : ControllerBase
     {
-        // TODO change Get methodes from 3 different methods to one 
-
-        // TODO need to change to get user role, because user can have more than one User.FindVirst only get the first role that it find. all controllers need to be changed
-
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
         private readonly IUserData _userData;
@@ -40,58 +36,11 @@ namespace ADHApi.Controllers.StaffAndPatients
         [Authorize(Roles = "Admin, Doctor")]
         public IActionResult GetArticles()
         {
-            string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            List<ArticleModel> articles;
-
-            var UserRoles = _userClaims.GetUserRole(User.Claims);
-
             try
             {
-                foreach (var role in UserRoles)
-                {
-                    if (role == "Admin")
-                    {
-                        articles = _articleData.FindArticles();
+                string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                        if (articles.Count > 0)
-                        {
-                            return Ok(articles);
-                        }
-
-                        return NotFound("There is no Articles to show");
-                    }
-                    if (role == "Doctor")
-                    {
-                        articles = _articleData.FindArticlesByUserId(UserId);
-
-                        if (articles.Count > 0)
-                        {
-                            return Ok(articles);
-                        }
-
-                        return NotFound();
-                    }
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-
-        }
-
-        // GET api/Article/{id}
-        [HttpGet("Admin/{userId}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetArticlesByUserId(string userId)
-        {
-            try
-            {
-                List<ArticleModel> articles = _articleData.FindArticlesByUserId(userId);
+                List<ArticleModel> articles = _articleData.FindArticlesByUserId(UserId);
 
                 if (articles.Count > 0)
                 {
@@ -107,7 +56,6 @@ namespace ADHApi.Controllers.StaffAndPatients
 
             return StatusCode(500);
         }
-
 
         // POST: api/Article/Staff
         [HttpPost("Staff")]
@@ -138,6 +86,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // PUT api/<ArticleController>/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult UpdateArticle(string id, [FromBody] ApiAddArticleModel model)
         {
             try
@@ -173,13 +122,10 @@ namespace ADHApi.Controllers.StaffAndPatients
 
         // DELETE api/Article/Staff
         [HttpDelete("Staff/{articleId}")]
-        [Authorize(Roles = "Admin, Manager, Doctor")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult Delete(string articleId)
         {
             var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            List<string> UserRoles = _userClaims.GetUserRole(User.Claims);
-
 
             try
             {
@@ -187,18 +133,7 @@ namespace ADHApi.Controllers.StaffAndPatients
 
                 if (article == null)
                 {
-                    return BadRequest($"There is no Article with this Id {articleId} ");
-                }
-
-                foreach (var role in UserRoles)
-                {
-                    // if he is admin, he can delete any article 
-                    if (role == "Admin")
-                    {
-                        _articleData.DeleteArticle(articleId);
-
-                        return Ok();
-                    }
+                    return NotFound($"There is no Article with this Id {articleId} ");
                 }
 
                 // if he is not admin, he can delete only his articles
@@ -206,140 +141,19 @@ namespace ADHApi.Controllers.StaffAndPatients
                 {
                     return StatusCode(405);
                 }
+                else
+                {
 
-                _articleData.DeleteArticle(articleId);
+                    _articleData.DeleteArticle(articleId);
 
-                return Ok($"Artilce With Id = {articleId} Deleted");
+                    return Ok($"Artilce With Id = {articleId} Deleted");
+                }
+
             }
             catch (Exception ex)
             {
                 _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
 
-            }
-
-            return StatusCode(500);
-        }
-
-        // public 
-        // GET: api/Article/public
-        [HttpGet("public")]
-        [AllowAnonymous]
-        public IActionResult GetPublicArticles()
-        {
-            try
-            {
-                var Result = _articleData.FindArticles(true);
-
-                if (Result == null)
-                {
-                    return NotFound();
-                }
-
-                List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
-
-                foreach (var item in Result)
-                {
-                    ArticleList.Add(new()
-                    {
-                        Id = item.Id,
-                        Titel = item.Titel,
-                        Body = item.Body,
-                        CreateDate = item.CreateDate,
-                        LastUpdate = item.LastUpdate,
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        UserName = item.UserName
-                    });
-                }
-
-                return Ok(ArticleList);
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/Article/public/{id}
-        [HttpGet("public/{id}")]
-        [AllowAnonymous]
-        public IActionResult GetAricleByID(string id)
-        {
-            try
-            {
-                var Result = _articleData.FindArticleByID(id, true);
-
-                if (Result == null)
-                {
-                    return NotFound();
-                }
-
-                List<PublicArticleModel> ArticleList = new List<PublicArticleModel>();
-
-                foreach (var item in Result)
-                {
-                    ArticleList.Add(new()
-                    {
-                        Id = item.Id,
-                        Titel = item.Titel,
-                        Body = item.Body,
-                        CreateDate = item.CreateDate,
-                        LastUpdate = item.LastUpdate,
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        UserName = item.UserName
-                    });
-                }
-
-                return Ok(ArticleList);
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/Article/public/{id}
-        [HttpGet("public/user/{userName}")]
-        [AllowAnonymous]
-        public IActionResult GetAricleByUserName(string userName)
-        {
-            try
-            {
-                var Result = _articleData.FindArticlesByUserName(userName, true);
-
-                if (Result == null)
-                {
-                    return NotFound();
-                }
-
-                List<PublicArticleModel> ArticleList = new();
-
-                foreach (var item in Result)
-                {
-                    PublicArticleModel Article = new()
-                    {
-                        Id = item.Id,
-                        Titel = item.Titel,
-                        Body = item.Body,
-                        CreateDate = item.CreateDate,
-                        LastUpdate = item.LastUpdate,
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        UserName = item.UserName
-                    };
-                    ArticleList.Add(Article);
-                }
-
-                return Ok(ArticleList);
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
             return StatusCode(500);
