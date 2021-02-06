@@ -1,11 +1,12 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models.AssignedPlan;
+using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.Registered
@@ -13,58 +14,46 @@ namespace ADHApi.Controllers.Registered
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+
+    // TODO     create function to update plan 
     public class AssignedPlanController : ControllerBase
     {
-        // TODO Before create new plan check if the input PatientId is: Patient, he is in the Database (PHASE 3)
-        // TODO Before DELETE APlan, check if  doctor create what he will delete  (PHASE 3)
+
 
         private readonly IAssignedPlanData _assignedPlanData;
         private readonly IApiErrorHandler _apiErrorHandler;
+        private readonly IMapper _mapper;
 
-        public AssignedPlanController(IAssignedPlanData assignedPlanData, IApiErrorHandler apiErrorHandler)
+        public AssignedPlanController(IAssignedPlanData assignedPlanData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _assignedPlanData = assignedPlanData;
             _apiErrorHandler = apiErrorHandler;
+            _mapper = mapper;
         }
 
         // GET: api/AssignedPlan/Admin
         [HttpGet]
-        [Authorize(Roles = "Admin, Patient")]
+        [Authorize(Roles = "Patient")]
+        // return only plan that has patient ID
         public IActionResult GetAssignedPlans()
         {
-            string UserRole = User.FindFirst(ClaimTypes.Role)?.Value;
             string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            List<AssignedPlanModel> AssignedPlans;
 
             try
             {
-                switch (UserRole)
+                var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(UserId);
+                var model = _mapper.Map<PatientAssignedPlanDisplayModel>(AssignedPlans);
+
+                if (AssignedPlans.Count > 0)
                 {
-                    case "Admin":
-                        {
-                            AssignedPlans = _assignedPlanData.GetAssignedPlans();
-
-                            if (AssignedPlans.Count > 0)
-                            {
-                                return Ok(AssignedPlans);
-
-                            }
-                            return NotFound();
-                        }
-                    case "Patient":
-                        {
-                            AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(UserId);
-
-                            if (AssignedPlans.Count > 0)
-                            {
-                                return Ok(AssignedPlans);
-                            }
-
-                            return NotFound();
-                        }
-                    default:
-                        return BadRequest();
+                    return Ok(model);
                 }
+
+                return NotFound("No plans to show");
+
+
             }
             catch (Exception ex)
             {
@@ -74,20 +63,21 @@ namespace ADHApi.Controllers.Registered
             return StatusCode(500);
         }
 
-        [HttpGet("Doctor/{patientId}")]
-        [Authorize(Roles = "Doctor, Admin")]
+        [HttpGet("{patientId}")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult GetByPatientID(string patientId)
         {
             try
             {
                 var AssignedPlans = _assignedPlanData.GetAssignedPlansByPaitnetID(patientId);
+                var model = _mapper.Map<DoctorAssignedPlanDisplayModel>(AssignedPlans);
 
                 if (AssignedPlans.Count > 0)
                 {
-                    return Ok(AssignedPlans);
+                    return Ok(model);
                 }
 
-                return NotFound();
+                return NotFound("No plans for this patient");
             }
             catch (Exception ex)
             {
@@ -100,6 +90,7 @@ namespace ADHApi.Controllers.Registered
         // GET: api/AssignedPlan/Doctor
         [HttpGet("Doctor")]
         [Authorize(Roles = "Doctor")]
+        // return plans that has Doctor ID only 
         public IActionResult GetByDoctorID()
         {
             try
@@ -108,12 +99,14 @@ namespace ADHApi.Controllers.Registered
 
                 var AssignedPlans = _assignedPlanData.GetAssignedPlansByDoctorID(DoctorId);
 
+                var model = _mapper.Map<DoctorAssignedPlanDisplayModel>(AssignedPlans);
+
                 if (AssignedPlans.Count > 0)
                 {
-                    return Ok(AssignedPlans);
+                    return Ok(model);
                 }
 
-                return NotFound();
+                return NotFound($"No plans found for this id: {DoctorId}");
             }
             catch (Exception ex)
             {
@@ -126,20 +119,17 @@ namespace ADHApi.Controllers.Registered
         // POST: api/AssignedPlan
         [HttpPost]
         [Authorize(Roles = "Doctor")]
-        public IActionResult PostNewAssigne([FromBody] ApiCreateAssignedPlanModel assignedPlanInput)
+        public IActionResult PostNewAssigne([FromBody] AssignedPlanViewModel input)
         {
+            // TODO Check if the Patient in the database before you add plan 
             try
             {
                 string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                AssignedPlanModel assignePlan = new()
-                {
-                    PatientID = assignedPlanInput.PatientID,
-                    PlanId = assignedPlanInput.PlanId,
-                    DoctorID = DoctorId,
-                    StartOn = assignedPlanInput.StartOn
-                };
 
-                _assignedPlanData.AddAssignedPlan(assignePlan);
+                var model = _mapper.Map<AssignedPlanModel>(input);
+                model.DoctorID = DoctorId;
+
+                _assignedPlanData.AddAssignedPlan(model);
 
                 return Ok();
             }
@@ -154,9 +144,10 @@ namespace ADHApi.Controllers.Registered
 
         // DELETE: api/AssignedPlan
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Doctor, Admin")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult Delete(string id)
         {
+            // TODO Before DELETE APlan, check if  doctor create what he will delete  (PHASE 3)
             try
             {
                 _assignedPlanData.DeletePlan(id);

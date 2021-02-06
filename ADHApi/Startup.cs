@@ -2,7 +2,6 @@ using ADHApi.CoustomProvider;
 using ADHApi.Error;
 using ADHApi.Helpers;
 using ADHApi.Models;
-using ADHApi.Models.AssignedPlan;
 using ADHApi.Models.Feedback;
 using ADHApi.Validation;
 using ADHApi.ViewModels;
@@ -46,6 +45,9 @@ namespace ADHApi
                 cfg.CreateMap<ArticleModel, PublicArticleDisplayModel>();
                 cfg.CreateMap<AssignedMedicineModel, PatientAssignedMedicineDisplayModel>();
                 cfg.CreateMap<AssignedMedicineViewModel, AssignedMedicineModel>();
+                cfg.CreateMap<AssignedPlanViewModel, AssignedPlanModel>();
+                cfg.CreateMap<AssignedPlanModel, PatientAssignedPlanDisplayModel>();
+                cfg.CreateMap<AssignedPlanModel, DoctorAssignedPlanDisplayModel>();
             });
             var mapper = config.CreateMapper();
 
@@ -105,8 +107,8 @@ namespace ADHApi
             // Validation Transient
             services.AddTransient<IValidator<ArticleViewModel>, ArticleViewModelValidations>();
             services.AddTransient<IValidator<AssignedMedicineViewModel>, AssignedMedicineValidation>();
+            services.AddTransient<IValidator<AssignedPlanViewModel>, AssignedPlanValidation>();
 
-            services.AddTransient<IValidator<ApiCreateAssignedPlanModel>, AssignedPlanValidation>();
             services.AddTransient<IValidator<ApiCreateFeedbackModel>, FeedbackValidation>();
 
 

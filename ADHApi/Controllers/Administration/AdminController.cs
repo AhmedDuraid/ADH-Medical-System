@@ -16,14 +16,17 @@ namespace ADHApi.Controllers.Administration
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
         private readonly AssignedMedicineData _assignedMedicineData;
+        private readonly AssignedPlanData _assignedPlanData;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
-            AssignedMedicineData assignedMedicineData)
+            AssignedMedicineData assignedMedicineData,
+            AssignedPlanData assignedPlanData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
             _assignedMedicineData = assignedMedicineData;
+            _assignedPlanData = assignedPlanData;
         }
 
         // GET api/Admin/Articles
@@ -97,6 +100,31 @@ namespace ADHApi.Controllers.Administration
             return StatusCode(500);
         }
 
+        // GET: api/Admin/AssignedPlan
+        [HttpGet("AssignedPlan")]
+        public IActionResult GetAssignedPlans()
+        {
+
+            try
+            {
+                var AssignedPlans = _assignedPlanData.GetAssignedPlans();
+
+                if (AssignedPlans.Count > 0)
+                {
+                    return Ok(AssignedPlans);
+
+                }
+
+                return NotFound("No plans to show");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
         [HttpDelete("AssignedMedicine/{id}")]
         public IActionResult DeleteAssignedMedicine(string id)
         {
@@ -144,6 +172,25 @@ namespace ADHApi.Controllers.Administration
             {
                 _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
 
+            }
+
+            return StatusCode(500);
+        }
+
+        // DELETE: api/Admin/AssignedPlan/{id}
+        [HttpDelete("AssignedPlan/{id}")]
+        public IActionResult Delete(string id)
+        {
+            // TODO     Find the plan before you delete, if the plan in the database do it else return not found
+            try
+            {
+                _assignedPlanData.DeletePlan(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
             }
 
             return StatusCode(500);
