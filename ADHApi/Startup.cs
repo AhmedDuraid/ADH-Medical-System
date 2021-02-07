@@ -2,8 +2,6 @@ using ADHApi.CoustomProvider;
 using ADHApi.Error;
 using ADHApi.Helpers;
 using ADHApi.Models;
-using ADHApi.Models.Feedback;
-using ADHApi.Validation;
 using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.DataAccess.AuthDataAccess;
@@ -48,6 +46,7 @@ namespace ADHApi
                 cfg.CreateMap<AssignedPlanViewModel, AssignedPlanModel>();
                 cfg.CreateMap<AssignedPlanModel, PatientAssignedPlanDisplayModel>();
                 cfg.CreateMap<AssignedPlanModel, DoctorAssignedPlanDisplayModel>();
+                cfg.CreateMap<PublicFeedbackViewModel, FeedbackModel>();
             });
             var mapper = config.CreateMapper();
 
@@ -108,8 +107,7 @@ namespace ADHApi
             services.AddTransient<IValidator<ArticleViewModel>, ArticleViewModelValidations>();
             services.AddTransient<IValidator<AssignedMedicineViewModel>, AssignedMedicineValidation>();
             services.AddTransient<IValidator<AssignedPlanViewModel>, AssignedPlanValidation>();
-
-            services.AddTransient<IValidator<ApiCreateFeedbackModel>, FeedbackValidation>();
+            services.AddTransient<IValidator<PublicFeedbackViewModel>, PublicFeedbackValidation>();
 
 
             //token services

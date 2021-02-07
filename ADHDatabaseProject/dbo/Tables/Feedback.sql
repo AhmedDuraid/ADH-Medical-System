@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Feedback] (
     [Id]           NVARCHAR (128) NOT NULL,
-    [Titel]        NVARCHAR (128) NOT NULL,
+    [Titel]        NVARCHAR (100) NOT NULL,
     [Name]         NVARCHAR (256) NOT NULL,
     [Email]        NVARCHAR (256) NOT NULL,
     [Phone]        CHAR (20)      NOT NULL,

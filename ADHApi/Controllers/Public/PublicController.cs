@@ -1,5 +1,6 @@
 ﻿using ADHApi.Error;
 using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using AutoMapper;
@@ -19,14 +20,17 @@ namespace ADHApi.Controllers.Public
         private readonly IArticleData _articleData;
         private readonly IApiErrorHandler _apiErrorHandler;
         private readonly IMapper _mapper;
+        private readonly IFeedbackData _feedbackData;
 
         public PublicController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
-            IMapper mapper)
+            IMapper mapper,
+            IFeedbackData feedbackData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
             _mapper = mapper;
+            _feedbackData = feedbackData;
         }
 
         // GET: api/public/Article
@@ -98,6 +102,26 @@ namespace ADHApi.Controllers.Public
                 }
 
                 return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // POST: api/Public/Feedback
+        [HttpPost]
+        public IActionResult AddFeedback([FromBody] PublicFeedbackViewModel input)
+        {
+            try
+            {
+                FeedbackModel model = _mapper.Map<FeedbackModel>(input);
+
+                _feedbackData.AddNewFeedback(model);
+
+                return Ok();
             }
             catch (Exception ex)
             {

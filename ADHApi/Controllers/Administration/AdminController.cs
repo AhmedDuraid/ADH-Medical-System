@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace ADHApi.Controllers.Administration
 {
@@ -17,16 +18,19 @@ namespace ADHApi.Controllers.Administration
         private readonly IApiErrorHandler _apiErrorHandler;
         private readonly AssignedMedicineData _assignedMedicineData;
         private readonly AssignedPlanData _assignedPlanData;
+        private readonly IFeedbackData _feedbackData;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
             AssignedMedicineData assignedMedicineData,
-            AssignedPlanData assignedPlanData)
+            AssignedPlanData assignedPlanData,
+            IFeedbackData feedbackData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
             _assignedMedicineData = assignedMedicineData;
             _assignedPlanData = assignedPlanData;
+            _feedbackData = feedbackData;
         }
 
         // GET api/Admin/Articles
@@ -116,6 +120,97 @@ namespace ADHApi.Controllers.Administration
                 }
 
                 return NotFound("No plans to show");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Admin/Feedback/
+        [HttpGet("Feedback")]
+        public IActionResult GetFeedbacks()
+        {
+            try
+            {
+                List<FeedbackModel> feedbacks = _feedbackData.GetFeedbacks();
+
+                if (feedbacks.Count > 0)
+                {
+                    return Ok(feedbacks);
+                }
+
+                return NotFound("No Feedbacks to show");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Admin/Feedback/new
+        [HttpGet("Feedback/new")]
+        public IActionResult GetFeedbacksNotReaded()
+        {
+            try
+            {
+                var Feedback = _feedbackData.GetFeedbackByNotReaded();
+
+                if (Feedback.Count > 0)
+                {
+                    return Ok(Feedback);
+
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Feedback/readerId
+        [HttpGet("Feedback/{readerId}")]
+        public IActionResult GetFeedbackReaderID(string readerId)
+        {
+            try
+            {
+                var Feedback = _feedbackData.GetFeedbackByReaderId(readerId);
+
+                if (Feedback.Count > 0)
+                {
+                    return Ok(Feedback);
+
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // POST: api/Feedback
+        [HttpPut("Feedback")]
+        public IActionResult UpdateFeedback([FromQuery] string feedbackId)
+        {
+            try
+            {
+                var readerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                _feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
+
+                return Ok("Updated");
             }
             catch (Exception ex)
             {
