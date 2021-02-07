@@ -1,7 +1,5 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models.Medicine;
 using ADHDataManager.Library.DataAccess;
-using ADHDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -24,7 +22,7 @@ namespace ADHApi.Controllers.Registered
 
         // GET: api/Medicine/
         [HttpGet]
-        [Authorize(Roles = "Admin, Doctor")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult GetMedicines()
         {
             try
@@ -48,7 +46,7 @@ namespace ADHApi.Controllers.Registered
 
         // GET: api/Medicine/MedName/{MedName}
         [HttpGet("MedName/{MedName}")]
-        [Authorize(Roles = "Admin, Doctor")]
+        [Authorize(Roles = "Doctor")]
         public IActionResult GetMedicineByName(string MedName)
         {
             var Medicine = _medicineData.GetMedicineByName(MedName);
@@ -69,79 +67,5 @@ namespace ADHApi.Controllers.Registered
 
             return StatusCode(500);
         }
-
-        // POST: api/Medicine/
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public IActionResult AddNew([FromBody] ApiMedicineModel userInput)
-        {
-            try
-            {
-                var NewMed = new MedicineModel()
-                {
-                    Name = userInput.Name,
-                    Contraindication = userInput.Contraindication,
-                    Description = userInput.Description,
-                    RecommendedDose = userInput.RecommendedDose
-                };
-
-                _medicineData.AddMedicines(NewMed);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // PUT: api/Medicine/{id}
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult UpdateMedicine(string id, [FromBody] ApiMedicineModel userInput)
-        {
-            try
-            {
-                var UpdateMed = new MedicineModel()
-                {
-                    Id = id,
-                    Description = userInput.Description,
-                    Name = userInput.Name,
-                    Contraindication = userInput.Contraindication,
-                    RecommendedDose = userInput.RecommendedDose
-                };
-                _medicineData.UpdateMed(UpdateMed);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // DELETE: api/Medicine/
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteMedicine(string id)
-        {
-            try
-            {
-                _medicineData.DeleteMed(id);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
     }
 }
