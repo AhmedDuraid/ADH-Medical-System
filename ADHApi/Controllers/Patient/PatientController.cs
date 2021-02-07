@@ -1,5 +1,6 @@
 ﻿using ADHApi.Error;
 using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
 using AutoMapper;
@@ -20,16 +21,22 @@ namespace ADHApi.Controllers.Patient
         private readonly ApiErrorHandler _apiErrorHandler;
         private readonly IMapper _mapper;
         private readonly PatientNoteData _patientNoteData;
+        private readonly PatientData _patientData;
+        private readonly UserData _userData;
 
         public PatientController(LabTestRequestsData labTestRequestsData,
             ApiErrorHandler apiErrorHandler,
             IMapper mapper,
-            PatientNoteData patientNoteData)
+            PatientNoteData patientNoteData,
+            PatientData patientData,
+            UserData userData)
         {
             _labTestRequestsData = labTestRequestsData;
             _apiErrorHandler = apiErrorHandler;
             _mapper = mapper;
             _patientNoteData = patientNoteData;
+            _patientData = patientData;
+            _userData = userData;
         }
 
         // GET: api/Patient/{patientId}
@@ -81,6 +88,54 @@ namespace ADHApi.Controllers.Patient
             }
 
             return StatusCode(500);
+        }
+
+        // GET: api/Patient
+        [HttpGet("Patient")]
+        public IActionResult GetPatientByID()
+        {
+            try
+            {
+                var PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var Patient = _patientData.GetPatientByID(PatientId);
+
+                if (Patient.Count > 0)
+                {
+                    return Ok(Patient);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        [HttpPut("Patient")]
+        public IActionResult UpdatePatient([FromBody] AccountViewModel userInput)
+        {
+            try
+            {
+
+                string UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var model = _mapper.Map<UserModel>(userInput);
+                model.Id = UserId;
+
+                _userData.UpdateUser(model);
+
+                return Ok($"{UserId} information Updated ");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+
         }
     }
 }
