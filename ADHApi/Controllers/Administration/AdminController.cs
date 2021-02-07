@@ -25,6 +25,7 @@ namespace ADHApi.Controllers.Administration
         private readonly IMapper _mapper;
         private readonly LabTestRequestsData _labTestRequestsData;
         private readonly MedicineData _medicineData;
+        private readonly PatientNoteData _patientNoteData;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
@@ -34,7 +35,8 @@ namespace ADHApi.Controllers.Administration
             ILabTestData labTestData,
             IMapper mapper,
             LabTestRequestsData labTestRequestsData,
-            MedicineData medicineData)
+            MedicineData medicineData,
+            PatientNoteData patientNoteData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
@@ -45,6 +47,7 @@ namespace ADHApi.Controllers.Administration
             _mapper = mapper;
             _labTestRequestsData = labTestRequestsData;
             _medicineData = medicineData;
+            _patientNoteData = patientNoteData;
         }
 
         // GET api/Admin/Articles
@@ -271,6 +274,52 @@ namespace ADHApi.Controllers.Administration
                 if (Medicine.Count > 0)
                 {
                     return Ok(Medicine);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Admin/PatientNotes
+        [HttpGet("PatientNote")]
+        public IActionResult GetNotes()
+        {
+            try
+            {
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotes();
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Admin/PatientNotes/{patientId}
+        [HttpGet("PatientNote/{patientId}")]
+        public IActionResult GetNotes(string patientId)
+        {
+            try
+            {
+                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientId(patientId);
+
+                if (Notes.Count > 0)
+                {
+                    return Ok(Notes);
                 }
 
                 return NotFound();

@@ -53,6 +53,10 @@ namespace ADHApi
                 cfg.CreateMap<TestRequestsViewModel, LabTestRequestsModel>();
                 cfg.CreateMap<LabRequestUpdateViewModel, LabTestRequestsModel>();
                 cfg.CreateMap<MedicineViewModel, MedicineModel>();
+                cfg.CreateMap<PatientNoteModel, PatientNoteDisplayModel>();
+                cfg.CreateMap<PatientNoteModel, DoctorPatientNoteDisplayModel>();
+                cfg.CreateMap<PatientNoteViewModel, PatientNoteModel>();
+                cfg.CreateMap<UpdatePatientNoteViewModel, PatientNoteModel>();
             });
             var mapper = config.CreateMapper();
 
@@ -118,6 +122,8 @@ namespace ADHApi
             services.AddTransient<IValidator<TestRequestsViewModel>, TestRequestsValidation>();
             services.AddTransient<IValidator<LabRequestUpdateViewModel>, LabRequestUpdateValidation>();
             services.AddTransient<IValidator<MedicineViewModel>, MedicineViewModelVlidation>();
+            services.AddTransient<IValidator<UpdatePatientNoteViewModel>, UpdatePatientNoteValidation>();
+            services.AddTransient<IValidator<PatientNoteViewModel>, PatientNoteViewModelValidation>();
 
 
             //token services

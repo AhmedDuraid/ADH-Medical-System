@@ -1,7 +1,9 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models.PatientNotes;
+using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,97 +14,26 @@ namespace ADHApi.Controllers.Registered
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Doctor")]
     public class PatientNotesController : ControllerBase
     {
         private readonly IPatientNoteData _patientNoteData;
         private readonly IApiErrorHandler _apiErrorHandler;
+        private readonly IMapper _mapper;
 
-        // TODO before update patient note, check if the token doctor is the same doctor in note  "PHASE 3"
-        // TODO before DELETE, check who delete note his id in the row. if not he can't delete ""PHASE 3"
 
-        public PatientNotesController(IPatientNoteData patientNoteData, IApiErrorHandler apiErrorHandler)
+
+        public PatientNotesController(IPatientNoteData patientNoteData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _patientNoteData = patientNoteData;
             _apiErrorHandler = apiErrorHandler;
+            _mapper = mapper;
         }
 
-        // GET: api/PatientNotes
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetNotes()
-        {
-            try
-            {
-                List<PatientNoteModel> Notes = _patientNoteData.GetNotes();
-
-                if (Notes.Count > 0)
-                {
-                    return Ok(Notes);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/PatientNotes/Staff/{patientId}
-        [HttpGet("Staff/{patientId}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetNotes(string patientId)
-        {
-            try
-            {
-                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientId(patientId);
-
-                if (Notes.Count > 0)
-                {
-                    return Ok(Notes);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/PatientNotes/Patient
-        [HttpGet("Patient")]
-        [Authorize(Roles = "Patient")]
-        public IActionResult GetNotesPatient()
-        {
-            try
-            {
-                string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientId_Show(PatientId);
-
-                if (Notes.Count > 0)
-                {
-                    return Ok(Notes);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/PatientNotes/Doctor/PatientNote/{patientId}
-        [HttpGet("Doctor/PatientNote/{patientId}")]
-        [Authorize(Roles = "Doctor")]
+        // GET: api/PatientNotes/PatientNote/{patientId}
+        [HttpGet("PatientNote/{patientId}")]
         public IActionResult GetNotesForDoctor(string patientId)
         {
             try
@@ -110,9 +41,11 @@ namespace ADHApi.Controllers.Registered
                 string DoctorId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 List<PatientNoteModel> Notes = _patientNoteData.GetNotesByPatientAndDoctorId(patientId, DoctorId);
 
+                var model = _mapper.Map<DoctorPatientNoteDisplayModel>(Notes);
+
                 if (Notes.Count > 0)
                 {
-                    return Ok(Notes);
+                    return Ok(model);
                 }
                 return NotFound();
             }
@@ -126,20 +59,15 @@ namespace ADHApi.Controllers.Registered
 
         // POST: api/PatientNotes/
         [HttpPost]
-        [Authorize(Roles = "Doctor")]
-        public IActionResult AddNew([FromBody] ApiAddPatientNoteModel patientNoteModel)
+        public IActionResult AddNew([FromBody] PatientNoteViewModel patientNoteModel)
         {
             try
             {
-                var NewNote = new PatientNoteModel()
-                {
-                    AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    Body = patientNoteModel.Body,
-                    PatientId = patientNoteModel.PatientId,
-                    ShowToPatient = patientNoteModel.ShowToPatient
-                };
+                var model = _mapper.Map<PatientNoteModel>(patientNoteModel);
+                model.AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                _patientNoteData.AddNewPatientNote(NewNote);
+
+                _patientNoteData.AddNewPatientNote(model);
 
                 return Ok();
             }
@@ -151,21 +79,19 @@ namespace ADHApi.Controllers.Registered
             return StatusCode(500);
         }
 
-        // PUT: api/UpdateNote_PatientDoctor
+        // PUT: api/PatientNotes
         [HttpPut("{id}")]
         [Authorize(Roles = "Doctor")]
-        public IActionResult UpdateNote_PatientDoctor(string id, [FromBody] ApiUpdatePatientNoteModel input)
+        public IActionResult UpdateNote_PatientDoctor(string id, [FromBody] UpdatePatientNoteViewModel input)
         {
-
+            // TODO before update, check if the doctor own the note 
             try
             {
-                var NewNote = new PatientNoteModel()
-                {
-                    Body = input.Body,
-                    ShowToPatient = input.ShowToPatient,
-                    Id = id
-                };
-                _patientNoteData.UpdatePatient_PatientAndDoctorId(NewNote);
+
+                var model = _mapper.Map<PatientNoteModel>(input);
+                model.Id = id;
+
+                _patientNoteData.UpdatePatient_PatientAndDoctorId(model);
 
                 return Ok();
             }
@@ -183,6 +109,7 @@ namespace ADHApi.Controllers.Registered
         {
             try
             {
+                // TODO before delete, check if the doctor add the note 
                 _patientNoteData.DeleteNote(noteId);
 
                 return Ok();

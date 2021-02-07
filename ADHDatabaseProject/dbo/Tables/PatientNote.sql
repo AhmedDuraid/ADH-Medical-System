@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[PatientNote] (
     [Id]            NVARCHAR (128) NOT NULL,
     [Date]          DATE           CONSTRAINT [DF_patient_note_date] DEFAULT (getdate()) NOT NULL,
-    [Body]          TEXT           NOT NULL,
+    [Body]          NVARCHAR(500)           NOT NULL,
     [PatientId]     NVARCHAR (128) NULL,
     [AddedBy]       NVARCHAR (128) NULL,
     [ShowToPatient] BIT            CONSTRAINT [DF_PatientNote_Show] DEFAULT ((0)) NULL,
