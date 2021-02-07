@@ -23,6 +23,7 @@ namespace ADHApi.Controllers.Administration
         private readonly IFeedbackData _feedbackData;
         private readonly ILabTestData _labTestData;
         private readonly IMapper _mapper;
+        private readonly LabTestRequestsData _labTestRequestsData;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
@@ -30,7 +31,8 @@ namespace ADHApi.Controllers.Administration
             AssignedPlanData assignedPlanData,
             IFeedbackData feedbackData,
             ILabTestData labTestData,
-            IMapper mapper)
+            IMapper mapper,
+            LabTestRequestsData labTestRequestsData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
@@ -39,6 +41,7 @@ namespace ADHApi.Controllers.Administration
             _feedbackData = feedbackData;
             _labTestData = labTestData;
             _mapper = mapper;
+            _labTestRequestsData = labTestRequestsData;
         }
 
         // GET api/Admin/Articles
@@ -208,6 +211,29 @@ namespace ADHApi.Controllers.Administration
             return StatusCode(500);
         }
 
+        // GET: api/Admin/LabRequest/doctorname/{id}
+        [HttpGet("LabRequest/doctorname/{id}")]
+        public IActionResult GetRequestsByDoctorId(string id)
+        {
+            try
+            {
+                var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(id);
+
+                if (LabRequest.Count > 0)
+                {
+                    return Ok(LabRequest);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
         // POST: api/Admin/LabTest
         [HttpPost("LabTest")]
         public IActionResult AddNewTest(LabTestViewModel input)
@@ -349,6 +375,24 @@ namespace ADHApi.Controllers.Administration
             try
             {
                 _assignedPlanData.DeletePlan(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // DELETE: api/Admin/LabTestRequest
+        [HttpDelete("LabTestRequest/{requestId}")]
+        public IActionResult DeleteRequest(string requestId)
+        {
+            try
+            {
+                _labTestRequestsData.DeleteRequest(requestId);
 
                 return Ok();
             }

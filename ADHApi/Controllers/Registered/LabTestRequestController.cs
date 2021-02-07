@@ -1,10 +1,13 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models.LabRequest;
+using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace ADHApi.Controllers.Registered
@@ -15,18 +18,20 @@ namespace ADHApi.Controllers.Registered
     {
         private readonly ILabTestRequestsData _labTestRequestsData;
         private readonly IApiErrorHandler _apiErrorHandler;
+        private readonly IMapper _mapper;
 
-        // TODO before DELETE, Check request ID have same doctor id 
-
-        public LabTestRequestController(ILabTestRequestsData labTestRequestsData, IApiErrorHandler apiErrorHandler)
+        public LabTestRequestController(ILabTestRequestsData labTestRequestsData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _labTestRequestsData = labTestRequestsData;
             _apiErrorHandler = apiErrorHandler;
+            _mapper = mapper;
         }
 
         // GET: api/LabTestRequest
         [HttpGet]
-        [Authorize(Roles = "Admin, LabTester")]
+        [Authorize(Roles = "LabTester")]
         public IActionResult GetRequests()
         {
             try
@@ -50,16 +55,18 @@ namespace ADHApi.Controllers.Registered
 
         // GET: api/Patient/{patientId}
         [HttpGet("Patient/{patientId}")]
-        [Authorize(Roles = "Admin, Doctor, LabTester")]
+        [Authorize(Roles = "Doctor, LabTester")]
         public IActionResult GetRequestsByPatientId(string patientId)
         {
             try
             {
                 var LabRequest = _labTestRequestsData.GetTestRequestByPatientId(patientId);
 
+                var model = _mapper.Map<List<DoctorLabTestRequestsDisplayModel>>(LabRequest);
+
                 if (LabRequest.Count > 0)
                 {
-                    return Ok(LabRequest);
+                    return Ok(model);
                 }
 
                 return NotFound();
@@ -72,18 +79,20 @@ namespace ADHApi.Controllers.Registered
             return StatusCode(500);
         }
 
-        // GET: api/Doctor/{doctorName}
-        [HttpGet("Doctor/{doctorName}")]
-        [Authorize(Roles = "Admin, Doctor")]
-        public IActionResult GetRequestsByDoctorId(string doctorName)
+        // GET: api/Doctor/{id}
+        [HttpGet("Doctor/{id}")]
+        [Authorize(Roles = "Doctor")]
+        public IActionResult GetRequestsByDoctorId(string id)
         {
             try
             {
-                var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(doctorName);
+                var LabRequest = _labTestRequestsData.GetTestRequestByDoctorId(id);
+
+                var model = _mapper.Map<List<DoctorLabTestRequestsDisplayModel>>(LabRequest);
 
                 if (LabRequest.Count > 0)
                 {
-                    return Ok(LabRequest);
+                    return Ok(model);
                 }
 
                 return NotFound();
@@ -99,20 +108,16 @@ namespace ADHApi.Controllers.Registered
         // POST: api/LabTestRequest 
         [HttpPost]
         [Authorize(Roles = "Doctor")]
-        public IActionResult AddNewRequest(ApiAddTestRequestsModel userInput)
+        public IActionResult AddNewRequest(TestRequestsViewModel userInput)
         {
             try
             {
-                var NewTestRequest = new LabTestRequestsModel()
-                {
-                    PatientId = userInput.PatientId,
-                    TesterId = userInput.TestId,
-                    CreatorID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                };
+                var model = _mapper.Map<LabTestRequestsModel>(userInput);
+                model.CreatorID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                _labTestRequestsData.AddTestRequests(NewTestRequest);
+                _labTestRequestsData.AddTestRequests(model);
 
-                return Ok($"lab Request Added to Patient {NewTestRequest.PatientId} ");
+                return Ok($"lab Request Added to Patient {model.PatientId} ");
             }
             catch (Exception ex)
             {
@@ -124,38 +129,15 @@ namespace ADHApi.Controllers.Registered
 
         // PUT: api/LabTestRequest
         [HttpPut]
-        [Authorize(Roles = "Tester")]
-        public IActionResult UpdateRequestResults(APILabRequestUpdateModel userInput)
+        [Authorize(Roles = "LabTester")]
+        public IActionResult UpdateRequestResults(LabRequestUpdateViewModel userInput)
         {
             try
             {
-                var UpdateRTest = new LabTestRequestsModel()
-                {
-                    TesterId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    Id = userInput.Id,
-                    Result = userInput.Result
-                };
+                var model = _mapper.Map<LabTestRequestsModel>(userInput);
+                model.TesterId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                _labTestRequestsData.AddTestResults(UpdateRTest);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // DELETE: api/LabTestRequest
-        [Authorize(Roles = "Admin, Doctor")]
-        [HttpDelete("{requestId}")]
-        public IActionResult DeleteRequest(string requestId)
-        {
-            try
-            {
-                _labTestRequestsData.DeleteRequest(requestId);
+                _labTestRequestsData.AddTestResults(model);
 
                 return Ok();
             }
