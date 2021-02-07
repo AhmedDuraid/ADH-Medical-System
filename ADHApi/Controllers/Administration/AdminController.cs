@@ -1,6 +1,8 @@
 ﻿using ADHApi.Error;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,18 +21,24 @@ namespace ADHApi.Controllers.Administration
         private readonly AssignedMedicineData _assignedMedicineData;
         private readonly AssignedPlanData _assignedPlanData;
         private readonly IFeedbackData _feedbackData;
+        private readonly ILabTestData _labTestData;
+        private readonly IMapper _mapper;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
             AssignedMedicineData assignedMedicineData,
             AssignedPlanData assignedPlanData,
-            IFeedbackData feedbackData)
+            IFeedbackData feedbackData,
+            ILabTestData labTestData,
+            IMapper mapper)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
             _assignedMedicineData = assignedMedicineData;
             _assignedPlanData = assignedPlanData;
             _feedbackData = feedbackData;
+            _labTestData = labTestData;
+            _mapper = mapper;
         }
 
         // GET api/Admin/Articles
@@ -200,7 +208,49 @@ namespace ADHApi.Controllers.Administration
             return StatusCode(500);
         }
 
-        // POST: api/Feedback
+        // POST: api/Admin/LabTest
+        [HttpPost("LabTest")]
+        public IActionResult AddNewTest(LabTestViewModel input)
+        {
+            try
+            {
+
+                var model = _mapper.Map<LabTestModel>(input);
+
+                _labTestData.AddNewTest(model);
+
+                return Ok("Created");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // PUT: api/LabTest/Admin/{id}
+        [HttpPut("LabTest/{id}")]
+        public IActionResult UpdateTest(string id, LabTestViewModel labTestInput)
+        {
+            try
+            {
+                var model = _mapper.Map<LabTestModel>(labTestInput);
+                model.Id = id;
+
+                _labTestData.UpdateTest(model);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // Put: api/Feedback
         [HttpPut("Feedback")]
         public IActionResult UpdateFeedback([FromQuery] string feedbackId)
         {
@@ -211,6 +261,25 @@ namespace ADHApi.Controllers.Administration
                 _feedbackData.UpdateFeedbackToReaded(readerId, feedbackId);
 
                 return Ok("Updated");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // DELETE: api/Admin/LabTest/id
+        [HttpDelete("LabTest/{id}")]
+        public IActionResult DeleteTest(string id)
+        {
+            try
+            {
+                // TODO Check if the record is in the database before delete
+                _labTestData.DeleteTest(id);
+
+                return Ok();
             }
             catch (Exception ex)
             {
