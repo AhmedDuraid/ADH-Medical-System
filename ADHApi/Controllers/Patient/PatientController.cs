@@ -23,13 +23,15 @@ namespace ADHApi.Controllers.Patient
         private readonly PatientNoteData _patientNoteData;
         private readonly PatientData _patientData;
         private readonly UserData _userData;
+        private readonly PatientProgressData _patientProgressData;
 
         public PatientController(LabTestRequestsData labTestRequestsData,
             ApiErrorHandler apiErrorHandler,
             IMapper mapper,
             PatientNoteData patientNoteData,
             PatientData patientData,
-            UserData userData)
+            UserData userData,
+            PatientProgressData patientProgressData)
         {
             _labTestRequestsData = labTestRequestsData;
             _apiErrorHandler = apiErrorHandler;
@@ -37,6 +39,7 @@ namespace ADHApi.Controllers.Patient
             _patientNoteData = patientNoteData;
             _patientData = patientData;
             _userData = userData;
+            _patientProgressData = patientProgressData;
         }
 
         // GET: api/Patient/{patientId}
@@ -112,6 +115,49 @@ namespace ADHApi.Controllers.Patient
             }
 
             return StatusCode(500);
+        }
+
+        // GET: api/Patient/PatientProgress
+        [HttpGet("PatientProgress")]
+        public IActionResult GetByPatientID()
+        {
+            try
+            {
+                string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var Progresses = _patientProgressData.GetPatientProgressesByPatientId(PatientId);
+
+                var model = _mapper.Map<List<PatientPatientProgressDisplayModel>>(Progresses);
+
+                if (Progresses.Count > 0)
+                {
+                    return Ok(model);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // POST: api/Patient/PatientProgress/
+        [HttpPost("PatientProgress")]
+        public IActionResult AddNewProgress([FromBody] PatientProgressViewModel userInput)
+        {
+            // TODO Add try and catch error 
+            string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var model = _mapper.Map<PatientProgressModel>(userInput);
+            model.PatientId = PatientId;
+            model.AddedBy = PatientId;
+
+
+            _patientProgressData.AddProgress(model);
+
+            return Ok();
         }
 
         [HttpPut("Patient")]

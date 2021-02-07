@@ -35,6 +35,7 @@ namespace ADHApi.Controllers.Administration
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserRoleData _userRoleData;
         private readonly PatientData _patientData;
+        private readonly PatientProgressData _patientProgressData;
 
         public AdminController(IArticleData articleData,
             IApiErrorHandler apiErrorHandler,
@@ -50,7 +51,8 @@ namespace ADHApi.Controllers.Administration
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             UserRoleData userRoleData,
-            PatientData patientData)
+            PatientData patientData,
+            PatientProgressData patientProgressData)
         {
             _articleData = articleData;
             _apiErrorHandler = apiErrorHandler;
@@ -67,6 +69,7 @@ namespace ADHApi.Controllers.Administration
             _roleManager = roleManager;
             _userRoleData = userRoleData;
             _patientData = patientData;
+            _patientProgressData = patientProgressData;
         }
 
         // TODO check all methods respons messages 
@@ -442,6 +445,52 @@ namespace ADHApi.Controllers.Administration
             return StatusCode(500);
         }
 
+        // GET: api/Admin/PatientProgress/
+        [HttpGet("PatientProgress")]
+        public IActionResult GetProgress()
+        {
+            try
+            {
+                List<PatientProgressModel> Progresses = _patientProgressData.GetPatientProgresses();
+
+                if (Progresses.Count > 0)
+                {
+                    return Ok(Progresses);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // GET: api/Admin/PatientProgress/
+        [HttpGet("PatientProgress/{patientID}")]
+        public IActionResult GetProgressByPatientID(string patientID)
+        {
+            try
+            {
+                List<PatientProgressModel> Progresses = _patientProgressData.GetPatientProgressesByPatientId(patientID);
+
+                if (Progresses.Count > 0)
+                {
+                    return Ok(Progresses);
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
         // POST: api/Medicine/
         [HttpPost("Medicines")]
         public IActionResult AddNew([FromBody] MedicineViewModel userInput)
@@ -748,6 +797,26 @@ namespace ADHApi.Controllers.Administration
                 _userData.DeleteUser(id);
 
                 return Ok($"user {id} Deleted");
+            }
+            catch (Exception ex)
+            {
+                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
+            }
+
+            return StatusCode(500);
+        }
+
+        // DELETE: api/Admin/PatientProgress
+        [HttpDelete("PatientProgress/{id}")]
+        public IActionResult DeleteProgress(string id)
+        {
+            try
+            {
+                // TODO Check if in before delete 
+
+                _patientProgressData.DeleteProgress(id);
+
+                return Ok();
             }
             catch (Exception ex)
             {

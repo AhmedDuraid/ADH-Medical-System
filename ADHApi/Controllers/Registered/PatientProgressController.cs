@@ -1,7 +1,8 @@
 ﻿using ADHApi.Error;
-using ADHApi.Models;
+using ADHApi.ViewModels;
 using ADHDataManager.Library.DataAccess;
 using ADHDataManager.Library.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,68 +16,23 @@ namespace ADHApi.Controllers.Registered
     [Authorize]
     public class PatientProgressController : ControllerBase
     {
+        // TODO
         private readonly IPatientProgressData _patientProgressData;
         private readonly IApiErrorHandler _apiErrorHandler;
+        private readonly IMapper _mapper;
 
-        public PatientProgressController(IPatientProgressData patientProgressData, IApiErrorHandler apiErrorHandler)
+        public PatientProgressController(IPatientProgressData patientProgressData,
+            IApiErrorHandler apiErrorHandler,
+            IMapper mapper)
         {
             _patientProgressData = patientProgressData;
             _apiErrorHandler = apiErrorHandler;
+            _mapper = mapper;
         }
 
-        // GET: api/PatientProgress/
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetProgress()
-        {
-            try
-            {
-                List<PatientProgressModel> Progresses = _patientProgressData.GetPatientProgresses();
-
-                if (Progresses.Count > 0)
-                {
-                    return Ok(Progresses);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/PatientProgress/Patient
-
-        [HttpGet("Patient")]
-        [Authorize(Roles = "Patient")]
-        public IActionResult GetByPatientID()
-        {
-            try
-            {
-                string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                List<PatientProgressModel> Progresses = _patientProgressData.GetPatientProgressesByPatientId(PatientId);
-
-                if (Progresses.Count > 0)
-                {
-                    return Ok(Progresses);
-                }
-
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-
-        // GET: api/PatientProgress/
-        [HttpGet("Staff/{patientID}")]
-        [Authorize(Roles = "Admin, Doctor, Manager")]
+        // GET: api/PatientProgress/{patientID}
+        [HttpGet("{patientID}")]
+        [Authorize(Roles = "Doctor, Manager")]
         public IActionResult GetByPatientID(string patientID)
         {
             try
@@ -99,64 +55,18 @@ namespace ADHApi.Controllers.Registered
             return StatusCode(500);
         }
 
-
-        // POST: api/PatientProgress/
-        [HttpPost("Patient")]
-        [Authorize(Roles = "Patient")]
-        public IActionResult AddNew([FromBody] ApiPatientProgressModel userInput)
-        {
-            string PatientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            PatientProgressModel NewProgress = new PatientProgressModel()
-            {
-                BMI = userInput.BMI,
-                Weight = userInput.Weight,
-                PatientId = PatientId,
-                AddedBy = PatientId
-            };
-
-
-            _patientProgressData.AddProgress(NewProgress);
-
-            return Ok();
-        }
-
         // POST: api/PatientProgress/
         [HttpPost("{patientId}")]
         [Authorize(Roles = "Doctor")]
-        public IActionResult AddNew(string patientId, [FromBody] ApiPatientProgressModel userInput)
-        {
-
-            try
-            {
-                PatientProgressModel NewProgress = new PatientProgressModel()
-                {
-                    BMI = userInput.BMI,
-                    Weight = userInput.Weight,
-                    PatientId = patientId,
-                    AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                };
-
-                _patientProgressData.AddProgress(NewProgress);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _apiErrorHandler.CreateError(ex.Source, ex.StackTrace, ex.Message);
-            }
-
-            return StatusCode(500);
-        }
-        // DELETE: api/PatientProgress
-        //admin
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteProgress(string id)
+        public IActionResult AddNew(string patientId, [FromBody] PatientProgressViewModel userInput)
         {
             try
             {
-                _patientProgressData.DeleteProgress(id);
+                var model = _mapper.Map<PatientProgressModel>(userInput);
+                model.PatientId = patientId;
+                model.AddedBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                _patientProgressData.AddProgress(model);
 
                 return Ok();
             }
